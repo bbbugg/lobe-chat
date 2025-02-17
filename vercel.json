@@ -3,16 +3,16 @@
   "installCommand": "bun install",
   "functions": {
     "api/test.js": {
-      "maxDuration": 600
+      "maxDuration": 60
     },
     "api/*.js": {
-      "maxDuration": 600
+      "maxDuration": 60
     },
     "src/api/*.js": {
-      "maxDuration": 600
+      "maxDuration": 60
     },
     "app/api/**/*": {
-      "maxDuration": 600
+      "maxDuration": 60
     }
   }
 }

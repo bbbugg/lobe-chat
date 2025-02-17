@@ -2,17 +2,8 @@
   "buildCommand": "NODE_OPTIONS=--max-old-space-size=6144 bun run build", 
   "installCommand": "bun install",
   "functions": {
-    "api/test.js": {
-      "maxDuration": 60
-    },
-    "api/*.js": {
-      "maxDuration": 60
-    },
-    "src/api/*.js": {
-      "maxDuration": 60
-    },
     "app/api/**/*": {
-      "maxDuration": 60
+      "maxDuration": 600
     }
   }
 }

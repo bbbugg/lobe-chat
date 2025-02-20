@@ -3,25 +3,6 @@ import { AIChatModelCard } from '@/types/aiModel';
 const deepseekChatModels: AIChatModelCard[] = [
   {
     abilities: {
-      reasoning: true,
-    },
-    contextWindowTokens: 65_536,
-    description:
-      '自己添加的，官方api卡顿用这个',
-    displayName: 'DMXAPI-DeepSeek-R1',
-    enabled: true,
-    id: 'DMXAPI-DeepSeek-R1',
-    pricing: {
-      cachedInput: 1,
-      currency: 'CNY',
-      input: 4,
-      output: 16,
-    },
-    releasedAt: '2025-01-20',
-    type: 'chat',
-  },
-  {
-    abilities: {
       functionCall: true,
     },
     contextWindowTokens: 65_536,

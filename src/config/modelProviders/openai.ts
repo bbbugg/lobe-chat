@@ -2,6 +2,7 @@ import { ModelProviderCard } from '@/types/llm';
 
 // ref: https://platform.openai.com/docs/deprecations
 const OpenAI: ModelProviderCard = {
+  chatModels: [
     {
       contextWindowTokens: 128_000,
       description:

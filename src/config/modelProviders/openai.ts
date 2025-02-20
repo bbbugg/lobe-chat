@@ -2,21 +2,6 @@ import { ModelProviderCard } from '@/types/llm';
 
 // ref: https://platform.openai.com/docs/deprecations
 const OpenAI: ModelProviderCard = {
-  chatModels: [
-      {
-      contextWindowTokens: 200_000,
-      description:
-        'o1-pro-all是自己添加的。',
-      displayName: 'OpenAI o1-pro',
-      enabled: true,
-      id: 'o1-pro-all',
-      maxOutput: 100_000,
-      pricing: {
-        input: 0.25,
-        output: 0,
-      },
-      releasedAt: '2024-12-12',
-    },
     {
       contextWindowTokens: 128_000,
       description:

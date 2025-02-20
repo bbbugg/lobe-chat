@@ -2,22 +2,6 @@ import { ModelProviderCard } from '@/types/llm';
 
 // ref: https://platform.deepseek.com/api-docs/pricing
 const DeepSeek: ModelProviderCard = {
-  chatModels: [
-    {
-      contextWindowTokens: 65_536,
-      description:
-        '自己加的。如果官方卡，用这个。',
-      displayName: 'DMXAPI-DeepSeek-R1',
-      enabled: true,
-      id: 'DMXAPI-DeepSeek-R1',
-      pricing: {
-        cachedInput: 1,
-        currency: 'CNY',
-        input: 4,
-        output: 16,
-      },
-      releasedAt: '2025-01-20',
-    },
     {
       contextWindowTokens: 65_536,
       description:

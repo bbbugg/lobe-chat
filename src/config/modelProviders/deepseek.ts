@@ -6,6 +6,21 @@ const DeepSeek: ModelProviderCard = {
     {
       contextWindowTokens: 65_536,
       description:
+        '自己加的。如果官方卡，用这个。',
+      displayName: 'DMXAPI-DeepSeek-R1',
+      enabled: true,
+      id: 'DMXAPI-DeepSeek-R1',
+      pricing: {
+        cachedInput: 1,
+        currency: 'CNY',
+        input: 4,
+        output: 16,
+      },
+      releasedAt: '2025-01-20',
+    },
+    {
+      contextWindowTokens: 65_536,
+      description:
         '最新模型 DeepSeek-V3 多项评测成绩超越 Qwen2.5-72B 和 Llama-3.1-405B 等开源模型，性能对齐领军闭源模型 GPT-4o 与 Claude-3.5-Sonnet。',
       displayName: 'DeepSeek V3',
       enabled: true,

@@ -7,7 +7,7 @@ const OpenAI: ModelProviderCard = {
       contextWindowTokens: 200_000,
       description:
         'o1-pro-all是自己添加的。',
-      displayName: 'o1-pro-all',
+      displayName: 'OpenAI o1-pro',
       enabled: true,
       id: 'o1-pro-all',
       maxOutput: 100_000,

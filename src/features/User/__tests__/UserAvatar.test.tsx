@@ -63,8 +63,8 @@ describe('UserAvatar', () => {
       });
 
       render(<UserAvatar />);
-      expect(screen.getByAltText('LobeChat')).toBeInTheDocument();
-      expect(screen.getByAltText('LobeChat')).toHaveAttribute('src', DEFAULT_USER_AVATAR_URL);
+      expect(screen.getByAltText('Mithrandir')).toBeInTheDocument();
+      expect(screen.getByAltText('Mithrandir')).toHaveAttribute('src', DEFAULT_USER_AVATAR_URL);
     });
   });
 

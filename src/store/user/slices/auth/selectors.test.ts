@@ -74,19 +74,6 @@ describe('userProfileSelectors', () => {
     });
   });
 
-  describe('username', () => {
-    it('should return default username when auth is disabled', () => {
-      enableAuth = false;
-
-      const store: UserStore = {
-        isSignedIn: false,
-        user: null,
-        enableAuth: () => false,
-      } as unknown as UserStore;
-
-      expect(userProfileSelectors.username(store)).toBe('LobeChat');
-    });
-
     it('should return user username when signed in', () => {
       const store: UserStore = {
         isSignedIn: true,

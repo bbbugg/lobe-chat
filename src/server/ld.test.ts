@@ -57,7 +57,7 @@ describe('Ld', () => {
       });
 
       expect(webpage['@type']).toBe('WebPage');
-      expect(webpage.name).toBe('Test Page · LobeChat');
+      expect(webpage.name).toBe('Test Page · Mithrandir');
       expect(webpage.description).toBe('Test Description');
     });
   });
@@ -79,7 +79,7 @@ describe('Ld', () => {
       const website = ld.genWebSite();
 
       expect(website['@type']).toBe('WebSite');
-      expect(website.name).toBe('LobeChat');
+      expect(website.name).toBe('Mithrandir');
     });
   });
 

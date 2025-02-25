@@ -95,7 +95,7 @@ describe('Ld', () => {
       });
 
       expect(article['@type']).toBe('Article');
-      expect(article.headline).toBe('Test Article · LobeChat');
+      expect(article.headline).toBe('Test Article · Mithrandir');
       expect(article.author['@type']).toBe('Person');
     });
   });

@@ -1,4 +1,4 @@
-src/store/chat/slices/plugin/action.test.tsimport { act, renderHook } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
 import { Md5 } from 'ts-md5';
 import { Mock, afterEach, describe, expect, it, vi } from 'vitest';
 

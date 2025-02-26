@@ -67,7 +67,7 @@ describe('ChatPluginAction', () => {
           {
             ...toolMessage,
             meta: {
-              avatar: 'https://s3.laimerx.cn/cutecat.svg',
+              avatar: 'https://s3.laimex.cn/cutecat.svg',
               backgroundColor: 'rgba(0,0,0,0)',
               description: undefined,
               title: undefined,

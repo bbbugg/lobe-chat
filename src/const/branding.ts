@@ -5,7 +5,7 @@
 export const LOBE_CHAT_CLOUD = 'LobeChat Cloud';
 
 export const BRANDING_NAME = 'Mithrandir';
-export const BRANDING_LOGO_URL = 'https://s3.laimex.cn/cutecat.svg';
+export const BRANDING_LOGO_URL = 'https://s3.laimerx.cn/cutecat.svg';
 
 export const ORG_NAME = 'LobeHub';
 

@@ -70,7 +70,7 @@ const mockedChats = [
     content: 'Function Message',
     role: 'tool',
     meta: {
-      avatar: 'https://s3.laimex.cn/cutecat.svg',
+      avatar: 'https://s3.laimerx.cn/cutecat.svg',
       backgroundColor: 'rgba(0,0,0,0)',
       description: 'inbox.desc',
       title: 'inbox.title',
@@ -213,7 +213,7 @@ describe('chatSelectors', () => {
           content: 'Function Message',
           role: 'tool',
           meta: {
-            avatar: 'https://s3.laimex.cn/cutecat.svg',
+            avatar: 'https://s3.laimerx.cn/cutecat.svg',
             backgroundColor: 'rgba(0,0,0,0)',
             description: 'inbox.desc',
             title: 'inbox.title',

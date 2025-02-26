@@ -1,4 +1,4 @@
-import { act, renderHook } from '@testing-library/react';
+src/store/chat/slices/plugin/action.test.tsimport { act, renderHook } from '@testing-library/react';
 import { Md5 } from 'ts-md5';
 import { Mock, afterEach, describe, expect, it, vi } from 'vitest';
 
@@ -67,7 +67,7 @@ describe('ChatPluginAction', () => {
           {
             ...toolMessage,
             meta: {
-              avatar: 'https://s3.laimex.cn/cutecat.svg',
+              avatar: 'https://s3.laimerx.cn/cutecat.svg',
               backgroundColor: 'rgba(0,0,0,0)',
               description: undefined,
               title: undefined,

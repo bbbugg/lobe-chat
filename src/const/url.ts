@@ -38,8 +38,8 @@ export const BLOG = urlJoin(OFFICIAL_SITE, 'blog');
 export const ABOUT = OFFICIAL_SITE;
 export const FEEDBACK = pkg.bugs.url;
 export const DISCORD = 'https://discord.gg/AYFPHvv2jT';
-export const PRIVACY_URL = 'https://www.laimex.cn/file/Privacy%20Policy.html';
-export const TERMS_URL = 'https://www.laimex.cn/file/Terms%20of%20Service.html';
+export const PRIVACY_URL = 'https://www.laimex.cn/files/Privacy.html';
+export const TERMS_URL = 'https://www.laimex.cn/files/Terms.html';
 
 export const PLUGINS_INDEX_URL = 'https://chat-plugins.lobehub.com';
 

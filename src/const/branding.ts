@@ -11,6 +11,6 @@ export const ORG_NAME = 'LobeHub';
 
 export const BRANDING_URL = {
   help: undefined,
-  privacy: undefined,
-  terms: undefined,
+  privacy: 'https://www.laimex.cn/files/Privacy.html',
+  terms: 'https://www.laimex.cn/files/Terms.html',
 };

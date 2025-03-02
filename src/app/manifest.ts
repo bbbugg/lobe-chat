@@ -26,7 +26,7 @@ const manifest = (): MetadataRoute.Manifest | any => {
       {
         purpose: 'maskable',
         sizes: '512x512',
-        url: '/icons/icon-512x512.maskable.png',
+        url: '/icons/cutecat.svg',
       },
     ],
     id: kebabCase(BRANDING_NAME),

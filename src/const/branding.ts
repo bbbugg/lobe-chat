@@ -5,7 +5,7 @@
 export const LOBE_CHAT_CLOUD = 'LobeChat Cloud';
 
 export const BRANDING_NAME = 'Mithrandir';
-export const BRANDING_LOGO_URL = '/icons/icon-512x512.maskable.png';
+export const BRANDING_LOGO_URL = '/icons/cutecat.svg';
 
 export const ORG_NAME = 'LobeHub';
 

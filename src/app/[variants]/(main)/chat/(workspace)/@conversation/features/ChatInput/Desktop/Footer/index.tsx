@@ -41,6 +41,19 @@ const useStyles = createStyles(({ css, prefixCls, token }) => {
         }
       }
     `,
+    shiftedFilesContainer: css`
+      /* 方案 A: 使用 transform (推荐，不影响布局流) */
+      transform: translateY(-16px);
+
+      /* 方案 B: 使用 margin (会影响下方元素的布局) */
+      /* margin-bottom: -16px; */ /* 如果想让下方元素也向上移动填补空间 */
+      /* 或者 */
+      /* margin-top: -16px; */ /* 如果想单纯将自身向上拉 */
+
+      /* 可选：如果移动后导致与其他元素重叠，可能需要调整 z-index */
+      /* position: relative; */ /* 需要配合 z-index 或 transform/top 使用 */
+      /* z-index: 1; */ /* 比下方元素高即可，如果下方没有设置 z-index, 1 就够 */
+    `,
   };
 });
 
@@ -82,7 +95,11 @@ const Footer = memo<FooterProps>(({ onExpandChange, expand }) => {
         padding={'0 24px'}
       >
         <Flexbox align={'center'} gap={8} horizontal style={{ overflow: 'hidden' }}>
-          {expand && <LocalFiles />}
+          {expand &&(
+            <Flexbox className={styles.shiftedFilesContainer}> {/* 应用移动样式 */}
+            <LocalFiles />
+          </Flexbox>
+          )}
         </Flexbox>
         <Flexbox align={'center'} flex={'none'} gap={8} horizontal>
           <ShortcutHint />

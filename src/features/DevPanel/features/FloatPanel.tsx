@@ -19,7 +19,7 @@ const useStyles = createStyles(({ token, css, prefixCls }) => {
       opacity: 0;
     `,
     expanded: css`
-      pointer-events: none;
+      pointer-events: auto;
       transform: scale(1);
       opacity: 1;
     `,

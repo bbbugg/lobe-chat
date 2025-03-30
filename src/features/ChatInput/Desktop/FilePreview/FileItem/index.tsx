@@ -15,7 +15,6 @@ import { FILE_ITEM_SIZE } from './style';
 
 const useStyles = createStyles(({ css, token }) => ({
   actions: css`
-    pointer-events: none;
     position: absolute;
     z-index: 10;
     inset-block-start: -4px;

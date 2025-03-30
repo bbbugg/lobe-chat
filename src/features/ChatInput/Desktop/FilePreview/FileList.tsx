@@ -10,6 +10,7 @@ import FileItem from './FileItem';
 const useStyles = createStyles(({ css, token }) => ({
   container: css`
     overflow-x: scroll;
+    pointer-events: none;
 
     width: 100%;
     border-start-start-radius: 8px;

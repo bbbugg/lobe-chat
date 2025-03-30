@@ -10,13 +10,23 @@ import FileItem from './FileItem';
 const useStyles = createStyles(({ css, token }) => ({
   container: css`
     overflow-x: scroll;
-    pointer-events: none;
+    position: relative; // 添加相对定位，z-index才能生效
+    z-index: 1; // 或者更高的值，确保它在拖拽条之上
 
     width: 100%;
     border-start-start-radius: 8px;
     border-start-end-radius: 8px;
 
     background: ${lighten(0.01, token.colorBgLayout)};
+
+    // 可能需要添加滚动条样式，使其在不同浏览器上更明显
+    &::-webkit-scrollbar {
+      height: 8px; // 设置滚动条高度
+    }
+    &::-webkit-scrollbar-thumb {
+      background: ${token.colorFill}; // 设置滑块颜色
+      border-radius: 4px;
+    }
   `,
 }));
 

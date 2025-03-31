@@ -16,8 +16,8 @@ const useStyles = createStyles(({ css, token }) => ({
     border-start-end-radius: 8px;
 
     background: ${lighten(0.01, token.colorBgLayout)};
-    position: relative; /* 设置定位上下文为相对定位 */
-    top: -16px;         /* 相对于原始位置，向上移动 16px */
+    position: relative;
+    inset-block-start: -16px;
   `,
 }));
 

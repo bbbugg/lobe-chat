@@ -9,8 +9,8 @@ import FileItem from './FileItem';
 
 const useStyles = createStyles(({ css, token }) => ({
   container: css`
-    position: relative; /* 设置定位上下文为相对定位 */
-    inset-block-start: -16px; /* 相对于原始位置，向上移动 16px */
+    position: relative;
+    inset-block-start: -16px;
 
     overflow-x: scroll;
 

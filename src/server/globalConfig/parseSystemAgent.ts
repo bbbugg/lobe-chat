@@ -53,7 +53,7 @@ export const parseSystemAgent = (envString: string = ''): Partial<UserSystemAgen
     for (const key of protectedKeys) {
       if (!config[key as keyof UserSystemAgentConfig]) {
         config[key as keyof UserSystemAgentConfig] = {
-          enabled: key === 'queryRewrite' ? true : undefined,
+          enabled: key === 'queryRewrite' ? false : undefined,
           model: defaultSetting.model,
           provider: defaultSetting.provider,
         } as any;

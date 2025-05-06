@@ -26,7 +26,7 @@ export const parseModelString = (modelString: string = '', withDeploymentName = 
       // if (!deploymentName) deploymentName = id;
       if (!deploymentName){
         let knownModel = null;
-        if (providerId != '-1') {
+        if (providerId !== '-1') {
           knownModel = LOBE_DEFAULT_MODEL_LIST.find(
             (model) => model.id === id && model.providerId === providerId,
           );

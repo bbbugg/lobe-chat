@@ -7,7 +7,7 @@ import { merge } from '@/utils/merge';
 /**
  * Parse model string to add or remove models.
  */
-export const parseModelString = (modelString: string = '', withDeploymentName = false, providerId = '-1') => {
+export const parseModelString = (modelString: string = '', withDeploymentName = false) => {
   let models: AiFullModelCard[] = [];
   let removeAll = false;
   const removedModels: string[] = [];
@@ -131,7 +131,7 @@ export const transformToAiChatModelList = ({
 }): AiFullModelCard[] | undefined => {
   if (!modelString) return undefined;
 
-  const modelConfig = parseModelString(modelString, withDeploymentName, providerId);
+  const modelConfig = parseModelString(modelString, withDeploymentName);
   let chatModels = modelConfig.removeAll ? [] : defaultChatModels;
 
   // 处理移除逻辑

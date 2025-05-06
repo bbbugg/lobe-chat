@@ -151,18 +151,17 @@ export const transformToAiChatModelList = ({
         knownModel = LOBE_DEFAULT_MODEL_LIST.find((model) => model.id === toAddModel.id);
         if (knownModel) knownModel.providerId = providerId;
       }
-
+      if (withDeploymentName) {
+        toAddModel.config = toAddModel.config || {};
+        if (!toAddModel.config.deploymentName) {
+          toAddModel.config.deploymentName = knownModel?.config?.deploymentName ?? toAddModel.id;
+        }
+      }
       // if the model is known, update it based on the known model
       if (knownModel) {
         const index = draft.findIndex((model) => model.id === toAddModel.id);
         const modelInList = draft[index];
 
-        if (withDeploymentName) {
-          if (!toAddModel.config?.deploymentName){
-            toAddModel.config = { knownModel.config?.deploymentName };
-            // deploymentName = knownModel?.config?.deploymentName ?? id;
-          }
-        }
 
         // if the model is already in chatModels, update it
         if (modelInList) {
@@ -183,11 +182,6 @@ export const transformToAiChatModelList = ({
         }
       } else {
         // if the model is not in LOBE_DEFAULT_MODEL_LIST, add it as a new custom model
-        if (withDeploymentName) {
-          if (!toAddModel.config?.deploymentName){
-            toAddModel.config = { toAddModel.id };
-          }
-        }
         draft.push({
           ...toAddModel,
           displayName: toAddModel.displayName || toAddModel.id,

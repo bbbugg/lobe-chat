@@ -51,31 +51,31 @@ exports[`settingsSelectors > currentSettings > should merge DEFAULT_SETTINGS and
 exports[`settingsSelectors > currentSystemAgent > should merge DEFAULT_SYSTEM_AGENT_CONFIG and s.settings.systemAgent correctly 1`] = `
 {
   "agentMeta": {
-    "model": "gpt-4.1-mini",
-    "provider": "openai",
+    "model": "deepseek-chat",
+    "provider": "deepseek",
   },
   "enableAutoReply": true,
   "historyCompress": {
-    "model": "gpt-4.1-mini",
-    "provider": "openai",
+    "model": "deepseek-chat",
+    "provider": "deepseek",
   },
   "queryRewrite": {
     "enabled": true,
-    "model": "gpt-4.1-mini",
-    "provider": "openai",
+    "model": "deepseek-chat",
+    "provider": "deepseek",
   },
   "replyMessage": "Custom auto reply",
   "thread": {
-    "model": "gpt-4.1-mini",
-    "provider": "openai",
+    "model": "deepseek-chat",
+    "provider": "deepseek",
   },
   "topic": {
-    "model": "gpt-4.1-mini",
-    "provider": "openai",
+    "model": "deepseek-chat",
+    "provider": "deepseek",
   },
   "translation": {
-    "model": "gpt-4.1-mini",
-    "provider": "openai",
+    "model": "deepseek-chat",
+    "provider": "deepseek",
   },
 }
 `;
@@ -111,8 +111,8 @@ exports[`settingsSelectors > defaultAgent > should merge DEFAULT_AGENT and s.set
       "historyCount": 8,
       "reasoningBudgetToken": 1024,
       "searchFCModel": {
-        "model": "gpt-4.1-mini",
-        "provider": "openai",
+        "model": "deepseek-chat",
+        "provider": "deepseek",
       },
       "searchMode": "off",
     },
@@ -125,7 +125,7 @@ exports[`settingsSelectors > defaultAgent > should merge DEFAULT_AGENT and s.set
       "top_p": 1,
     },
     "plugins": [],
-    "provider": "openai",
+    "provider": "deepseek",
     "systemRole": "user",
     "tts": {
       "showAllLocaleVoice": false,
@@ -155,8 +155,8 @@ exports[`settingsSelectors > defaultAgentConfig > should merge DEFAULT_AGENT_CON
     "historyCount": 8,
     "reasoningBudgetToken": 1024,
     "searchFCModel": {
-      "model": "gpt-4.1-mini",
-      "provider": "openai",
+      "model": "deepseek-chat",
+      "provider": "deepseek",
     },
     "searchMode": "off",
   },
@@ -169,7 +169,7 @@ exports[`settingsSelectors > defaultAgentConfig > should merge DEFAULT_AGENT_CON
     "top_p": 1,
   },
   "plugins": [],
-  "provider": "openai",
+  "provider": "deepseek",
   "systemRole": "custom role",
   "tts": {
     "showAllLocaleVoice": false,

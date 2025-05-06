@@ -305,6 +305,7 @@ describe('parseModelString', () => {
     });
   });
 
+  describe('deployment name', () => {
     it('should have diff deployment name as id', () => {
       const result = parseModelString('gpt-35-turbo->my-deploy=GPT 3.5 Turbo', true);
       expect(result.add[0]).toEqual({

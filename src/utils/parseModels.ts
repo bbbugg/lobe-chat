@@ -24,16 +24,6 @@ export const parseModelString = (modelString: string = '', withDeploymentName = 
     if (withDeploymentName) {
       [id, deploymentName] = id.split('->');
       // if (!deploymentName) deploymentName = id;
-      // if (!deploymentName){
-      //   let knownModel = null;
-      //   if (providerId !== '-1') {
-      //     knownModel = LOBE_DEFAULT_MODEL_LIST.find(
-      //       (model) => model.id === id && model.providerId === providerId,
-      //     );
-      //   }
-      //   if (!knownModel) knownModel = LOBE_DEFAULT_MODEL_LIST.find((model) => model.id === id);
-      //   deploymentName = knownModel?.config?.deploymentName ?? id;
-      // }
     }
 
     if (disable) {
@@ -157,11 +147,11 @@ export const transformToAiChatModelList = ({
           toAddModel.config.deploymentName = knownModel?.config?.deploymentName ?? toAddModel.id;
         }
       }
+
       // if the model is known, update it based on the known model
       if (knownModel) {
         const index = draft.findIndex((model) => model.id === toAddModel.id);
         const modelInList = draft[index];
-
 
         // if the model is already in chatModels, update it
         if (modelInList) {

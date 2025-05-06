@@ -235,7 +235,6 @@ const BaiduWenxin: ModelProviderCard = {
   checkModel: 'ernie-speed-128k',
   description:
     '企业级一站式大模型与AI原生应用开发及服务平台，提供最全面易用的生成式人工智能模型开发、应用开发全流程工具链',
-  enabled: true,
   id: 'wenxin',
   modelsUrl: 'https://cloud.baidu.com/doc/WENXINWORKSHOP/s/Nlks5zkzu#%E5%AF%B9%E8%AF%9Dchat',
   name: 'Wenxin',

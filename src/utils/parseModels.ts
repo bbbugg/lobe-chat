@@ -24,16 +24,16 @@ export const parseModelString = (modelString: string = '', withDeploymentName = 
     if (withDeploymentName) {
       [id, deploymentName] = id.split('->');
       // if (!deploymentName) deploymentName = id;
-      if (!deploymentName){
-        let knownModel = null;
-        if (providerId !== '-1') {
-          knownModel = LOBE_DEFAULT_MODEL_LIST.find(
-            (model) => model.id === id && model.providerId === providerId,
-          );
-        }
-        if (!knownModel) knownModel = LOBE_DEFAULT_MODEL_LIST.find((model) => model.id === id);
-        deploymentName = knownModel?.config?.deploymentName ?? id;
-      }
+      // if (!deploymentName){
+      //   let knownModel = null;
+      //   if (providerId !== '-1') {
+      //     knownModel = LOBE_DEFAULT_MODEL_LIST.find(
+      //       (model) => model.id === id && model.providerId === providerId,
+      //     );
+      //   }
+      //   if (!knownModel) knownModel = LOBE_DEFAULT_MODEL_LIST.find((model) => model.id === id);
+      //   deploymentName = knownModel?.config?.deploymentName ?? id;
+      // }
     }
 
     if (disable) {
@@ -157,6 +157,13 @@ export const transformToAiChatModelList = ({
         const index = draft.findIndex((model) => model.id === toAddModel.id);
         const modelInList = draft[index];
 
+        if (withDeploymentName) {
+          if (!toAddModel.config?.deploymentName){
+            toAddModel.config = { knownModel.config?.deploymentName };
+            // deploymentName = knownModel?.config?.deploymentName ?? id;
+          }
+        }
+
         // if the model is already in chatModels, update it
         if (modelInList) {
           draft[index] = merge(modelInList, {
@@ -176,6 +183,11 @@ export const transformToAiChatModelList = ({
         }
       } else {
         // if the model is not in LOBE_DEFAULT_MODEL_LIST, add it as a new custom model
+        if (withDeploymentName) {
+          if (!toAddModel.config?.deploymentName){
+            toAddModel.config = { toAddModel.id };
+          }
+        }
         draft.push({
           ...toAddModel,
           displayName: toAddModel.displayName || toAddModel.id,

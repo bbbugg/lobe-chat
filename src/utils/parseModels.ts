@@ -7,7 +7,7 @@ import { merge } from '@/utils/merge';
 /**
  * Parse model string to add or remove models.
  */
-export const parseModelString = (modelString: string = '', withDeploymentName = false) => {
+export const parseModelString = (modelString: string = '', withDeploymentName = false, providerId = '-1') => {
   let models: AiFullModelCard[] = [];
   let removeAll = false;
   const removedModels: string[] = [];
@@ -23,7 +23,17 @@ export const parseModelString = (modelString: string = '', withDeploymentName = 
 
     if (withDeploymentName) {
       [id, deploymentName] = id.split('->');
-      if (!deploymentName) deploymentName = id;
+      // if (!deploymentName) deploymentName = id;
+      if (!deploymentName){
+        let knownModel = null;
+        if (providerId != '-1') {
+          knownModel = LOBE_DEFAULT_MODEL_LIST.find(
+            (model) => model.id === id && model.providerId === providerId,
+          );
+        }
+        if (!knownModel) knownModel = LOBE_DEFAULT_MODEL_LIST.find((model) => model.id === id);
+        deploymentName = knownModel?.config?.deploymentName ?? id;
+      }
     }
 
     if (disable) {
@@ -121,7 +131,7 @@ export const transformToAiChatModelList = ({
 }): AiFullModelCard[] | undefined => {
   if (!modelString) return undefined;
 
-  const modelConfig = parseModelString(modelString, withDeploymentName);
+  const modelConfig = parseModelString(modelString, withDeploymentName, providerId);
   let chatModels = modelConfig.removeAll ? [] : defaultChatModels;
 
   // 处理移除逻辑

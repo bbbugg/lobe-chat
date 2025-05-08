@@ -502,7 +502,7 @@ describe('transformToChatModelCards', () => {
       abilities: {},
       enabled: true,
       config: {
-        deploymentName: `+my_model`,
+        deploymentName: `my_model`,
       },
     });
   });

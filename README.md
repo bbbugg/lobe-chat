@@ -26,6 +26,7 @@ One-click **FREE** deployment of your private OpenAI ChatGPT/Claude/Gemini/Groq/
 [![][github-issues-shield]][github-issues-link]
 [![][github-license-shield]][github-license-link]<br>
 [![][sponsor-shield]][sponsor-link]
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/bbbugg/lobe-chat)
 
 **Share LobeChat Repository**
 

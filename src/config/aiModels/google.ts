@@ -70,6 +70,7 @@ const googleChatModels: AIChatModelCard[] = [
     settings: {
       searchImpl: 'params',
       searchProvider: 'google',
+      extendParams: ['enableReasoning', 'reasoningBudgetToken'],
     },
     type: 'chat',
   },

@@ -84,6 +84,7 @@ interface LobeGoogleAIParams {
 
 interface GoogleAIThinkingConfig {
   thinkingBudget?: number;
+  includeThoughts?: boolean;
 }
 
 export class LobeGoogleAI implements LobeRuntimeAI {
@@ -112,6 +113,7 @@ export class LobeGoogleAI implements LobeRuntimeAI {
 
       const thinkingConfig: GoogleAIThinkingConfig = {
         thinkingBudget: thinking?.type === 'enabled' ? Math.min(thinking.budget_tokens, 24_576) : 0,
+        includeThoughts: true,
       };
 
       const contents = await this.buildGoogleMessages(payload.messages);

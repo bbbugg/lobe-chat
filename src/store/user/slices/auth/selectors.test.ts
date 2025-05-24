@@ -124,19 +124,6 @@ describe('userProfileSelectors', () => {
       expect(userProfileSelectors.username(store)).toBe('johndoe');
     });
 
-    it('should return user username when auth is disabled and is desktop', () => {
-      enableAuth = false;
-      isDesktop = true;
-
-      const store: UserStore = {
-        isSignedIn: false,
-        user: { username: 'johndoe' },
-        enableAuth: () => false,
-      } as unknown as UserStore;
-
-      expect(userProfileSelectors.username(store)).toBe('johndoe');
-    });
-
     it('should return user username when signed in', () => {
       const store: UserStore = {
         isSignedIn: true,

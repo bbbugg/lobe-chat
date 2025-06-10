@@ -37,7 +37,6 @@ export const BLOG = urlJoin(OFFICIAL_SITE, 'blog');
 
 export const ABOUT = OFFICIAL_SITE;
 export const FEEDBACK = pkg.bugs.url;
-export const DISCORD = 'https://discord.gg/AYFPHvv2jT';
 export const PRIVACY_URL = '/.files/Privacy.html';
 export const TERMS_URL = '/.files/Terms.html';
 
@@ -64,8 +63,6 @@ export const LOBE_URL_IMPORT_NAME = 'settings';
 export const EMAIL_SUPPORT = 'support@laimex.cn';
 export const EMAIL_BUSINESS = 'hello@laimex.cn';
 
-export const MEDIDUM = 'https://medium.com/@lobehub';
-export const X = 'https://x.com/lobehub';
 export const RELEASES_URL = urlJoin(GITHUB, 'releases');
 
 export const mailTo = (email: string) => `mailto:${email}`;

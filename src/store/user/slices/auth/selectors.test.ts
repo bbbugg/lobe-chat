@@ -44,7 +44,7 @@ describe('userProfileSelectors', () => {
         enableAuth: () => false,
       } as unknown as UserStore;
 
-      expect(userProfileSelectors.displayUserName(store)).toBe('LobeChat');
+      expect(userProfileSelectors.displayUserName(store)).toBe('Mithrandir');
     });
 
     it('should return user username when auth is disabled and is desktop', () => {

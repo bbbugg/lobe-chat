@@ -353,7 +353,7 @@ jobs:
         if: failure()
         uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.GH_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN}}
           script: |
             const createFailureIssue = require('./.github/scripts/create-failure-issue.js');
             return await createFailureIssue({ github, context, core });

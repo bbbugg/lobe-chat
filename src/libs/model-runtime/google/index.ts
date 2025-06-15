@@ -10,15 +10,14 @@ import {
   SchemaType,
 } from '@google/generative-ai';
 
-import type { ChatModelCard } from '@/types/llm';
 import { imageUrlToBase64 } from '@/utils/imageToBase64';
 import { safeParseJSON } from '@/utils/safeParseJSON';
 
 import { LobeRuntimeAI } from '../BaseAI';
 import { AgentRuntimeErrorType, ILobeAgentRuntimeErrorType } from '../error';
 import {
-  ChatCompetitionOptions,
   ChatCompletionTool,
+  ChatMethodOptions,
   ChatStreamPayload,
   OpenAIChatMessage,
   UserMessageContentPart,
@@ -26,11 +25,7 @@ import {
 import { AgentRuntimeError } from '../utils/createError';
 import { debugStream } from '../utils/debugStream';
 import { StreamingResponse } from '../utils/response';
-import {
-  GoogleGenerativeAIStream,
-  VertexAIStream,
-  convertIterableToStream,
-} from '../utils/streams';
+import { GoogleGenerativeAIStream, VertexAIStream } from '../utils/streams';
 import { parseDataUri } from '../utils/uriParser';
 
 const modelsOffSafetySettings = new Set(['gemini-2.0-flash-exp']);
@@ -92,6 +87,17 @@ interface GoogleAIThinkingConfig {
   thinkingBudget?: number;
 }
 
+const isAbortError = (error: Error): boolean => {
+  const message = error.message.toLowerCase();
+  return (
+    message.includes('aborted') ||
+    message.includes('cancelled') ||
+    message.includes('error reading from the stream') ||
+    message.includes('abort') ||
+    error.name === 'AbortError'
+  );
+};
+
 export class LobeGoogleAI implements LobeRuntimeAI {
   private client: GoogleGenerativeAI;
   private isVertexAi: boolean;
@@ -111,28 +117,50 @@ export class LobeGoogleAI implements LobeRuntimeAI {
     this.provider = id || (isVertexAi ? 'vertexai' : 'google');
   }
 
-  async chat(rawPayload: ChatStreamPayload, options?: ChatCompetitionOptions) {
+  async chat(rawPayload: ChatStreamPayload, options?: ChatMethodOptions) {
     try {
       const payload = this.buildPayload(rawPayload);
       const { model, thinking } = payload;
 
       const thinkingConfig: GoogleAIThinkingConfig = {
         includeThoughts:
-          (thinking?.type === 'enabled') || 
-          (!thinking && model && (model.includes('-2.5-') || model.includes('thinking'))) 
+          thinking?.type === 'enabled' ||
+          (!thinking && model && (model.includes('-2.5-') || model.includes('thinking')))
             ? true
             : undefined,
         thinkingBudget:
           thinking?.type === 'enabled'
-            ? Math.min(thinking.budget_tokens, 24_576)
+            ? (() => {
+                const budget = thinking.budget_tokens;
+                if (model.includes('-2.5-flash')) {
+                  return Math.min(budget, 24_576);
+                } else if (model.includes('-2.5-pro')) {
+                  return Math.max(128, Math.min(budget, 32_768));
+                }
+                return Math.min(budget, 24_576);
+              })()
             : thinking?.type === 'disabled'
-              ? 0
+              ? model.includes('-2.5-pro') ? 128 : 0
               : undefined,
       };
 
       const contents = await this.buildGoogleMessages(payload.messages);
 
       const inputStartAt = Date.now();
+
+      const controller = new AbortController();
+      const originalSignal = options?.signal;
+
+      if (originalSignal) {
+        if (originalSignal.aborted) {
+          controller.abort();
+        } else {
+          originalSignal.addEventListener('abort', () => {
+            controller.abort();
+          });
+        }
+      }
+
       const geminiStreamResult = await this.client
         .getGenerativeModel(
           {
@@ -142,7 +170,9 @@ export class LobeGoogleAI implements LobeRuntimeAI {
               response_modalities: modelsWithModalities.has(model) ? ['Text', 'Image'] : undefined,
               temperature: payload.temperature,
               topP: payload.top_p,
-              ...(modelsDisableInstuction.has(model) || model.toLowerCase().includes('learnlm') ? {} : { thinkingConfig }),
+              ...(modelsDisableInstuction.has(model) || model.toLowerCase().includes('learnlm')
+                ? {}
+                : { thinkingConfig }),
             },
             model,
             // avoid wide sensitive words
@@ -168,15 +198,20 @@ export class LobeGoogleAI implements LobeRuntimeAI {
           },
           { apiVersion: 'v1beta', baseUrl: this.baseURL },
         )
-        .generateContentStream({
-          contents,
-          systemInstruction: modelsDisableInstuction.has(model)
-            ? undefined
-            : (payload.system as string),
-          tools: this.buildGoogleTools(payload.tools, payload),
-        });
+        .generateContentStream(
+          {
+            contents,
+            systemInstruction: modelsDisableInstuction.has(model)
+              ? undefined
+              : (payload.system as string),
+            tools: this.buildGoogleTools(payload.tools, payload),
+          },
+          {
+            signal: controller.signal,
+          },
+        );
 
-      const googleStream = convertIterableToStream(geminiStreamResult.stream);
+      const googleStream = this.createEnhancedStream(geminiStreamResult.stream, controller.signal);
       const [prod, useForDebug] = googleStream.tee();
 
       const key = this.isVertexAi
@@ -196,6 +231,16 @@ export class LobeGoogleAI implements LobeRuntimeAI {
     } catch (e) {
       const err = e as Error;
 
+      // 移除之前的静默处理，统一抛出错误
+      if (isAbortError(err)) {
+        console.log('Request was cancelled');
+        throw AgentRuntimeError.chat({
+          error: { message: 'Request was cancelled' },
+          errorType: AgentRuntimeErrorType.ProviderBizError,
+          provider: this.provider,
+        });
+      }
+
       console.log(err);
       const { errorType, error } = this.parseErrorMessage(err.message);
 
@@ -203,48 +248,90 @@ export class LobeGoogleAI implements LobeRuntimeAI {
     }
   }
 
-  async models() {
-    const { LOBE_DEFAULT_MODEL_LIST } = await import('@/config/aiModels');
+  private createEnhancedStream(originalStream: any, signal: AbortSignal): ReadableStream {
+    return new ReadableStream({
+      async start(controller) {
+        let hasData = false;
 
-    const url = `${this.baseURL}/v1beta/models?key=${this.apiKey}`;
-    const response = await fetch(url, {
-      method: 'GET',
+        try {
+          for await (const chunk of originalStream) {
+            if (signal.aborted) {
+              // 如果有数据已经输出，优雅地关闭流而不是抛出错误
+              if (hasData) {
+                console.log('Stream cancelled gracefully, preserving existing output');
+                controller.close();
+                return;
+              } else {
+                // 如果还没有数据输出，则抛出取消错误
+                throw new Error('Stream cancelled');
+              }
+            }
+
+            hasData = true;
+            controller.enqueue(chunk);
+          }
+        } catch (error) {
+          const err = error as Error;
+
+          // 统一处理所有错误，包括 abort 错误
+          if (isAbortError(err) || signal.aborted) {
+            // 如果有数据已经输出，优雅地关闭流
+            if (hasData) {
+              console.log('Stream reading cancelled gracefully, preserving existing output');
+              controller.close();
+              return;
+            } else {
+              console.log('Stream reading cancelled before any output');
+              controller.error(new Error('Stream cancelled'));
+              return;
+            }
+          } else {
+            // 处理其他流解析错误
+            console.error('Stream parsing error:', err);
+            controller.error(err);
+            return;
+          }
+        }
+
+        controller.close();
+      },
     });
-    const json = await response.json();
+  }
 
-    const modelList: GoogleModelCard[] = json['models'];
+  async models(options?: { signal?: AbortSignal }) {
+    try {
+      const url = `${this.baseURL}/v1beta/models?key=${this.apiKey}`;
+      const response = await fetch(url, {
+        method: 'GET',
+        signal: options?.signal,
+      });
 
-    return modelList
-      .map((model) => {
-        const modelName = model.name.replace(/^models\//, '');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
-        const knownModel = LOBE_DEFAULT_MODEL_LIST.find(
-          (m) => modelName.toLowerCase() === m.id.toLowerCase(),
-        );
+      const json = await response.json();
+
+      const modelList: GoogleModelCard[] = json.models;
+
+      const processedModels = modelList.map((model) => {
+        const id = model.name.replace(/^models\//, '');
 
         return {
-          contextWindowTokens: model.inputTokenLimit + model.outputTokenLimit,
-          displayName: model.displayName,
-          enabled: knownModel?.enabled || false,
-          functionCall:
-            (modelName.toLowerCase().includes('gemini') &&
-              !modelName.toLowerCase().includes('thinking')) ||
-            knownModel?.abilities?.functionCall ||
-            false,
-          id: modelName,
-          reasoning:
-            modelName.toLowerCase().includes('thinking') ||
-            knownModel?.abilities?.reasoning ||
-            false,
-          vision:
-            modelName.toLowerCase().includes('vision') ||
-            (modelName.toLowerCase().includes('gemini') &&
-              !modelName.toLowerCase().includes('gemini-1.0')) ||
-            knownModel?.abilities?.vision ||
-            false,
+          contextWindowTokens: (model.inputTokenLimit || 0) + (model.outputTokenLimit || 0),
+          displayName: model.displayName || id,
+          id,
+          maxOutput: model.outputTokenLimit || undefined,
         };
-      })
-      .filter(Boolean) as ChatModelCard[];
+      });
+
+      const { MODEL_LIST_CONFIGS, processModelList } = await import('../utils/modelParse');
+
+      return processModelList(processedModels, MODEL_LIST_CONFIGS.google);
+    } catch (error) {
+      console.error('Failed to fetch Google models:', error);
+      throw error;
+    }
   }
 
   private buildPayload(payload: ChatStreamPayload) {

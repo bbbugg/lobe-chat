@@ -11,6 +11,9 @@ const TencentCloud: ModelProviderCard = {
   name: 'TencentCloud',
   settings: {
     disableBrowserRequest: true,
+    proxyUrl: {
+      placeholder: 'https://api.lkeap.cloud.tencent.com/v1',
+    },
     sdkType: 'openai',
     showModelFetcher: true,
   },

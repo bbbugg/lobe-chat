@@ -80,78 +80,76 @@ describe('searchRouter', () => {
       );
     });
 
-    // it('should return search results successfully', async () => {
-    //   const mockSearchResult = {
-    //     results: [
-    //       {
-    //         title: 'Test Result',
-    //         url: 'http://test.com',
-    //         content: 'Test content',
-    //       },
-    //     ],
-    //   };
-    //
-    //   (SearXNGClient as any).mockImplementation(() => ({
-    //     search: vi.fn().mockResolvedValue(mockSearchResult),
-    //   }));
-    //
-    //   const caller = searchRouter.createCaller(mockContext as any);
-    //
-    //   const result = await caller.query({
-    //     optionalParams: {
-    //       searchEngines: ['google'],
-    //     },
-    //     query: 'test query',
-    //   });
-    //
-    //   expect(result).toEqual({
-    //     costTime: 0,
-    //     query: 'test query',
-    //     results: [
-    //       {
-    //         title: 'Test Result',
-    //         parsedUrl: 'test.com',
-    //         url: 'http://test.com',
-    //         content: 'Test content',
-    //       },
-    //     ],
-    //   });
-    // });
+    it('should return search results successfully', async () => {
+      const mockSearchResult = {
+        results: [
+          {
+            title: 'Test Result',
+            url: 'http://test.com',
+            content: 'Test content',
+          },
+        ],
+      };
 
-    // it('should work without specifying search engines', async () => {
-    //   const mockSearchResult = {
-    //     results: [
-    //       {
-    //         title: 'Test Result',
-    //         url: 'http://test.com',
-    //         content: 'Test content',
-    //       },
-    //     ],
-    //   };
-    //
-    //   (SearXNGClient as any).mockImplementation(() => ({
-    //     search: vi.fn().mockResolvedValue(mockSearchResult),
-    //   }));
-    //
-    //   const caller = searchRouter.createCaller(mockContext as any);
-    //
-    //   const result = await caller.query({
-    //     query: 'test query',
-    //   });
-    //
-    //   expect(result).toEqual({
-    //     costTime: 0,
-    //     query: 'test query',
-    //     results: [
-    //       {
-    //         title: 'Test Result',
-    //         parsedUrl: 'test.com',
-    //         url: 'http://test.com',
-    //         content: 'Test content',
-    //       },
-    //     ],
-    //   });
-    // });
+      (SearXNGClient as any).mockImplementation(() => ({
+        search: vi.fn().mockResolvedValue(mockSearchResult),
+      }));
+
+      const caller = searchRouter.createCaller(mockContext as any);
+
+      const result = await caller.query({
+        optionalParams: {
+          searchEngines: ['google'],
+        },
+        query: 'test query',
+      });
+
+      expect(result).toMatchObject({
+        query: 'test query',
+        results: [
+          {
+            title: 'Test Result',
+            parsedUrl: 'test.com',
+            url: 'http://test.com',
+            content: 'Test content',
+          },
+        ],
+      });
+    });
+
+    it('should work without specifying search engines', async () => {
+      const mockSearchResult = {
+        results: [
+          {
+            title: 'Test Result',
+            url: 'http://test.com',
+            content: 'Test content',
+          },
+        ],
+      };
+
+      (SearXNGClient as any).mockImplementation(() => ({
+        search: vi.fn().mockResolvedValue(mockSearchResult),
+      }));
+
+      const caller = searchRouter.createCaller(mockContext as any);
+
+      const result = await caller.query({
+        query: 'test query',
+      });
+
+      expect(result).toMatchObject({
+        query: 'test query',
+        results: [
+          {
+            title: 'Test Result',
+            parsedUrl: 'test.com',
+            url: 'http://test.com',
+            content: 'Test content',
+          },
+        ],
+      });
+    });
 
     it('should handle search errors', async () => {
       (SearXNGClient as any).mockImplementation(() => ({

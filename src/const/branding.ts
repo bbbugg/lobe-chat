@@ -24,6 +24,6 @@ export const SOCIAL_URL = {
 };
 
 export const BRANDING_EMAIL = {
-  business: 'hello@lobehub.com',
-  support: 'support@lobehub.com',
+  business: 'hello@laimex.cn',
+  support: 'support@laimex.cn',
 };

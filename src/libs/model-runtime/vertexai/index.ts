@@ -4,7 +4,7 @@ import { AgentRuntimeErrorType } from '../error';
 import { LobeGoogleAI } from '../google';
 import { AgentRuntimeError } from '../utils/createError';
 
-const DEFAULT_VERTEXAI_LOCATION = 'global';
+const DEFAULT_VERTEXAI_LOCATION = 'us-central1';
 
 export class LobeVertexAI extends LobeGoogleAI {
   static initFromVertexAI(params?: GoogleGenAIOptions) {

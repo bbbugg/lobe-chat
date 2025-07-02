@@ -8,6 +8,8 @@ import {
   Type as SchemaType,
   ThinkingConfig,
 } from '@google/genai';
+import { GaxiosOptions } from 'gaxios';
+import { GoogleToken } from 'gtoken';
 
 import { imageUrlToBase64 } from '@/utils/imageToBase64';
 import { safeParseJSON } from '@/utils/safeParseJSON';
@@ -24,7 +26,11 @@ import {
 import { AgentRuntimeError } from '../utils/createError';
 import { debugStream } from '../utils/debugStream';
 import { StreamingResponse } from '../utils/response';
-import { GoogleGenerativeAIStream, VertexAIStream } from '../utils/streams';
+import {
+  GoogleGenerativeAIStream,
+  ImageGenerationStream,
+  VertexAIStream,
+} from '../utils/streams';
 import { parseDataUri } from '../utils/uriParser';
 
 const modelsOffSafetySettings = new Set(['gemini-2.0-flash-exp']);
@@ -46,47 +52,27 @@ const modelsDisableInstuction = new Set([
   'gemma-3n-e4b-it',
 ]);
 
+const imageGenerationModels = new Set(['imagen-4.0-generate-preview-06-06']);
+
 export interface GoogleModelCard {
   displayName: string;
   inputTokenLimit: number;
-  name: string;
-  outputTokenLimit: number;
-}
-
-enum HarmCategory {
-  HARM_CATEGORY_DANGEROUS_CONTENT = 'HARM_CATEGORY_DANGEROUS_CONTENT',
-  HARM_CATEGORY_HARASSMENT = 'HARM_CATEGORY_HARASSMENT',
-  HARM_CATEGORY_HATE_SPEECH = 'HARM_CATEGORY_HATE_SPEECH',
-  HARM_CATEGORY_SEXUALLY_EXPLICIT = 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
-}
-
-enum HarmBlockThreshold {
-  BLOCK_NONE = 'BLOCK_NONE',
-}
-
-function getThreshold(model: string): HarmBlockThreshold {
-  if (modelsOffSafetySettings.has(model)) {
-    return 'OFF' as HarmBlockThreshold; // https://discuss.ai.google.dev/t/59352
-  }
-  return HarmBlockThreshold.BLOCK_NONE;
-}
-
+// ... existing code ...
 const DEFAULT_BASE_URL = 'https://generativelanguage.googleapis.com';
 
 interface LobeGoogleAIParams {
-  apiKey?: string;
+  apiKey?: any;
   baseURL?: string;
   client?: GoogleGenAI;
   id?: string;
   isVertexAi?: boolean;
+  location?: string;
+  projectId?: string;
 }
 
 const isAbortError = (error: Error): boolean => {
   const message = error.message.toLowerCase();
-  return (
-    message.includes('aborted') ||
-    message.includes('cancelled') ||
-    message.includes('error reading from the stream') ||
+// ... existing code ...
     message.includes('abort') ||
     error.name === 'AbortError'
   );
@@ -96,10 +82,20 @@ export class LobeGoogleAI implements LobeRuntimeAI {
   private client: GoogleGenAI;
   private isVertexAi: boolean;
   baseURL?: string;
-  apiKey?: string;
+  apiKey?: any;
   provider: string;
+  location?: string;
+  projectId?: string;
 
-  constructor({ apiKey, baseURL, client, isVertexAi, id }: LobeGoogleAIParams = {}) {
+  constructor({
+    apiKey,
+    baseURL,
+    client,
+    isVertexAi,
+    id,
+    location,
+    projectId,
+  }: LobeGoogleAIParams = {}) {
     if (!apiKey) throw AgentRuntimeError.createError(AgentRuntimeErrorType.InvalidProviderAPIKey);
 
     const httpOptions = baseURL ? { baseUrl: baseURL } : undefined;
@@ -108,11 +104,16 @@ export class LobeGoogleAI implements LobeRuntimeAI {
     this.client = client ? client : new GoogleGenAI({ apiKey, httpOptions });
     this.baseURL = client ? undefined : baseURL || DEFAULT_BASE_URL;
     this.isVertexAi = isVertexAi || false;
+    this.location = location;
+    this.projectId = projectId;
 
     this.provider = id || (isVertexAi ? 'vertexai' : 'google');
   }
 
   async chat(rawPayload: ChatStreamPayload, options?: ChatMethodOptions) {
+    if (imageGenerationModels.has(rawPayload.model)) {
+      return this._handleImageGeneration(rawPayload, options);
+    }
     try {
       const payload = this.buildPayload(rawPayload);
       const { model, thinkingBudget } = payload;
@@ -240,6 +241,82 @@ export class LobeGoogleAI implements LobeRuntimeAI {
       const { errorType, error } = this.parseErrorMessage(err.message);
 
       throw AgentRuntimeError.chat({ error, errorType, provider: this.provider });
+    }
+  }
+
+  private async _handleImageGeneration(
+    payload: ChatStreamPayload,
+    options?: ChatMethodOptions,
+  ): Promise<Response> {
+    if (!this.isVertexAi) {
+      throw AgentRuntimeError.createError(AgentRuntimeErrorType.UnsupportedProvider, {
+        provider: 'Google',
+      });
+    }
+
+    if (!this.projectId || !this.location) {
+      throw AgentRuntimeError.createError(AgentRuntimeErrorType.InvalidVertexCredentials, {
+        message: 'Missing projectId or location for Vertex AI image generation',
+      });
+    }
+
+    const gt = new GoogleToken({
+      email: this.apiKey.client_email,
+      key: this.apiKey.private_key,
+      scope: ['https://www.googleapis.com/auth/cloud-platform'],
+    });
+
+    const accessToken = await gt.getToken();
+
+    const lastMessage = payload.messages[payload.messages.length - 1];
+
+    const imageGeneratePayload = {
+      instances: [
+        {
+          prompt: lastMessage.content,
+        },
+      ],
+      parameters: {
+        sampleCount: 1,
+      },
+    };
+
+    const url = `https://${this.location}-aiplatform.googleapis.com/v1/projects/${this.projectId}/locations/${this.location}/publishers/google/models/${payload.model}:predict`;
+
+    const requestOptions: GaxiosOptions = {
+      body: JSON.stringify(imageGeneratePayload),
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      method: 'POST',
+      signal: options?.signal,
+    };
+
+    try {
+      const response = await gt.request(url, requestOptions);
+
+      if (!response.data?.predictions?.[0]?.bytesBase64Encoded) {
+        throw AgentRuntimeError.chat({
+          error: response.data,
+          errorType: AgentRuntimeErrorType.ProviderBizError,
+          provider: this.provider,
+        });
+      }
+
+      const stream = ImageGenerationStream(response.data.predictions);
+
+      return StreamingResponse(stream, {
+        headers: options?.headers,
+      });
+    } catch (e) {
+      const err = e as Error;
+      console.error('Image generation error:', err);
+      throw AgentRuntimeError.chat({
+        error: { message: err.message, stack: err.stack },
+        errorType: AgentRuntimeErrorType.ProviderBizError,
+        provider: this.provider,
+      });
     }
   }
 

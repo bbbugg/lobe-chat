@@ -57,7 +57,28 @@ const imageGenerationModels = new Set(['imagen-4.0-generate-preview-06-06']);
 export interface GoogleModelCard {
   displayName: string;
   inputTokenLimit: number;
-// ... existing code ...
+  name: string;
+  outputTokenLimit: number;
+}
+
+enum HarmCategory {
+  HARM_CATEGORY_DANGEROUS_CONTENT = 'HARM_CATEGORY_DANGEROUS_CONTENT',
+  HARM_CATEGORY_HARASSMENT = 'HARM_CATEGORY_HARASSMENT',
+  HARM_CATEGORY_HATE_SPEECH = 'HARM_CATEGORY_HATE_SPEECH',
+  HARM_CATEGORY_SEXUALLY_EXPLICIT = 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+}
+
+enum HarmBlockThreshold {
+  BLOCK_NONE = 'BLOCK_NONE',
+}
+
+function getThreshold(model: string): HarmBlockThreshold {
+  if (modelsOffSafetySettings.has(model)) {
+    return 'OFF' as HarmBlockThreshold; // https://discuss.ai.google.dev/t/59352
+  }
+  return HarmBlockThreshold.BLOCK_NONE;
+}
+
 const DEFAULT_BASE_URL = 'https://generativelanguage.googleapis.com';
 
 interface LobeGoogleAIParams {
@@ -72,7 +93,10 @@ interface LobeGoogleAIParams {
 
 const isAbortError = (error: Error): boolean => {
   const message = error.message.toLowerCase();
-// ... existing code ...
+  return (
+    message.includes('aborted') ||
+    message.includes('cancelled') ||
+    message.includes('error reading from the stream') ||
     message.includes('abort') ||
     error.name === 'AbortError'
   );

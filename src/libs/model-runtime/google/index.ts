@@ -8,8 +8,6 @@ import {
   Type as SchemaType,
   ThinkingConfig,
 } from '@google/genai';
-import { GaxiosOptions } from 'gaxios';
-import { GoogleToken } from 'gtoken';
 
 import { imageUrlToBase64 } from '@/utils/imageToBase64';
 import { safeParseJSON } from '@/utils/safeParseJSON';
@@ -101,6 +99,13 @@ const isAbortError = (error: Error): boolean => {
     error.name === 'AbortError'
   );
 };
+
+// Helper to Base64-URL encode
+const base64UrlEncode = (data: ArrayBuffer): string =>
+  Buffer.from(data).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+
+// Helper to convert string to Uint8Array
+const strToUint8 = (str: string): Uint8Array => new TextEncoder().encode(str);
 
 export class LobeGoogleAI implements LobeRuntimeAI {
   private client: GoogleGenAI;
@@ -268,6 +273,74 @@ export class LobeGoogleAI implements LobeRuntimeAI {
     }
   }
 
+  private async _getAccessToken(): Promise<string> {
+    const serviceAccount = this.apiKey;
+
+    const header = {
+      alg: 'RS256',
+      typ: 'JWT',
+    };
+    const encodedHeader = base64UrlEncode(strToUint8(JSON.stringify(header)));
+
+    const now = Math.floor(Date.now() / 1000);
+    const expiry = now + 3600;
+
+    const claims = {
+      aud: 'https://oauth2.googleapis.com/token',
+      exp: expiry,
+      iat: now,
+      iss: serviceAccount.client_email,
+      scope: 'https://www.googleapis.com/auth/cloud-platform',
+    };
+    const encodedClaims = base64UrlEncode(strToUint8(JSON.stringify(claims)));
+
+    const privateKeyData = Buffer.from(
+      serviceAccount.private_key
+        .replace('-----BEGIN PRIVATE KEY-----', '')
+        .replace('-----END PRIVATE KEY-----', '')
+        .replace(/\n/g, ''),
+      'base64',
+    );
+
+    const cryptoKey = await crypto.subtle.importKey(
+      'pkcs8',
+      privateKeyData,
+      {
+        name: 'RSASSA-PKCS1-v1_5',
+        hash: 'SHA-256',
+      },
+      false,
+      ['sign'],
+    );
+
+    const dataToSign = strToUint8(`${encodedHeader}.${encodedClaims}`);
+    const signature = await crypto.subtle.sign('RSASSA-PKCS1-v1_5', cryptoKey, dataToSign);
+
+    const encodedSignature = base64UrlEncode(signature);
+    const jwt = `${encodedHeader}.${encodedClaims}.${encodedSignature}`;
+
+    const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+      body: new URLSearchParams({
+        assertion: jwt,
+        grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+      }),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      method: 'POST',
+    });
+
+    const tokenData = await tokenResponse.json();
+
+    if (!tokenResponse.ok) {
+      throw AgentRuntimeError.createError(AgentRuntimeErrorType.InvalidVertexCredentials, {
+        message: `Failed to fetch access token: ${JSON.stringify(tokenData)}`,
+      });
+    }
+
+    return tokenData.access_token;
+  }
+
   private async _handleImageGeneration(
     payload: ChatStreamPayload,
     options?: ChatMethodOptions,
@@ -285,13 +358,7 @@ export class LobeGoogleAI implements LobeRuntimeAI {
       });
     }
 
-    const gt = new GoogleToken({
-      email: this.apiKey.client_email,
-      key: this.apiKey.private_key,
-      scope: ['https://www.googleapis.com/auth/cloud-platform'],
-    });
-
-    const accessToken = await gt.getToken();
+    const accessToken = await this._getAccessToken();
 
     const lastMessage = payload.messages[payload.messages.length - 1];
 
@@ -327,7 +394,7 @@ export class LobeGoogleAI implements LobeRuntimeAI {
 
       const data = await response.json();
 
-      if (!data?.predictions?.[0]?.bytesBase64Encoded) {
+      if (!response.ok || !data?.predictions?.[0]?.bytesBase64Encoded) {
         throw AgentRuntimeError.chat({
           error: data,
           errorType: AgentRuntimeErrorType.ProviderBizError,

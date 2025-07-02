@@ -123,23 +123,21 @@ const transformVertexAIStream = (
 export const ImageGenerationStream = (
   images: { bytesBase64Encoded: string }[],
 ): ReadableStream<string> => {
-  const encoder = new TextEncoder();
   const id = 'chat_' + nanoid();
 
   return new ReadableStream({
     start(controller) {
       for (const image of images) {
-        // For Image, we just need to send the data as a data url
+        // For Image, we just need to send the data as a data url in SSE format
         controller.enqueue(
-          encoder.encode(
-            `id: ${id}\nevent: image\ndata: ${JSON.stringify(
-              `data:image/png;base64,${image.bytesBase64Encoded}`,
-            )}\n\n`,
-          ),
+          `id: ${id}\nevent: image\ndata: ${JSON.stringify(
+            `data:image/png;base64,${image.bytesBase64Encoded}`,
+          )}\n\n`,
         );
       }
 
-      controller.enqueue(encoder.encode(`id: ${id}\nevent: stop\ndata: ${JSON.stringify('')}\n\n`));
+      // After sending all images, send a stop event
+      controller.enqueue(`id: ${id}\nevent: stop\ndata: ${JSON.stringify('')}\n\n`);
 
       controller.close();
     },

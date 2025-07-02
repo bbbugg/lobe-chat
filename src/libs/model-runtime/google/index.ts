@@ -273,7 +273,8 @@ export class LobeGoogleAI implements LobeRuntimeAI {
     options?: ChatMethodOptions,
   ): Promise<Response> {
     if (!this.isVertexAi) {
-      throw AgentRuntimeError.createError(AgentRuntimeErrorType.UnsupportedProvider, {
+      throw AgentRuntimeError.createError(AgentRuntimeErrorType.ProviderBizError, {
+        message: 'Image generation is only available for Vertex AI',
         provider: 'Google',
       });
     }
@@ -294,6 +295,12 @@ export class LobeGoogleAI implements LobeRuntimeAI {
 
     const lastMessage = payload.messages[payload.messages.length - 1];
 
+    if (!lastMessage?.content) {
+      throw AgentRuntimeError.createError(AgentRuntimeErrorType.ProviderBizError, {
+        message: 'Prompt is empty',
+      });
+    }
+
     const imageGeneratePayload = {
       instances: [
         {
@@ -307,28 +314,28 @@ export class LobeGoogleAI implements LobeRuntimeAI {
 
     const url = `https://${this.location}-aiplatform.googleapis.com/v1/projects/${this.projectId}/locations/${this.location}/publishers/google/models/${payload.model}:predict`;
 
-    const requestOptions: GaxiosOptions = {
-      body: JSON.stringify(imageGeneratePayload),
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-      },
-      method: 'POST',
-      signal: options?.signal,
-    };
-
     try {
-      const response = await gt.request(url, requestOptions);
+      const response = await fetch(url, {
+        body: JSON.stringify(imageGeneratePayload),
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        method: 'POST',
+        signal: options?.signal,
+      });
 
-      if (!response.data?.predictions?.[0]?.bytesBase64Encoded) {
+      const data = await response.json();
+
+      if (!data?.predictions?.[0]?.bytesBase64Encoded) {
         throw AgentRuntimeError.chat({
-          error: response.data,
+          error: data,
           errorType: AgentRuntimeErrorType.ProviderBizError,
           provider: this.provider,
         });
       }
 
-      const stream = ImageGenerationStream(response.data.predictions);
+      const stream = ImageGenerationStream(data.predictions);
 
       return StreamingResponse(stream, {
         headers: options?.headers,

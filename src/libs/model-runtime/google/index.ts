@@ -24,11 +24,7 @@ import {
 import { AgentRuntimeError } from '../utils/createError';
 import { debugStream } from '../utils/debugStream';
 import { StreamingResponse } from '../utils/response';
-import {
-  GoogleGenerativeAIStream,
-  ImageGenerationStream,
-  VertexAIStream,
-} from '../utils/streams';
+import { GoogleGenerativeAIStream, ImageGenerationStream, VertexAIStream } from '../utils/streams';
 import { parseDataUri } from '../utils/uriParser';
 
 const modelsOffSafetySettings = new Set(['gemini-2.0-flash-exp']);
@@ -360,7 +356,7 @@ export class LobeGoogleAI implements LobeRuntimeAI {
 
     const accessToken = await this._getAccessToken();
 
-    const lastMessage = payload.messages[payload.messages.length - 1];
+    const lastMessage = payload.messages.at(-1);
 
     if (!lastMessage?.content) {
       throw AgentRuntimeError.createError(AgentRuntimeErrorType.ProviderBizError, {

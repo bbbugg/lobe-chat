@@ -4,41 +4,6 @@ import { AIChatModelCard } from '@/types/aiModel';
 const vertexaiChatModels: AIChatModelCard[] = [
   {
     abilities: {
-      imageOutput: true,
-      vision: true,
-    },
-    contextWindowTokens: 32_768 + 8192,
-    description: 'Gemini 2.0 Flash 预览模型，支持图像生成',
-    displayName: 'Gemini 2.0 Flash Preview Image Generation',
-    enabled: true,
-    id: 'gemini-2.0-flash-preview-image-generation',
-    maxOutput: 8192,
-    pricing: {
-      input: 0.1,
-      output: 0.039, // per image
-    },
-    releasedAt: '2025-05-07',
-    type: 'chat',
-  },
-  {
-    abilities: {
-      imageOutput: true,
-    },
-    contextWindowTokens: 32_768 + 8192,
-    description: 'Gemini 2.0 Flash 预览模型，支持图像生成',
-    displayName: 'Imagen 3',
-    enabled: true,
-    id: 'imagen-3.0-generate-002',
-    maxOutput: 8192,
-    pricing: {
-      input: 0.1,
-      output: 0.039, // per image
-    },
-    releasedAt: '2025-05-07',
-    type: 'chat',
-  },
-  {
-    abilities: {
       functionCall: true,
       reasoning: true,
       vision: true,

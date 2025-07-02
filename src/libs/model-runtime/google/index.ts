@@ -24,7 +24,7 @@ import {
 import { AgentRuntimeError } from '../utils/createError';
 import { debugStream } from '../utils/debugStream';
 import { StreamingResponse } from '../utils/response';
-import { GoogleGenerativeAIStream, ImageGenerationStream, VertexAIStream } from '../utils/streams';
+import { GoogleGenerativeAIStream, VertexAIStream } from '../utils/streams';
 import { parseDataUri } from '../utils/uriParser';
 
 const modelsOffSafetySettings = new Set(['gemini-2.0-flash-exp']);
@@ -45,8 +45,6 @@ const modelsDisableInstuction = new Set([
   'gemma-3-27b-it',
   'gemma-3n-e4b-it',
 ]);
-
-const imageGenerationModels = new Set(['imagen-4.0-generate-preview-06-06']);
 
 export interface GoogleModelCard {
   displayName: string;
@@ -76,13 +74,11 @@ function getThreshold(model: string): HarmBlockThreshold {
 const DEFAULT_BASE_URL = 'https://generativelanguage.googleapis.com';
 
 interface LobeGoogleAIParams {
-  apiKey?: any;
+  apiKey?: string;
   baseURL?: string;
   client?: GoogleGenAI;
   id?: string;
   isVertexAi?: boolean;
-  location?: string;
-  projectId?: string;
 }
 
 const isAbortError = (error: Error): boolean => {
@@ -96,31 +92,14 @@ const isAbortError = (error: Error): boolean => {
   );
 };
 
-// Helper to Base64-URL encode
-const base64UrlEncode = (data: ArrayBuffer): string =>
-  Buffer.from(data).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-
-// Helper to convert string to Uint8Array
-const strToUint8 = (str: string): Uint8Array => new TextEncoder().encode(str);
-
 export class LobeGoogleAI implements LobeRuntimeAI {
   private client: GoogleGenAI;
   private isVertexAi: boolean;
   baseURL?: string;
-  apiKey?: any;
+  apiKey?: string;
   provider: string;
-  location?: string;
-  projectId?: string;
 
-  constructor({
-    apiKey,
-    baseURL,
-    client,
-    isVertexAi,
-    id,
-    location,
-    projectId,
-  }: LobeGoogleAIParams = {}) {
+  constructor({ apiKey, baseURL, client, isVertexAi, id }: LobeGoogleAIParams = {}) {
     if (!apiKey) throw AgentRuntimeError.createError(AgentRuntimeErrorType.InvalidProviderAPIKey);
 
     const httpOptions = baseURL ? { baseUrl: baseURL } : undefined;
@@ -129,16 +108,11 @@ export class LobeGoogleAI implements LobeRuntimeAI {
     this.client = client ? client : new GoogleGenAI({ apiKey, httpOptions });
     this.baseURL = client ? undefined : baseURL || DEFAULT_BASE_URL;
     this.isVertexAi = isVertexAi || false;
-    this.location = location;
-    this.projectId = projectId;
 
     this.provider = id || (isVertexAi ? 'vertexai' : 'google');
   }
 
   async chat(rawPayload: ChatStreamPayload, options?: ChatMethodOptions) {
-    if (imageGenerationModels.has(rawPayload.model)) {
-      return this._handleImageGeneration(rawPayload, options);
-    }
     try {
       const payload = this.buildPayload(rawPayload);
       const { model, thinkingBudget } = payload;
@@ -266,151 +240,6 @@ export class LobeGoogleAI implements LobeRuntimeAI {
       const { errorType, error } = this.parseErrorMessage(err.message);
 
       throw AgentRuntimeError.chat({ error, errorType, provider: this.provider });
-    }
-  }
-
-  private async _getAccessToken(): Promise<string> {
-    const serviceAccount = this.apiKey;
-
-    const header = {
-      alg: 'RS256',
-      typ: 'JWT',
-    };
-    const encodedHeader = base64UrlEncode(strToUint8(JSON.stringify(header)));
-
-    const now = Math.floor(Date.now() / 1000);
-    const expiry = now + 3600;
-
-    const claims = {
-      aud: 'https://oauth2.googleapis.com/token',
-      exp: expiry,
-      iat: now,
-      iss: serviceAccount.client_email,
-      scope: 'https://www.googleapis.com/auth/cloud-platform',
-    };
-    const encodedClaims = base64UrlEncode(strToUint8(JSON.stringify(claims)));
-
-    const privateKeyData = Buffer.from(
-      serviceAccount.private_key
-        .replace('-----BEGIN PRIVATE KEY-----', '')
-        .replace('-----END PRIVATE KEY-----', '')
-        .replace(/\n/g, ''),
-      'base64',
-    );
-
-    const cryptoKey = await crypto.subtle.importKey(
-      'pkcs8',
-      privateKeyData,
-      {
-        name: 'RSASSA-PKCS1-v1_5',
-        hash: 'SHA-256',
-      },
-      false,
-      ['sign'],
-    );
-
-    const dataToSign = strToUint8(`${encodedHeader}.${encodedClaims}`);
-    const signature = await crypto.subtle.sign('RSASSA-PKCS1-v1_5', cryptoKey, dataToSign);
-
-    const encodedSignature = base64UrlEncode(signature);
-    const jwt = `${encodedHeader}.${encodedClaims}.${encodedSignature}`;
-
-    const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
-      body: new URLSearchParams({
-        assertion: jwt,
-        grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-      }),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      method: 'POST',
-    });
-
-    const tokenData = await tokenResponse.json();
-
-    if (!tokenResponse.ok) {
-      throw AgentRuntimeError.createError(AgentRuntimeErrorType.InvalidVertexCredentials, {
-        message: `Failed to fetch access token: ${JSON.stringify(tokenData)}`,
-      });
-    }
-
-    return tokenData.access_token;
-  }
-
-  private async _handleImageGeneration(
-    payload: ChatStreamPayload,
-    options?: ChatMethodOptions,
-  ): Promise<Response> {
-    if (!this.isVertexAi) {
-      throw AgentRuntimeError.createError(AgentRuntimeErrorType.ProviderBizError, {
-        message: 'Image generation is only available for Vertex AI',
-        provider: 'Google',
-      });
-    }
-
-    if (!this.projectId || !this.location) {
-      throw AgentRuntimeError.createError(AgentRuntimeErrorType.InvalidVertexCredentials, {
-        message: 'Missing projectId or location for Vertex AI image generation',
-      });
-    }
-
-    const accessToken = await this._getAccessToken();
-
-    const lastMessage = payload.messages.at(-1);
-
-    if (!lastMessage?.content) {
-      throw AgentRuntimeError.createError(AgentRuntimeErrorType.ProviderBizError, {
-        message: 'Prompt is empty',
-      });
-    }
-
-    const imageGeneratePayload = {
-      instances: [
-        {
-          prompt: lastMessage.content,
-        },
-      ],
-      parameters: {
-        sampleCount: 1,
-      },
-    };
-
-    const url = `https://${this.location}-aiplatform.googleapis.com/v1/projects/${this.projectId}/locations/${this.location}/publishers/google/models/${payload.model}:predict`;
-
-    try {
-      const response = await fetch(url, {
-        body: JSON.stringify(imageGeneratePayload),
-        headers: {
-          'Authorization': `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-        },
-        method: 'POST',
-        signal: options?.signal,
-      });
-
-      const data = await response.json();
-
-      if (!response.ok || !data?.predictions?.[0]?.bytesBase64Encoded) {
-        throw AgentRuntimeError.chat({
-          error: data,
-          errorType: AgentRuntimeErrorType.ProviderBizError,
-          provider: this.provider,
-        });
-      }
-
-      const stream = ImageGenerationStream(data.predictions);
-
-      return StreamingResponse(stream, {
-        headers: options?.headers,
-      });
-    } catch (e) {
-      const err = e as Error;
-      console.error('Image generation error:', err);
-      throw AgentRuntimeError.chat({
-        error: { message: err.message, stack: err.stack },
-        errorType: AgentRuntimeErrorType.ProviderBizError,
-        provider: this.provider,
-      });
     }
   }
 

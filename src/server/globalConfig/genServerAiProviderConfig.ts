@@ -31,6 +31,20 @@ export const genServerAiProvidersConfig = (specificConfig: Record<any, ProviderS
         process.env[providerConfig.modelListKey ?? `${providerUpperCase}_MODEL_LIST`];
 
       const defaultChatModels = providerCard.filter((c) => c.type === 'chat');
+      const otherModels = providerCard.filter((c) => c.type !== 'chat');
+
+      const processedChatModels = transformToAiChatModelList({
+        defaultChatModels: defaultChatModels || [],
+        modelString: providerModelList,
+        providerId: provider,
+        withDeploymentName: providerConfig.withDeploymentName || false,
+      });
+
+
+      const serverModelLists =
+        processedChatModels !== undefined
+          ? [...processedChatModels, ...otherModels]
+          : undefined;
 
       config[provider] = {
         enabled:
@@ -42,12 +56,9 @@ export const genServerAiProvidersConfig = (specificConfig: Record<any, ProviderS
           providerModelList,
           providerConfig.withDeploymentName || false,
         ),
-        serverModelLists: transformToAiChatModelList({
-          defaultChatModels: defaultChatModels || [],
-          modelString: providerModelList,
-          providerId: provider,
-          withDeploymentName: providerConfig.withDeploymentName || false,
-        }),
+
+        serverModelLists,
+
         ...(providerConfig.fetchOnClient !== undefined && {
           fetchOnClient: providerConfig.fetchOnClient,
         }),

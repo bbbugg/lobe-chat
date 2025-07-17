@@ -56,8 +56,8 @@ exports[`settingsSelectors > currentSystemAgent > should merge DEFAULT_SYSTEM_AG
   },
   "enableAutoReply": true,
   "generationTopic": {
-    "model": "gpt-4.1-mini",
-    "provider": "openai",
+    "model": "deepseek-chat",
+    "provider": "deepseek",
   },
   "historyCompress": {
     "model": "deepseek-chat",

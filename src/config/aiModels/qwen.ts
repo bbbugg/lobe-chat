@@ -11,7 +11,7 @@ const qwenChatModels: AIChatModelCard[] = [
     description:
       '总参数 1T，激活参数 32B。 非思维模型中，在前沿知识、数学和编码方面达到了顶尖水平，更擅长通用 Agent 任务。 针对代理任务进行了精心优化，不仅能回答问题，还能采取行动。 最适用于即兴、通用聊天和代理体验，是一款无需长时间思考的反射级模型。',
     displayName: 'Kimi K2 Instruct',
-    enabled: true,
+    // enabled: true,
     id: 'Moonshot-Kimi-K2-Instruct',
     maxOutput: 8192,
     organization: 'Qwen',
@@ -41,7 +41,7 @@ const qwenChatModels: AIChatModelCard[] = [
     organization: 'Qwen',
     pricing: {
       cachedInput: 2.4, // tokens 32K ~ 128K
-      currency: 'CNY',  
+      currency: 'CNY',
       input: 6,
       output: 24,
     },
@@ -97,7 +97,7 @@ const qwenChatModels: AIChatModelCard[] = [
     description:
       '基于Qwen3的非思考模式开源模型，相较上一版本（通义千问3-235B-A22B）主观创作能力与模型安全性均有小幅度提升。',
     displayName: 'Qwen3 235B A22B Instruct 2507',
-    enabled: true,
+    // enabled: true,
     id: 'qwen3-235b-a22b-instruct-2507',
     maxOutput: 32_768,
     organization: 'Qwen',
@@ -118,7 +118,7 @@ const qwenChatModels: AIChatModelCard[] = [
     description:
       '基于Qwen3的思考模式开源模型，相较上一版本（通义千问3-30B-A3B）逻辑能力、通用能力、知识增强及创作能力均有大幅提升，适用于高难度强推理场景。',
     displayName: 'Qwen3 30B A3B Thinking 2507',
-    enabled: true,
+    // enabled: true,
     id: 'qwen3-30b-a3b-thinking-2507',
     maxOutput: 32_768,
     organization: 'Qwen',
@@ -141,7 +141,7 @@ const qwenChatModels: AIChatModelCard[] = [
     description:
       '相较上一版本（Qwen3-30B-A3B）中英文和多语言整体通用能力有大幅提升。主观开放类任务专项优化，显著更加符合用户偏好，能够提供更有帮助性的回复。',
     displayName: 'Qwen3 30B A3B Instruct 2507',
-    enabled: true,
+    // enabled: true,
     id: 'qwen3-30b-a3b-instruct-2507',
     maxOutput: 32_768,
     organization: 'Qwen',
@@ -376,7 +376,7 @@ const qwenChatModels: AIChatModelCard[] = [
     contextWindowTokens: 1_000_000, // Non-thinking mode
     description: '通义千问超大规模语言模型，支持中文、英文等不同语言输入。',
     displayName: 'Qwen Turbo',
-    enabled: true,
+    // enabled: true,
     id: 'qwen-turbo',
     maxOutput: 16_384,
     organization: 'Qwen',
@@ -405,7 +405,7 @@ const qwenChatModels: AIChatModelCard[] = [
     contextWindowTokens: 131_072,
     description: '通义千问超大规模语言模型增强版，支持中文、英文等不同语言输入。',
     displayName: 'Qwen Plus',
-    enabled: true,
+    // enabled: true,
     id: 'qwen-plus',
     maxOutput: 16_384,
     organization: 'Qwen',
@@ -434,7 +434,7 @@ const qwenChatModels: AIChatModelCard[] = [
     description:
       '通义千问千亿级别超大规模语言模型，支持中文、英文等不同语言输入，当前通义千问2.5产品版本背后的API模型。',
     displayName: 'Qwen Max',
-    enabled: true,
+    // enabled: true,
     id: 'qwen-max',
     maxOutput: 8192,
     organization: 'Qwen',
@@ -971,6 +971,7 @@ const qwenChatModels: AIChatModelCard[] = [
     description:
       '685B 满血版模型，2025年5月28日发布。DeepSeek-R1 在后训练阶段大规模使用了强化学习技术，在仅有极少标注数据的情况下，极大提升了模型推理能力。在数学、代码、自然语言推理等任务上，性能较高，能力较强。',
     displayName: 'DeepSeek R1 0528',
+    enabled: true,
     id: 'deepseek-r1-0528',
     maxOutput: 16_384,
     organization: 'DeepSeek',
@@ -1210,7 +1211,7 @@ const qwenImageModels: AIImageModelCard[] = [
   {
     description: 'FLUX.1 [schnell] 作为目前开源最先进的少步模型，不仅超越了同类竞争者，甚至还优于诸如 Midjourney v6.0 和 DALL·E 3 (HD) 等强大的非精馏模型。该模型经过专门微调，以保留预训练阶段的全部输出多样性，相较于当前市场上的最先进模型，FLUX.1 [schnell] 显著提升了在视觉质量、指令遵从、尺寸/比例变化、字体处理及输出多样性等方面的可能，为用户带来更为丰富多样的创意图像生成体验。',
     displayName: 'FLUX.1 [schnell]',
-    enabled: true,
+    // enabled: true,
     id: 'flux-schnell',
     organization: 'Qwen',
     parameters: {
@@ -1230,7 +1231,7 @@ const qwenImageModels: AIImageModelCard[] = [
   {
     description: 'FLUX.1 [dev] 是一款面向非商业应用的开源权重、精炼模型。FLUX.1 [dev] 在保持了与FLUX专业版相近的图像质量和指令遵循能力的同时，具备更高的运行效率。相较于同尺寸的标准模型，它在资源利用上更为高效。',
     displayName: 'FLUX.1 [dev]',
-    enabled: true,
+    // enabled: true,
     id: 'flux-dev',
     organization: 'Qwen',
     parameters: {
@@ -1250,7 +1251,7 @@ const qwenImageModels: AIImageModelCard[] = [
   {
     description: 'FLUX.1-merged 模型结合了 "DEV" 在开发阶段探索的深度特性和 "Schnell" 所代表的高速执行优势。通过这一举措，FLUX.1-merged 不仅提升了模型的性能界限，还拓宽了其应用范围。',
     displayName: 'FLUX.1-merged',
-    enabled: true,
+    // enabled: true,
     id: 'flux-merged',
     organization: 'Qwen',
     parameters: {

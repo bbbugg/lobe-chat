@@ -98,7 +98,7 @@ export const openaiChatModels: AIChatModelCard[] = [
     description:
       'ChatGPT 中使用的 GPT-5 模型。结合了强大的语言理解与生成能力，适合对话式交互应用。',
     displayName: 'GPT-5 Chat',
-    enabled: true,
+    // enabled: true,
     id: 'gpt-5-chat-latest',
     maxOutput: 128_000,
     pricing: {

@@ -56,6 +56,7 @@ export default function TermsPage() {
       {/* 步骤3: 页面主体内容，并进行JSX语法转换 */}
       <div style={{ padding: '1rem' }}> {/* 添加一个外层padding让内容不会紧贴边缘 */}
         <button
+          type="button"
           style={{ fontSize: '24px', padding: '0.5% 1%' }}
           onClick={() => {
             window.location.href = '/';
@@ -83,7 +84,7 @@ export default function TermsPage() {
           <p>The words of which the initial letter is capitalized have meanings defined under the following conditions. The following definitions shall have the same meaning regardless of whether they appear in singular or in plural.</p>
           <ul>
             <li><strong>Agreement</strong> means this Terms of Use Agreement.</li>
-            <li><strong>Company</strong> (referred to as either "the Company", "We", "Us" or "Our" in this Agreement) refers to Mithrandir.</li>
+            <li><strong>Company</strong> (referred to as either &quot;the Company&quot;, &quot;We&quot;, &quot;Us&quot; or &quot;Our&quot; in this Agreement) refers to Mithrandir.</li>
             <li><strong>Service</strong> means the Mithrandir website.</li>
             <li><strong>You</strong> means the individual accessing or using the Services, or the company, or other legal entity on behalf of which such individual is accessing or using the Services, as applicable.</li>
           </ul>
@@ -114,17 +115,17 @@ export default function TermsPage() {
           <h2>Termination of Services</h2>
           <p>You may close Your account and cease using the Services at any time. In the event of a violation of the terms of the agreement, Mithrandir may immediately suspend or terminate Your access to the Services. Upon termination, You will immediately lose the right to access or use the Services. Mithrandir will not be liable to You or any third party for the termination of the Services.</p>
           <h2>Disclaimer of Warranties</h2>
-          <p>The Services provided by Mithrandir are provided on an "as-is" basis, and without any form of guarantee. We explicitly disclaim all warranties, whether express, implied, statutory, or otherwise, including but not limited to warranties of merchantability, fitness for a particular purpose, and non-infringement. Your use of the Services is at Your own risk.</p>
+          {/* FIX: 将文本中的 " 替换为 &quot; */}
+          <p>The Services provided by Mithrandir are provided on an &quot;as-is&quot; basis, and without any form of guarantee. We explicitly disclaim all warranties, whether express, implied, statutory, or otherwise, including but not limited to warranties of merchantability, fitness for a particular purpose, and non-infringement. Your use of the Services is at Your own risk.</p>
           <h2>Limitation of Liability</h2>
           <p>In no event shall Mithrandir, its Affiliates, directors, employees, or agents be liable for any direct, indirect, punitive, incidental, special, or consequential damages arising from or related to Your use or inability to use the Services. This limitation applies regardless of the basis or form of action.</p>
           <h2>Modification of Terms</h2>
-          <p>We may revise this agreement periodically, and the new version of the agreement will replace the previous version. We will indicate the "last updated" date at the beginning and provide notice within the Services to inform You of significant changes. It is Your responsibility to regularly review these legal terms to stay informed of any updates. By continuing to use the Services after the revised legal terms are posted, You will be deemed to have understood and accepted any changes to the revised legal terms.</p>
+          <p>We may revise this agreement periodically, and the new version of the agreement will replace the previous version. We will indicate the &quot;last updated&quot; date at the beginning and provide notice within the Services to inform You of significant changes. It is Your responsibility to regularly review these legal terms to stay informed of any updates. By continuing to use the Services after the revised legal terms are posted, You will be deemed to have understood and accepted any changes to the revised legal terms.</p>
           <h2>Governing Law and Jurisdiction</h2>
-          <p>This Agreement shall be governed by and construed in accordance with the laws of the People's Republic of China (for the purposes of this Agreement, excluding Hong Kong Special Administrative Region, Macau Special Administrative Region, and Taiwan). The parties agree that any dispute arising out of or in connection with this Agreement or the Services shall be submitted to choose one court with competent jurisdiction for resolution through litigation. You may also be required to comply with the laws of your local jurisdiction, province, country, or international laws when using the Services.</p>
+          <p>This Agreement shall be governed by and construed in accordance with the laws of the People&apos;s Republic of China (for the purposes of this Agreement, excluding Hong Kong Special Administrative Region, Macau Special Administrative Region, and Taiwan). The parties agree that any dispute arising out of or in connection with this Agreement or the Services shall be submitted to choose one court with competent jurisdiction for resolution through litigation. You may also be required to comply with the laws of your local jurisdiction, province, country, or international laws when using the Services.</p>
           <h2>Conclusion</h2>
           <p>This agreement represents the entire agreement between You and Mithrandir regarding the use of the Services. It supersedes any prior agreements or understandings. The failure of Mithrandir to enforce any provision of this agreement does not constitute a waiver of its rights.</p>
 
-          {/* 步骤4: 动态注入联系邮箱 */}
           <p>
             By accessing or using the Mithrandir Services, You acknowledge that You have read, understood, and agreed to be bound by this agreement.
             If You have any questions regarding this agreement, please contact us at{' '}
@@ -134,7 +135,9 @@ export default function TermsPage() {
           </p>
         </div>
 
+        {/* FIX: 添加了 type="button" 属性 */}
         <button
+          type="button"
           style={{ fontSize: '24px', padding: '0.5% 1%', position: 'fixed', right: '1%', bottom: '2%' }}
           onClick={() => {
             window.scrollTo({ top: 0, behavior: 'smooth' });

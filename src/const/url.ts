@@ -38,7 +38,7 @@ export const BLOG = urlJoin(OFFICIAL_SITE, 'blog');
 export const ABOUT = OFFICIAL_SITE;
 export const FEEDBACK = pkg.bugs.url;
 export const PRIVACY_URL = '/.files/Privacy.html';
-export const TERMS_URL = '/files/terms';
+export const TERMS_URL = '/public/terms';
 
 export const PLUGINS_INDEX_URL = 'https://chat-plugins.lobehub.com';
 

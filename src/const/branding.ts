@@ -12,7 +12,7 @@ export const ORG_NAME = 'LobeHub';
 export const BRANDING_URL = {
   help: undefined,
   privacy: '/.files/Privacy.html',
-  terms: '/files/terms',
+  terms: '/public/terms',
 };
 
 export const SOCIAL_URL = {

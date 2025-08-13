@@ -159,6 +159,7 @@ const isPublicRoute = createRouteMatcher([
   // oauth
   '/oidc/handoff',
   '/oidc/token',
+  '/public(.*)', // 服务条款和隐私条款
 ]);
 
 const isProtectedRoute = createRouteMatcher([

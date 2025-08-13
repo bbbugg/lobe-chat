@@ -22,7 +22,8 @@ export default function TermsPage() {
         />
       </Head>
 
-      <style jsx global>{`
+      {/* FIX: 将 jsx 和 global 属性按字母顺序排序 */}
+      <style global jsx>{`
         body {
           background-color: white;
           color: black;
@@ -60,12 +61,11 @@ export default function TermsPage() {
           style={{ fontSize: '24px', padding: '0.5% 1%' }}
           type="button"
         >
-          {/* FIX: 使用自闭合标签 */}
           <i className="fas fa-home" /> Back to Home Page
         </button>
 
-        {/* FIX: 对 style 对象内的 key 按字母顺序排序 */}
-        <div style={{ marginBottom: '5em', marginTop: '5em', margin: '0 10%', textAlign: 'justify' }}>
+        {/* FIX: 调整了 style 对象中 margin, marginBottom, marginTop 的顺序 */}
+        <div style={{ margin: '0 10%', marginBottom: '5em', marginTop: '5em', textAlign: 'justify' }}>
           <div style={{ marginBottom: '3em', textAlign: 'center' }}>
             <h1>Terms of Service</h1>
             <div>

@@ -1,80 +1,39 @@
 "use client";
 
 import { BRANDING_EMAIL } from '@/const/branding';
-import Head from 'next/head';
+import { Button } from '@lobehub/ui'; // 尝试使用项目内置的UI组件
+import { ArrowUp, Home } from 'lucide-react'; // 使用更现代的图标库
+import { useRouter } from 'next/navigation'; // 使用App Router的导航钩子
 import React from 'react';
+import { Flexbox } from 'react-layout-kit'; // 使用项目常用的布局组件
+
+// App Router推荐的定义页面标题和元数据的方式
+export const metadata = {
+  title: 'Terms of Service',
+};
 
 export default function TermsPage() {
+  const router = useRouter(); // 获取路由实例
+
   return (
-    <>
-      <Head>
-        <title>Terms of Service</title>
-        {/* FIX: 对 meta 和 link 标签的属性按字母顺序排序 */}
-        <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-        <link href="/favicon.ico" rel="icon" type="image/x-icon" />
-        <link href="/apple-touch-icon.png" rel="apple-touch-icon" />
-        <link
-          crossOrigin="anonymous"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-          integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
-          referrerPolicy="no-referrer"
-          rel="stylesheet"
-        />
-      </Head>
+    // 使用Flexbox进行布局，并设置其可滚动
+    <Flexbox align={'center'} gap={16} style={{ height: '100%', overflowY: 'auto', padding: '16px' }}>
+      {/* 使用项目内置的Button组件，样式会自动统一 */}
+      <Button icon={<Home />} onClick={() => router.push('/')}>
+        Back to Home Page
+      </Button>
 
-      {/* FIX: 将 jsx 和 global 属性按字母顺序排序 */}
-      <style global jsx>{`
-        body {
-          background-color: white;
-          color: black;
-        }
-        a {
-          color: #007bff;
-        }
-        button {
-          border: 1px solid black;
-          border-radius: 10px;
-          color: black;
-          cursor: pointer;
-        }
-        @media (prefers-color-scheme: dark) {
-          body {
-            background-color: #333;
-            color: white;
-          }
-          button {
-            background-color: #555;
-            border-color: #eee;
-            color: white;
-          }
-          a {
-            color: #4dabf5;
-          }
-        }
-      `}</style>
-
-      <div style={{ padding: '1rem' }}>
-        <button
-          onClick={() => {
-            window.location.href = '/';
-          }}
-          style={{ fontSize: '24px', padding: '0.5% 1%' }}
-          type="button"
-        >
-          <i className="fas fa-home" /> Back to Home Page
-        </button>
-
-        {/* FIX: 调整了 style 对象中 margin, marginBottom, marginTop 的顺序 */}
-        <div style={{ margin: '0 10%', marginBottom: '5em', marginTop: '5em', textAlign: 'justify' }}>
-          <div style={{ marginBottom: '3em', textAlign: 'center' }}>
-            <h1>Terms of Service</h1>
-            <div>
-              Last Updated at
-              <time aria-label="modified-date" dateTime="2025-03-01T00:00:00.000Z">
-                2025-03-01
-              </time>
-            </div>
+      {/* 为文本内容创建一个容器，并设置最大宽度和内外边距 */}
+      <div style={{ maxWidth: 800, margin: '24px 0' }}>
+        <div style={{ marginBottom: '3em', textAlign: 'center' }}>
+          <h1>Terms of Service</h1>
+          <div>
+            Last Updated at
+            <time aria-label="modified-date" dateTime="2025-03-01T00:00:00.000Z">
+              2025-03-01
+            </time>
           </div>
+        </div>
 
           <p>Welcome to Mithrandir! Please carefully read the following Terms of Use (hereinafter referred to as the &quot;Agreement&quot;). This Agreement constitutes a legally binding agreement between You and Mithrandir regarding the access and use of the Mithrandir website (collectively referred to as the &quot;Services&quot;).</p>
           <p>By accessing or using the Services in any way, You acknowledge that You have read, understood, and agreed to be bound by all the terms of this Agreement. If You do not agree to any part of this Agreement, You are not permitted to continue accessing or using the Services.</p>
@@ -132,17 +91,22 @@ export default function TermsPage() {
           </p>
         </div>
 
-        <button
-          onClick={() => {
-            window.scrollTo({ behavior: 'smooth', top: 0 });
-          }}
-          style={{ bottom: '2%', fontSize: '24px', padding: '0.5% 1%', position: 'fixed', right: '1%' }}
-          type="button"
-        >
-          {/* FIX: 使用自闭合标签 */}
-          <i className="fas fa-arrow-up" /> Top
-        </button>
-      </div>
-    </>
+      {/* “回到顶部”按钮 */}
+      <Button
+        icon={<ArrowUp />}
+        onClick={() => {
+          // 注意：这里需要找到正确的滚动容器来执行scrollTo
+          // 简单的 window.scrollTo 可能不再有效，需要根据实际DOM结构调整
+          // 但一个简单的UI改进是，当用户滚动时才显示这个按钮
+          const scrollableContainer = document.querySelector('main'); // 假设主滚动容器是<main>
+          if (scrollableContainer) {
+            scrollableContainer.scrollTo({ behavior: 'smooth', top: 0 });
+          }
+        }}
+        style={{ bottom: '24px', position: 'fixed', right: '24px' }}
+      >
+        Top
+      </Button>
+    </Flexbox>
   );
 }

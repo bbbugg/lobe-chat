@@ -78,7 +78,7 @@ export default function TermsPage() {
           </div>
 
           {/* 以下是所有条款内容，无需修改，因为它们不包含需要转换的特殊属性 */}
-          <p>Welcome to Mithrandir! Please carefully read the following Terms of Use (hereinafter referred to as the "Agreement"). This Agreement constitutes a legally binding agreement between You and Mithrandir regarding the access and use of the Mithrandir website (collectively referred to as the "Services").</p>
+          <p>Welcome to Mithrandir! Please carefully read the following Terms of Use (hereinafter referred to as the &quot;Agreement&quot;). This Agreement constitutes a legally binding agreement between You and Mithrandir regarding the access and use of the Mithrandir website (collectively referred to as the &quot;Services&quot;).</p>
           <p>By accessing or using the Services in any way, You acknowledge that You have read, understood, and agreed to be bound by all the terms of this Agreement. If You do not agree to any part of this Agreement, You are not permitted to continue accessing or using the Services.</p>
           <h2>Definitions</h2>
           <p>The words of which the initial letter is capitalized have meanings defined under the following conditions. The following definitions shall have the same meaning regardless of whether they appear in singular or in plural.</p>

@@ -1,3 +1,4 @@
+"use client";
 import { BRANDING_EMAIL } from '@/const/branding';
 import Head from 'next/head'; // 导入Head组件来管理<head>标签内容
 import React from 'react'; // 导入React

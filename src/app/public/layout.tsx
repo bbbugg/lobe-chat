@@ -1,31 +1,31 @@
 // src/app/public/layout.tsx
 
-import type { Metadata } from 'next';
+'use client'; // 1. 将其转换为客户端组件，因为 AppTheme 是客户端组件
+
+import type {Metadata} from 'next';
 import React from 'react';
 
-// 你可以在这里定义整个网站的默认元数据（比如标题、描述），对SEO友好
+// 2. 导入 AppTheme 组件
+import AppTheme from '@/layout/GlobalProvider/AppTheme';
+
+// 由于 'use client' 的存在，Metadata 对象需要以这种方式导出
+// 但对于这些公共页面，通常标题是在 page.tsx 中定义的，这里可以保留或简化
 export const metadata: Metadata = {
-  description: '',
-  title: '', // 可以改成你的网站名
+  description: 'LobeChat Public Page',
+  title: 'LobeChat',
 };
 
-// 这就是根布局组件
-export default function RootLayout({
-                                     children,
-                                   }: {
-  children: React.ReactNode; // 'children' 是一个特殊的 prop，它代表被包裹的子组件（在这里就是你的 page.tsx）
+export default function PublicLayout({
+                                       children,
+                                     }: {
+  children: React.ReactNode;
 }) {
   return (
-    // 【修复】为 <html> 添加 height: '100%'
-    <html lang="en" style={{ height: '100%' }}>
-    {/* 【修复】为 <body> 添加 height: '100%' 和 margin: 0 */}
-    <body style={{ height: '100%', margin: 0 }}>
-    {/*
-          现在，children (也就是你的 TermsContent 组件)
-          的父容器就有了一个固定的、占满全屏的高度，
-          它内部的 height: '100%' 样式就能正确生效了。
-        */}
-    {children}
+    <html lang="en" style={{height: '100%'}}>
+    <body style={{height: '100%', margin: 0}}>
+    {/* 3. 使用 AppTheme 组件包裹 children */}
+    {/* 这将为 terms 和 privacy 页面提供完整的主题支持 */}
+    <AppTheme>{children}</AppTheme>
     </body>
     </html>
   );

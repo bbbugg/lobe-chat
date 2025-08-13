@@ -24,7 +24,7 @@ export default function TermsContent() {
       </Button>
 
       {/* 为文本内容创建一个容器，并设置最大宽度和内外边距 */}
-      <div style={{ maxWidth: 800, margin: '24px 0' }}>
+      <div style={{ margin: '24px 0', maxWidth: 800 }}>
         <div style={{ marginBottom: '3em', textAlign: 'center' }}>
           <h1>Terms of Service</h1>
           <div>

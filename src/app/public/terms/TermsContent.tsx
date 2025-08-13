@@ -26,15 +26,19 @@ export default function TermsContent() {
   return (
     // 使用Flexbox进行布局，并设置其可滚动
     <Flexbox
-      ref={scrollableContainerRef}
-      // 2. 【修复按钮居中问题】移除 align={'center'}，让子元素默认拉伸或左对齐
       gap={16}
-      style={{height: '100%', overflowY: 'auto', padding: '16px 0'}} // 调整内边距，左右为0
+      ref={scrollableContainerRef}
+      style={{height: '100%', overflowY: 'auto', padding: '16px 0'}}
     >
       {/* 3. 【修复页面宽度和按钮位置】创建一个新的容器来模拟HTML中的 `margin: 0 10%` 效果 */}
       <div style={{width: '80%', margin: '0 auto'}}>
         {/* 将 "Back to Home Page" 按钮移动到这个新容器内部，使其位于内容区的左上角 */}
-        <Button icon={<Home/>} onClick={() => router.push('/')} style={{marginBottom: '2em'}}>
+        <Button
+          // 【Lint修复】按照字母顺序调整 props
+          icon={<Home/>}
+          onClick={() => router.push('/')}
+          style={{marginBottom: '2em'}}
+        >
           Back to Home Page
         </Button>
 

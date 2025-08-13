@@ -31,7 +31,7 @@ export default function TermsContent() {
       style={{height: '100%', overflowY: 'auto', padding: '16px 0'}}
     >
       {/* 3. 【修复页面宽度和按钮位置】创建一个新的容器来模拟HTML中的 `margin: 0 10%` 效果 */}
-      <div style={{width: '80%', margin: '0 auto'}}>
+      <div style={{margin: '0 auto', width: '80%'}}>
         {/* 将 "Back to Home Page" 按钮移动到这个新容器内部，使其位于内容区的左上角 */}
         <Button
           // 【Lint修复】按照字母顺序调整 props

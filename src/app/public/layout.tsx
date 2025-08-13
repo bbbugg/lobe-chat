@@ -3,8 +3,8 @@ import React from 'react';
 
 // 你可以在这里定义整个网站的默认元数据（比如标题、描述），对SEO友好
 export const metadata: Metadata = {
-  title: '', // 可以改成你的网站名
   description: '',
+  title: '', // 可以改成你的网站名
 };
 
 // 这就是根布局组件

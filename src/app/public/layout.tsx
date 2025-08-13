@@ -8,8 +8,8 @@ import ThemeRegistry from './ThemeRegistry';
 export const metadata: Metadata = {
   description: 'Public pages for our service',
   title: {
-    default: 'Mithrandir', // 默认标题
-    template: '%s | Mithrandir', // 页面标题模板
+    default: 'LobeChat', // 默认标题
+    template: '%s | LobeChat', // 页面标题模板
   },
 };
 

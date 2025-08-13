@@ -435,7 +435,7 @@ const qwenChatModels: AIChatModelCard[] = [
     contextWindowTokens: 1_000_000,
     description: '通义千问系列速度最快、成本极低的模型，适合简单任务。',
     displayName: 'Qwen Flash',
-    enabled: true,
+    // enabled: true,
     id: 'qwen-flash',
     maxOutput: 32_768,
     organization: 'Qwen',

@@ -9,7 +9,7 @@ import {useRouter} from 'next/navigation';
 import React, {useRef} from 'react';
 import {Flexbox} from 'react-layout-kit';
 
-import {BRANDING_EMAIL} from '@/const/branding';
+import {BRANDING_EMAIL, BRANDING_NAME} from '@/const/branding';
 
 // 使用项目常用的布局组件
 
@@ -41,7 +41,10 @@ export default function TermsContent() {
           // 【Lint修复】按照字母顺序调整 props
           icon={<Home/>}
           onClick={() => router.push('/')}
-          style={{marginBottom: '2em'}}
+          style={{
+            fontSize: '16px',
+            marginBottom: '2em'
+          }}
         >
           Back to Home Page
         </Button>
@@ -60,9 +63,9 @@ export default function TermsContent() {
           </div>
 
           <p>
-            Welcome to Mithrandir! Please carefully read the following Terms of Use (hereinafter
+            Welcome to {BRANDING_NAME}! Please carefully read the following Terms of Use (hereinafter
             referred to as the &quot;Agreement&quot;). This Agreement constitutes a legally binding
-            agreement between You and Mithrandir regarding the access and use of the Mithrandir
+            agreement between You and {BRANDING_NAME} regarding the access and use of the {BRANDING_NAME}
             website (collectively referred to as the &quot;Services&quot;).
           </p>
           <p>
@@ -83,10 +86,10 @@ export default function TermsContent() {
             </li>
             <li>
               <strong>Company</strong> (referred to as either &quot;the Company&quot;, &quot;We&quot;,
-              &quot;Us&quot; or &quot;Our&quot; in this Agreement) refers to Mithrandir.
+              &quot;Us&quot; or &quot;Our&quot; in this Agreement) refers to {BRANDING_NAME}.
             </li>
             <li>
-              <strong>Service</strong> means the Mithrandir website.
+              <strong>Service</strong> means the {BRANDING_NAME} website.
             </li>
             <li>
               <strong>You</strong> means the individual accessing or using the Services, or the
@@ -96,7 +99,7 @@ export default function TermsContent() {
           </ul>
           <h2>Our Services</h2>
           <p>
-            Mithrandir provides a platform and interface that enables users to interact with
+            {BRANDING_NAME} provides a platform and interface that enables users to interact with
             artificial intelligence technologies, including but not limited to natural language
             processing models or content generation models developed independently or provided by
             third parties such as DeepSeek, Aliyun, and other commercial companies as well as
@@ -131,7 +134,7 @@ export default function TermsContent() {
             To access the Services, You must register an account by providing true, accurate,
             up-to-date, and complete information. You are solely responsible for all activities that
             occur under Your account, including maintaining the security of Your account and
-            restricting access. You must immediately notify Mithrandir of any unauthorized account use
+            restricting access. You must immediately notify {BRANDING_NAME} of any unauthorized account use
             or other security breaches.
           </p>
           <p>
@@ -175,7 +178,7 @@ export default function TermsContent() {
           </p>
           <h2>Intellectual Property Rights</h2>
           <p>
-            Mithrandir reserves all rights to the technology, software, first-party content, and data
+            {BRANDING_NAME} reserves all rights to the technology, software, first-party content, and data
             within the Services, including but not limited to patents, trademarks, trade secrets,
             copyrights, and other intellectual property rights. Your permission to use the Services
             does not grant You any ownership or title. You are not permitted to copy, modify, adapt,
@@ -184,23 +187,23 @@ export default function TermsContent() {
           </p>
           <h2>Privacy and Security</h2>
           <p>
-            Mithrandir employs industry-standard technical, managerial, and physical security measures
+            {BRANDING_NAME} employs industry-standard technical, managerial, and physical security measures
             to protect the security, confidentiality, and integrity of Your data. However, We cannot
             guarantee that unauthorized access, hacking attacks, data loss, or other breaches will
-            never occur. Mithrandir is not liable for any damages or liabilities related to security
+            never occur. {BRANDING_NAME} is not liable for any damages or liabilities related to security
             incidents. Please refer to our Privacy Policy for more detailed information.
           </p>
           <h2>Termination of Services</h2>
           <p>
             You may close Your account and cease using the Services at any time. In the event of a
-            violation of the terms of the agreement, Mithrandir may immediately suspend or terminate
+            violation of the terms of the agreement, {BRANDING_NAME} may immediately suspend or terminate
             Your access to the Services. Upon termination, You will immediately lose the right to
-            access or use the Services. Mithrandir will not be liable to You or any third party for
+            access or use the Services. {BRANDING_NAME} will not be liable to You or any third party for
             the termination of the Services.
           </p>
           <h2>Disclaimer of Warranties</h2>
           <p>
-            The Services provided by Mithrandir are provided on an &quot;as-is&quot; basis, and
+            The Services provided by {BRANDING_NAME} are provided on an &quot;as-is&quot; basis, and
             without any form of guarantee. We explicitly disclaim all warranties, whether express,
             implied, statutory, or otherwise, including but not limited to warranties of
             merchantability, fitness for a particular purpose, and non-infringement. Your use of the
@@ -208,7 +211,7 @@ export default function TermsContent() {
           </p>
           <h2>Limitation of Liability</h2>
           <p>
-            In no event shall Mithrandir, its Affiliates, directors, employees, or agents be liable
+            In no event shall {BRANDING_NAME}, its Affiliates, directors, employees, or agents be liable
             for any direct, indirect, punitive, incidental, special, or consequential damages arising
             from or related to Your use or inability to use the Services. This limitation applies
             regardless of the basis or form of action.
@@ -234,14 +237,14 @@ export default function TermsContent() {
           </p>
           <h2>Conclusion</h2>
           <p>
-            This agreement represents the entire agreement between You and Mithrandir regarding the
+            This agreement represents the entire agreement between You and {BRANDING_NAME} regarding the
             use of the Services. It supersedes any prior agreements or understandings. The failure of
-            Mithrandir to enforce any provision of this agreement does not constitute a waiver of its
+            {BRANDING_NAME} to enforce any provision of this agreement does not constitute a waiver of its
             rights.
           </p>
 
           <p>
-            By accessing or using the Mithrandir Services, You acknowledge that You have read,
+            By accessing or using the {BRANDING_NAME} Services, You acknowledge that You have read,
             understood, and agreed to be bound by this agreement. If You have any questions regarding
             this agreement, please contact us at{' '}
             <a href={`mailto:${BRANDING_EMAIL.support}`}>{BRANDING_EMAIL.support}</a>.
@@ -259,7 +262,7 @@ export default function TermsContent() {
             scrollableContainerRef.current.scrollTo({behavior: 'smooth', top: 0});
           }
         }}
-        style={{bottom: '2%', position: 'fixed', right: '1%'}}
+        style={{bottom: '2%', fontSize: '16px', position: 'fixed', right: '1%'}}
       >
         Top
       </Button>

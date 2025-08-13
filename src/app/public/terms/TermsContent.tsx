@@ -13,14 +13,9 @@ import {BRANDING_EMAIL, BRANDING_NAME} from '@/const/branding';
 
 // 使用项目常用的布局组件
 
-// App Router推荐的定义页面标题和元数据的方式
-export const metadata = {
-  title: 'Terms of Service',
-};
-
 export default function TermsContent() {
   const router = useRouter();
-  // 1. 【修复 "Top" 按钮】创建一个 ref 来引用可滚动的容器
+  // 1. 创建一个 ref 来引用可滚动的容器，以实现 "Top" 按钮功能
   const scrollableContainerRef = useRef<HTMLDivElement>(null);
 
   return (
@@ -33,24 +28,23 @@ export default function TermsContent() {
         height: '100%',
         overflowY: 'auto',
         padding: '16px 0',
-      }}>
-      {/* 3. 【修复页面宽度和按钮位置】创建一个新的容器来模拟HTML中的 `margin: 0 10%` 效果 */}
+      }}
+    >
+      {/* 2. 创建一个容器来模拟HTML中的 `margin: 0 10%` 效果，并居中内容 */}
       <div style={{margin: '0 auto', width: '80%'}}>
-        {/* 将 "Back to Home Page" 按钮移动到这个新容器内部，使其位于内容区的左上角 */}
+        {/* 将 "Back to Home Page" 按钮放置于内容区的左上角 */}
         <Button
-          // 【Lint修复】按照字母顺序调整 props
           icon={<Home/>}
           onClick={() => router.push('/')}
           style={{
             fontSize: '16px',
-            marginBottom: '2em'
+            marginBottom: '2em',
           }}
         >
           Back to Home Page
         </Button>
 
-        {/* 为文本内容创建一个容器 */}
-        {/* 4. 【修复字体和对齐】在 style 中加入 fontSize 和 textAlign 属性 */}
+        {/* 3. 为文本内容创建一个容器，并设置字体和对齐方式 */}
         <div style={{fontSize: '16px', textAlign: 'justify'}}>
           <div style={{marginBottom: '3em', textAlign: 'center'}}>
             <h1>Terms of Service</h1>
@@ -65,8 +59,8 @@ export default function TermsContent() {
           <p>
             Welcome to {BRANDING_NAME}! Please carefully read the following Terms of Use (hereinafter
             referred to as the &quot;Agreement&quot;). This Agreement constitutes a legally binding
-            agreement between You and {BRANDING_NAME} regarding the access and use of the {BRANDING_NAME}
-            website (collectively referred to as the &quot;Services&quot;).
+            agreement between You and {BRANDING_NAME} regarding the access and use of the {BRANDING_NAME} website
+            (collectively referred to as the &quot;Services&quot;).
           </p>
           <p>
             By accessing or using the Services in any way, You acknowledge that You have read,
@@ -238,8 +232,9 @@ export default function TermsContent() {
           <h2>Conclusion</h2>
           <p>
             This agreement represents the entire agreement between You and {BRANDING_NAME} regarding the
-            use of the Services. It supersedes any prior agreements or understandings. The failure of
-            {BRANDING_NAME} to enforce any provision of this agreement does not constitute a waiver of its
+            use of the Services. It supersedes any prior agreements or understandings. The failure
+            of {BRANDING_NAME} to
+            enforce any provision of this agreement does not constitute a waiver of its
             rights.
           </p>
 
@@ -256,7 +251,7 @@ export default function TermsContent() {
       <Button
         icon={<ArrowUp/>}
         onClick={() => {
-          // 5. 【修复 "Top" 按钮】使用 ref 来操作滚动
+          // 4. 使用 ref 来操作滚动
           // .current 属性指向真实的DOM元素
           if (scrollableContainerRef.current) {
             scrollableContainerRef.current.scrollTo({behavior: 'smooth', top: 0});

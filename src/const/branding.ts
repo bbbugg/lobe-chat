@@ -11,7 +11,7 @@ export const ORG_NAME = 'LobeHub';
 
 export const BRANDING_URL = {
   help: undefined,
-  privacy: '/.files/Privacy.html',
+  privacy: '/public/privacy',
   terms: '/public/terms',
 };
 

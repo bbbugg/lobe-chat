@@ -1,30 +1,28 @@
 "use client";
-import { BRANDING_EMAIL } from '@/const/branding';
-import Head from 'next/head'; // 导入Head组件来管理<head>标签内容
-import React from 'react'; // 导入React
 
-// 这是符合React/Next.js规范的页面组件
+import { BRANDING_EMAIL } from '@/const/branding';
+import Head from 'next/head';
+import React from 'react';
+
 export default function TermsPage() {
   return (
     <>
-      {/* 步骤1: 使用Head组件管理所有头部信息 */}
       <Head>
         <title>Terms of Service</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="icon" href="/favicon.ico" type="image/x-icon" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        {/* FIX: 对 meta 和 link 标签的属性按字母顺序排序 */}
+        <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+        <link href="/favicon.ico" rel="icon" type="image/x-icon" />
+        <link href="/apple-touch-icon.png" rel="apple-touch-icon" />
         <link
-          rel="stylesheet"
+          crossOrigin="anonymous"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
           integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
-          crossOrigin="anonymous"
           referrerPolicy="no-referrer"
+          rel="stylesheet"
         />
       </Head>
 
-      {/* 步骤2: 使用<style jsx global>来保留原始CSS样式 */}
       <style jsx global>{`
-        /* 这段CSS与您原来<style>标签中的完全一样，确保样式不变 */
         body {
           background-color: white;
           color: black;
@@ -33,10 +31,10 @@ export default function TermsPage() {
           color: #007bff;
         }
         button {
-          color: black;
           border: 1px solid black;
-          cursor: pointer;
           border-radius: 10px;
+          color: black;
+          cursor: pointer;
         }
         @media (prefers-color-scheme: dark) {
           body {
@@ -45,8 +43,8 @@ export default function TermsPage() {
           }
           button {
             background-color: #555;
-            color: white;
             border-color: #eee;
+            color: white;
           }
           a {
             color: #4dabf5;
@@ -54,21 +52,21 @@ export default function TermsPage() {
         }
       `}</style>
 
-      {/* 步骤3: 页面主体内容，并进行JSX语法转换 */}
-      <div style={{ padding: '1rem' }}> {/* 添加一个外层padding让内容不会紧贴边缘 */}
+      <div style={{ padding: '1rem' }}>
         <button
-          type="button"
-          style={{ fontSize: '24px', padding: '0.5% 1%' }}
           onClick={() => {
             window.location.href = '/';
           }}
+          style={{ fontSize: '24px', padding: '0.5% 1%' }}
+          type="button"
         >
-          {/* class -> className */}
-          <i className="fas fa-home"></i> Back to Home Page
+          {/* FIX: 使用自闭合标签 */}
+          <i className="fas fa-home" /> Back to Home Page
         </button>
 
-        <div style={{ margin: '0 10%', textAlign: 'justify', marginBottom: '5em', marginTop: '5em' }}>
-          <div style={{ textAlign: 'center', marginBottom: '3em' }}>
+        {/* FIX: 对 style 对象内的 key 按字母顺序排序 */}
+        <div style={{ marginBottom: '5em', marginTop: '5em', margin: '0 10%', textAlign: 'justify' }}>
+          <div style={{ marginBottom: '3em', textAlign: 'center' }}>
             <h1>Terms of Service</h1>
             <div>
               Last Updated at
@@ -78,7 +76,6 @@ export default function TermsPage() {
             </div>
           </div>
 
-          {/* 以下是所有条款内容，无需修改，因为它们不包含需要转换的特殊属性 */}
           <p>Welcome to Mithrandir! Please carefully read the following Terms of Use (hereinafter referred to as the &quot;Agreement&quot;). This Agreement constitutes a legally binding agreement between You and Mithrandir regarding the access and use of the Mithrandir website (collectively referred to as the &quot;Services&quot;).</p>
           <p>By accessing or using the Services in any way, You acknowledge that You have read, understood, and agreed to be bound by all the terms of this Agreement. If You do not agree to any part of this Agreement, You are not permitted to continue accessing or using the Services.</p>
           <h2>Definitions</h2>
@@ -116,7 +113,6 @@ export default function TermsPage() {
           <h2>Termination of Services</h2>
           <p>You may close Your account and cease using the Services at any time. In the event of a violation of the terms of the agreement, Mithrandir may immediately suspend or terminate Your access to the Services. Upon termination, You will immediately lose the right to access or use the Services. Mithrandir will not be liable to You or any third party for the termination of the Services.</p>
           <h2>Disclaimer of Warranties</h2>
-          {/* FIX: 将文本中的 " 替换为 &quot; */}
           <p>The Services provided by Mithrandir are provided on an &quot;as-is&quot; basis, and without any form of guarantee. We explicitly disclaim all warranties, whether express, implied, statutory, or otherwise, including but not limited to warranties of merchantability, fitness for a particular purpose, and non-infringement. Your use of the Services is at Your own risk.</p>
           <h2>Limitation of Liability</h2>
           <p>In no event shall Mithrandir, its Affiliates, directors, employees, or agents be liable for any direct, indirect, punitive, incidental, special, or consequential damages arising from or related to Your use or inability to use the Services. This limitation applies regardless of the basis or form of action.</p>
@@ -136,16 +132,15 @@ export default function TermsPage() {
           </p>
         </div>
 
-        {/* FIX: 添加了 type="button" 属性 */}
         <button
-          type="button"
-          style={{ fontSize: '24px', padding: '0.5% 1%', position: 'fixed', right: '1%', bottom: '2%' }}
           onClick={() => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window.scrollTo({ behavior: 'smooth', top: 0 });
           }}
+          style={{ bottom: '2%', fontSize: '24px', padding: '0.5% 1%', position: 'fixed', right: '1%' }}
+          type="button"
         >
-          {/* class -> className */}
-          <i className="fas fa-arrow-up"></i> Top
+          {/* FIX: 使用自闭合标签 */}
+          <i className="fas fa-arrow-up" /> Top
         </button>
       </div>
     </>

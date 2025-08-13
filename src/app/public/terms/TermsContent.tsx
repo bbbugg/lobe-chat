@@ -28,8 +28,12 @@ export default function TermsContent() {
     <Flexbox
       gap={16}
       ref={scrollableContainerRef}
-      style={{height: '100%', overflowY: 'auto', padding: '16px 0'}}
-    >
+      style={{
+        boxSizing: 'border-box',
+        height: '100%',
+        overflowY: 'auto',
+        padding: '16px 0',
+      }}>
       {/* 3. 【修复页面宽度和按钮位置】创建一个新的容器来模拟HTML中的 `margin: 0 10%` 效果 */}
       <div style={{margin: '0 auto', width: '80%'}}>
         {/* 将 "Back to Home Page" 按钮移动到这个新容器内部，使其位于内容区的左上角 */}

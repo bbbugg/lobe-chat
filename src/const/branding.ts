@@ -26,7 +26,7 @@ export const SOCIAL_URL = {
 // 1. 从环境变量中读取域名
 // process.env.NEXT_PUBLIC_BRANDING_DOMAIN 会在构建时被Vercel替换为真实值
 // || 'example.com' 是一个备用值，如果在本地开发时没有设置环境变量，就会使用它，防止程序出错
-const domain = process.env.NEXT_PUBLIC_BRANDING_DOMAIN || 'example.com';
+const domain = process.env.NEXT_PUBLIC_BRANDING_DOMAIN || 'lobehub.com';
 
 // 2. 使用读取到的域名动态生成邮箱地址
 export const BRANDING_EMAIL = {

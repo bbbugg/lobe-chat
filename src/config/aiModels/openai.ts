@@ -133,6 +133,7 @@ export const openaiChatModels: AIChatModelCard[] = [
     description:
       'o4-mini 是我们最新的小型 o 系列模型。 它专为快速有效的推理而优化，在编码和视觉任务中表现出极高的效率和性能。',
     displayName: 'o4-mini',
+    enabled: true,
     id: 'o4-mini',
     maxOutput: 100_000,
     pricing: {

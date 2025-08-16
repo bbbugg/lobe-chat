@@ -26,7 +26,7 @@ exports[`agentSelectors > defaultAgentConfig > should merge DEFAULT_AGENT_CONFIG
     "top_p": 1,
   },
   "plugins": [],
-  "provider": "deepseek",
+  "provider": "siliconcloud",
   "systemRole": "user",
   "tts": {
     "showAllLocaleVoice": false,

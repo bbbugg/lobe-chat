@@ -116,7 +116,7 @@ exports[`settingsSelectors > defaultAgent > should merge DEFAULT_AGENT and s.set
       "reasoningBudgetToken": 1024,
       "searchFCModel": {
         "model": "deepseek-ai/DeepSeek-V3",
-        "provider": "deepseek",
+        "provider": "siliconcloud",
       },
       "searchMode": "off",
     },

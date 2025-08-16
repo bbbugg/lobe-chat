@@ -51,35 +51,35 @@ exports[`settingsSelectors > currentSettings > should merge DEFAULT_SETTINGS and
 exports[`settingsSelectors > currentSystemAgent > should merge DEFAULT_SYSTEM_AGENT_CONFIG and s.settings.systemAgent correctly 1`] = `
 {
   "agentMeta": {
-    "model": "deepseek-chat",
-    "provider": "deepseek",
+    "model": "deepseek-ai/DeepSeek-V3",
+    "provider": "siliconcloud",
   },
   "enableAutoReply": true,
   "generationTopic": {
-    "model": "deepseek-chat",
-    "provider": "deepseek",
+    "model": "deepseek-ai/DeepSeek-V3",
+    "provider": "siliconcloud",
   },
   "historyCompress": {
-    "model": "deepseek-chat",
-    "provider": "deepseek",
+    "model": "deepseek-ai/DeepSeek-V3",
+    "provider": "siliconcloud",
   },
   "queryRewrite": {
     "enabled": true,
-    "model": "deepseek-chat",
-    "provider": "deepseek",
+    "model": "deepseek-ai/DeepSeek-V3",
+    "provider": "siliconcloud",
   },
   "replyMessage": "Custom auto reply",
   "thread": {
-    "model": "deepseek-chat",
-    "provider": "deepseek",
+    "model": "deepseek-ai/DeepSeek-V3",
+    "provider": "siliconcloud",
   },
   "topic": {
-    "model": "deepseek-chat",
-    "provider": "deepseek",
+    "model": "deepseek-ai/DeepSeek-V3",
+    "provider": "siliconcloud",
   },
   "translation": {
-    "model": "deepseek-chat",
-    "provider": "deepseek",
+    "model": "deepseek-ai/DeepSeek-V3",
+    "provider": "siliconcloud",
   },
 }
 `;
@@ -115,7 +115,7 @@ exports[`settingsSelectors > defaultAgent > should merge DEFAULT_AGENT and s.set
       "historyCount": 20,
       "reasoningBudgetToken": 1024,
       "searchFCModel": {
-        "model": "deepseek-chat",
+        "model": "deepseek-ai/DeepSeek-V3",
         "provider": "deepseek",
       },
       "searchMode": "off",
@@ -129,7 +129,7 @@ exports[`settingsSelectors > defaultAgent > should merge DEFAULT_AGENT and s.set
       "top_p": 1,
     },
     "plugins": [],
-    "provider": "deepseek",
+    "provider": "siliconcloud",
     "systemRole": "user",
     "tts": {
       "showAllLocaleVoice": false,
@@ -159,8 +159,8 @@ exports[`settingsSelectors > defaultAgentConfig > should merge DEFAULT_AGENT_CON
     "historyCount": 20,
     "reasoningBudgetToken": 1024,
     "searchFCModel": {
-      "model": "deepseek-chat",
-      "provider": "deepseek",
+      "model": "deepseek-ai/DeepSeek-V3",
+      "provider": "siliconcloud",
     },
     "searchMode": "off",
   },
@@ -173,7 +173,7 @@ exports[`settingsSelectors > defaultAgentConfig > should merge DEFAULT_AGENT_CON
     "top_p": 1,
   },
   "plugins": [],
-  "provider": "deepseek",
+  "provider": "siliconcloud",
   "systemRole": "custom role",
   "tts": {
     "showAllLocaleVoice": false,

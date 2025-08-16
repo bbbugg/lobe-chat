@@ -12,8 +12,8 @@ exports[`agentSelectors > defaultAgentConfig > should merge DEFAULT_AGENT_CONFIG
     "historyCount": 20,
     "reasoningBudgetToken": 1024,
     "searchFCModel": {
-      "model": "deepseek-chat",
-      "provider": "deepseek",
+      "model": "deepseek-ai/DeepSeek-V3",
+      "provider": "siliconcloud",
     },
     "searchMode": "off",
   },

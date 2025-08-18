@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import React from 'react';
+import { BRANDING_NAME } from '@/const/branding';
 
 // 2. 导入我们刚刚创建的客户端主题注册表组件
 import ThemeRegistry from './ThemeRegistry';
@@ -8,8 +9,8 @@ import ThemeRegistry from './ThemeRegistry';
 export const metadata: Metadata = {
   description: 'Public pages for our service',
   title: {
-    default: 'LobeChat', // 默认标题
-    template: '%s | LobeChat', // 页面标题模板
+    default: BRANDING_NAME, // 默认标题
+    template: '%s | ' + BRANDING_NAME, // 页面标题模板
   },
 };
 

@@ -477,7 +477,7 @@ const siliconcloudChatModels: AIChatModelCard[] = [
     description:
       'GLM-4.1V-9B-Thinking 是由智谱 AI 和清华大学 KEG 实验室联合发布的一款开源视觉语言模型（VLM），专为处理复杂的多模态认知任务而设计。该模型基于 GLM-4-9B-0414 基础模型，通过引入“思维链”（Chain-of-Thought）推理机制和采用强化学习策略，显著提升了其跨模态的推理能力和稳定性。',
     displayName: 'GLM-4.1V 9B Thinking (Free)',
-    enabled: true,
+    // enabled: true,
     id: 'THUDM/GLM-4.1V-9B-Thinking',
     pricing: {
       currency: 'CNY',
@@ -652,7 +652,7 @@ const siliconcloudChatModels: AIChatModelCard[] = [
     description:
       'DeepSeek-R1-0528-Qwen3-8B 是通过从 DeepSeek-R1-0528 模型蒸馏思维链到 Qwen3 8B Base 获得的模型。该模型在开源模型中达到了最先进（SOTA）的性能，在 AIME 2024 测试中超越了 Qwen3 8B 10%，并达到了 Qwen3-235B-thinking 的性能水平。该模型在数学推理、编程和通用逻辑等多个基准测试中表现出色，其架构与 Qwen3-8B 相同，但共享 DeepSeek-R1-0528 的分词器配置。',
     displayName: 'DeepSeek R1 0528 Qwen3 8B (Free)',
-    enabled: true,
+    // enabled: true,
     id: 'deepseek-ai/DeepSeek-R1-0528-Qwen3-8B',
     pricing: {
       currency: 'CNY',

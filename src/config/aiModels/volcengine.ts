@@ -93,7 +93,7 @@ const doubaoChatModels: AIChatModelCard[] = [
     description:
       'Doubao-Seed-1.6-flash推理速度极致的多模态深度思考模型，TPOT仅需10ms； 同时支持文本和视觉理解，文本理解能力超过上一代lite，视觉理解比肩友商pro系列模型。支持 256k 上下文窗口，输出长度支持最大 16k tokens。',
     displayName: 'Doubao Seed 1.6 Flash',
-    enabled: true,
+    // enabled: true,
     id: 'doubao-seed-1.6-flash',
     maxOutput: 16_000,
     pricing: {

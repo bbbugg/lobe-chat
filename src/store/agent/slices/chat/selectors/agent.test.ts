@@ -165,7 +165,7 @@ describe('agentSelectors', () => {
         },
       };
       const provider = agentSelectors.currentAgentModelProvider(modifiedStore);
-      expect(provider).toEqual('deepseek');
+      expect(provider).toEqual('siliconcloud');
     });
   });
 

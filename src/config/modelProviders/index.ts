@@ -1,12 +1,15 @@
 import { ChatModelCard, ModelProviderCard } from '@/types/llm';
 
 import Ai21Provider from './ai21';
+import Ai302Provider from './ai302';
 import Ai360Provider from './ai360';
+import AiHubMixProvider from './aihubmix';
 import AnthropicProvider from './anthropic';
 import AzureProvider from './azure';
 import AzureAIProvider from './azureai';
 import BaichuanProvider from './baichuan';
 import BedrockProvider from './bedrock';
+import BflProvider from './bfl';
 import CloudflareProvider from './cloudflare';
 import CohereProvider from './cohere';
 import DeepSeekProvider from './deepseek';
@@ -94,6 +97,7 @@ export const LOBE_DEFAULT_MODEL_LIST: ChatModelCard[] = [
   TaichuProvider.chatModels,
   CloudflareProvider.chatModels,
   Ai360Provider.chatModels,
+  AiHubMixProvider.chatModels,
   SiliconCloudProvider.chatModels,
   GiteeAIProvider.chatModels,
   UpstageProvider.chatModels,
@@ -122,13 +126,17 @@ export const DEFAULT_MODEL_PROVIDER_LIST = [
   GoogleProvider,
   VertexAIProvider,
   DeepSeekProvider,
-  HuggingFaceProvider,
+  MoonshotProvider,
+  AiHubMixProvider,
   OpenRouterProvider,
   FalProvider,
+  HuggingFaceProvider,
   CloudflareProvider,
   GithubProvider,
+  BflProvider,
   NovitaProvider,
   PPIOProvider,
+  Ai302Provider,
   NvidiaProvider,
   TogetherAIProvider,
   FireworksAIProvider,
@@ -153,7 +161,6 @@ export const DEFAULT_MODEL_PROVIDER_LIST = [
   SparkProvider,
   SenseNovaProvider,
   StepfunProvider,
-  MoonshotProvider,
   BaichuanProvider,
   VolcengineProvider,
   MinimaxProvider,
@@ -178,12 +185,15 @@ export const isProviderDisableBrowserRequest = (id: string) => {
 };
 
 export { default as Ai21ProviderCard } from './ai21';
+export { default as Ai302ProviderCard } from './ai302';
 export { default as Ai360ProviderCard } from './ai360';
+export { default as AiHubMixProviderCard } from './aihubmix';
 export { default as AnthropicProviderCard } from './anthropic';
 export { default as AzureProviderCard } from './azure';
 export { default as AzureAIProviderCard } from './azureai';
 export { default as BaichuanProviderCard } from './baichuan';
 export { default as BedrockProviderCard } from './bedrock';
+export { default as BflProviderCard } from './bfl';
 export { default as CloudflareProviderCard } from './cloudflare';
 export { default as CohereProviderCard } from './cohere';
 export { default as DeepSeekProviderCard } from './deepseek';

@@ -3,6 +3,8 @@ import { CallReportRequest, InstallReportRequest } from '@lobehub/market-types';
 
 import { lambdaClient } from '@/libs/trpc/client';
 import { globalHelpers } from '@/store/global/helpers';
+import { useUserStore } from '@/store/user';
+import { preferenceSelectors } from '@/store/user/selectors';
 import {
   AssistantListResponse,
   AssistantQueryParams,
@@ -83,10 +85,6 @@ class DiscoverService {
     });
   };
 
-  getMcpIdentifiers = async (): Promise<IdentifiersResponse> => {
-    return lambdaClient.market.getMcpIdentifiers.query();
-  };
-
   getMcpList = async (params: McpQueryParams = {}): Promise<McpListResponse> => {
     const locale = globalHelpers.getCurrentLanguage();
     return lambdaClient.market.getMcpList.query({
@@ -145,6 +143,10 @@ class DiscoverService {
     errorCode,
     ...params
   }: InstallReportRequest) => {
+    // if user don't allow tracing, just not report installation
+    const allow = preferenceSelectors.userAllowTrace(useUserStore.getState());
+
+    if (!allow) return;
     await this.injectMPToken();
 
     const reportData = {
@@ -166,6 +168,11 @@ class DiscoverService {
    * 上报插件调用结果
    */
   reportPluginCall = async (reportData: CallReportRequest) => {
+    // if user don't allow tracing , just not report calling
+    const allow = preferenceSelectors.userAllowTrace(useUserStore.getState());
+
+    if (!allow) return;
+
     await this.injectMPToken();
 
     lambdaClient.market.reportCall.mutate(cleanObject(reportData)).catch((reportError) => {

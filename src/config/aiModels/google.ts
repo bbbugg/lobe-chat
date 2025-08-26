@@ -304,7 +304,7 @@ const googleChatModels: AIChatModelCard[] = [
     contextWindowTokens: 32_768 + 8192,
     description: 'Gemini 2.0 Flash 预览模型，支持图像生成',
     displayName: 'Gemini 2.0 Flash Preview Image Generation',
-    enabled: true,
+    //enabled: true,
     id: 'gemini-2.0-flash-preview-image-generation',
     maxOutput: 8192,
     pricing: {

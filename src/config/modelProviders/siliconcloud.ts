@@ -421,7 +421,7 @@ const SiliconCloud: ModelProviderCard = {
   ],
   checkModel: 'Pro/Qwen/Qwen2-1.5B-Instruct',
   description: 'SiliconCloud，基于优秀开源基础模型的高性价比 GenAI 云服务',
-  enabled: true,
+  // enabled: true,
   id: 'siliconcloud',
   modelList: { showModelFetcher: true },
   modelsUrl: 'https://siliconflow.cn/zh-cn/models',

@@ -1206,7 +1206,6 @@ const qwenChatModels: AIChatModelCard[] = [
     description:
       '685B 满血版模型，2025年5月28日发布。DeepSeek-R1 在后训练阶段大规模使用了强化学习技术，在仅有极少标注数据的情况下，极大提升了模型推理能力。在数学、代码、自然语言推理等任务上，性能较高，能力较强。',
     displayName: 'DeepSeek R1 0528',
-    enabled: true,
     id: 'deepseek-r1-0528',
     maxOutput: 16_384,
     organization: 'DeepSeek',

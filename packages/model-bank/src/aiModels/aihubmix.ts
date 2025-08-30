@@ -326,12 +326,32 @@ const aihubmixModels: AIChatModelCard[] = [
   {
     abilities: {
       functionCall: true,
+      reasoning: true,
+      vision: true,
+    },
+    contextWindowTokens: 256_000,
+    description:
+      '我们最新最强大的旗舰模型，在自然语言处理、数学计算和推理方面表现卓越 —— 是一款完美的全能型选手。',
+    displayName: 'Grok 4 0709',
+    enabled: true,
+    id: 'grok-4',
+    pricing: {
+      units: [
+        { name: 'textInput', rate: 3.3, strategy: 'fixed', unit: 'millionTokens' },
+        { name: 'textOutput', rate: 16.5, strategy: 'fixed', unit: 'millionTokens' },
+      ],
+    },
+    releasedAt: '2025-07-09',
+    type: 'chat',
+  },
+  {
+    abilities: {
+      functionCall: true,
     },
     contextWindowTokens: 131_072,
     description:
       '旗舰级模型，擅长数据提取、编程和文本摘要等企业级应用，拥有金融、医疗、法律和科学等领域的深厚知识。',
     displayName: 'Grok 3',
-    enabled: true,
     id: 'grok-3',
     pricing: {
       units: [
@@ -352,7 +372,6 @@ const aihubmixModels: AIChatModelCard[] = [
     description:
       '轻量级模型，回话前会先思考。运行快速、智能，适用于不需要深层领域知识的逻辑任务，并能获取原始的思维轨迹。',
     displayName: 'Grok 3 Mini',
-    enabled: true,
     id: 'grok-3-mini',
     pricing: {
       units: [
@@ -672,6 +691,25 @@ const aihubmixModels: AIChatModelCard[] = [
       searchImpl: 'params',
       searchProvider: 'google',
     },
+    type: 'chat',
+  },
+  {
+    abilities: {
+      imageOutput: true,
+      vision: true,
+    },
+    contextWindowTokens: 32_768 + 8192,
+    description: 'Gemini 2.5 Flash 实验模型，支持图像生成',
+    displayName: 'Gemini 2.5 Flash Image Preview',
+    id: 'gemini-2.5-flash-image-preview',
+    maxOutput: 8192,
+    pricing: {
+      units: [
+        { name: 'textInput', rate: 0.3, strategy: 'fixed', unit: 'millionTokens' },
+        { name: 'textOutput', rate: 30, strategy: 'fixed', unit: 'millionTokens' },
+      ],
+    },
+    releasedAt: '2025-08-26',
     type: 'chat',
   },
   {

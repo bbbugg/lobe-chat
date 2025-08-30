@@ -45,7 +45,7 @@ export const LobeSiliconCloudAI = createOpenAICompatibleRuntime({
 
       return {
         ...rest,
-        ...(['qwen3'].some((keyword) => model.toLowerCase().includes(keyword))
+        ...(['qwen3', 'DeepSeek-V3.1'].some((keyword) => model.toLowerCase().includes(keyword))
           ? {
               enable_thinking: thinking !== undefined ? thinking.type === 'enabled' : false,
               thinking_budget:

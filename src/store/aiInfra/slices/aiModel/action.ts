@@ -81,6 +81,8 @@ export const createAiModelSlice: StateCreator<
             functionCall: model.functionCall,
             reasoning: model.reasoning,
             vision: model.vision,
+            search: model.search,
+            imageOutput: model.imageOutput,
           },
           enabled: model.enabled || false,
           source: 'remote',

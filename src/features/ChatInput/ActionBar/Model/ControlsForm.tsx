@@ -38,7 +38,7 @@ const ControlsForm = memo(() => {
   const descWide = { display: 'inline-block', width: 300 } as const;
   const descNarrow = {
     display: 'block',
-    maxWidth: 500,
+    maxWidth: '100%',
     whiteSpace: 'normal',
   } as const;
 

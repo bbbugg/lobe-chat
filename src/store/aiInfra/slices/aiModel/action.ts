@@ -79,7 +79,9 @@ export const createAiModelSlice: StateCreator<
           abilities: {
             files: model.files,
             functionCall: model.functionCall,
+            imageOutput: model.imageOutput,
             reasoning: model.reasoning,
+            search: model.search,
             vision: model.vision,
             search: model.search,
             imageOutput: model.imageOutput,

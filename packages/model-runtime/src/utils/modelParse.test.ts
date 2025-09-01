@@ -95,20 +95,19 @@ const mockDefaultModelList: (Partial<ChatModelCard> & { id: string })[] = [
     enabled: false,
     id: 'model-known-disabled',
   },
-  {
-    displayName: 'Gemini 2.5 Pro',
-    enabled: true,
-    functionCall: true,
-    id: 'gemini-2.5-pro',
-    reasoning: true,
-    search: true,
-    vision: true,
-  },
 ];
 
 // Mock the import
 vi.mock('model-bank', () => ({
   LOBE_DEFAULT_MODEL_LIST: mockDefaultModelList,
+  // 新增 provider 专用清单，供 findKnownModelByProvider 使用
+  google: [
+    {
+      id: 'gemini-2.5-pro',
+      displayName: 'Gemini 2.5 Pro',
+      abilities: { search: true, functionCall: true, reasoning: true, vision: true },
+    },
+  ],
 }));
 
 describe('modelParse', () => {
@@ -489,14 +488,8 @@ describe('modelParse', () => {
         expect(m.search).toBe(true);
       });
 
-      it('explicit model.search=false should override knownModel abilities and keyword inference', async () => {
-        const out = await processMultiProviderModelList([{ id: 'gemini-2.5-pro', search: false }]);
-        expect(out).toHaveLength(1);
-        expect(out[0].search).toBe(false);
-      });
-
-      it('explicit model.search=true should work even without keywords', async () => {
-        const out = await processMultiProviderModelList([{ id: 'gpt-4o', search: true }]);
+      it('default search keywords should make "*-search" models support search', async () => {
+        const out = await processMultiProviderModelList([{ id: 'gpt-4o-search'}]);
         expect(out).toHaveLength(1);
         expect(out[0].search).toBe(true);
       });

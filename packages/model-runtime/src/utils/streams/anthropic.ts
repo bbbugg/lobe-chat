@@ -240,12 +240,13 @@ export const transformAnthropicStream = (
 
 export interface AnthropicStreamOptions {
   callbacks?: ChatStreamCallbacks;
+  enabledTps?: boolean; // 是否启用 TPS 计算（非流式时传 false）
   inputStartAt?: number;
 }
 
 export const AnthropicStream = (
   stream: Stream<Anthropic.MessageStreamEvent> | ReadableStream,
-  { callbacks, inputStartAt }: AnthropicStreamOptions = {},
+  { callbacks, inputStartAt, enabledTps = true }: AnthropicStreamOptions = {},
 ) => {
   const streamStack: StreamContext = { id: '' };
 
@@ -254,7 +255,11 @@ export const AnthropicStream = (
 
   return readableStream
     .pipeThrough(
-      createTokenSpeedCalculator(transformAnthropicStream, { inputStartAt, streamStack }),
+      createTokenSpeedCalculator(transformAnthropicStream, {
+        enabledTps: enabledTps,
+        inputStartAt,
+        streamStack,
+      }),
     )
     .pipeThrough(createSSEProtocolTransformer((c) => c, streamStack))
     .pipeThrough(createCallbacksTransformer(callbacks));

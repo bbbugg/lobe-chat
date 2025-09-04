@@ -337,7 +337,11 @@ export const TOKEN_SPEED_CHUNK_ID = 'output_speed';
  */
 export const createTokenSpeedCalculator = (
   transformer: (chunk: any, stack: StreamContext) => StreamProtocolChunk | StreamProtocolChunk[],
-  { inputStartAt, streamStack }: { inputStartAt?: number; streamStack?: StreamContext } = {},
+  {
+    inputStartAt,
+    streamStack,
+    enabledTps = true, // 非流不启用tps计算
+  }: { enabledTps?: boolean; inputStartAt?: number; streamStack?: StreamContext } = {},
 ) => {
   let outputStartAt: number | undefined;
   let outputThinking: boolean | undefined;
@@ -374,7 +378,7 @@ export const createTokenSpeedCalculator = (
           : Math.max(0, totalOutputTokens - reasoningTokens);
       result.push({
         data: {
-          tps: (outputTokens / (Date.now() - outputStartAt)) * 1000,
+          tps: enabledTps ? (outputTokens / (Date.now() - outputStartAt)) * 1000 : undefined,
           ttft: outputStartAt - inputStartAt,
         } as ModelSpeed,
         id: TOKEN_SPEED_CHUNK_ID,

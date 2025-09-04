@@ -114,7 +114,7 @@ describe('SparkAIStream', () => {
       chunks.push(chunk);
     }
 
-    expect(chunks).toHaveLength(2);
+    expect(chunks).toHaveLength(3);
     expect(chunks[0].choices[0].delta.tool_calls).toEqual([
       {
         function: {

@@ -142,6 +142,7 @@ export function transformResponseToStream(data: OpenAI.ChatCompletion) {
             },
           ],
           created: data.created,
+          finish_reason: null,
           id: data.id,
           model: data.model,
           object: 'chat.completion.chunk',
@@ -343,7 +344,7 @@ export const createOpenAICompatibleRuntime = <T extends Record<string, any> = an
                 callbacks: streamOptions.callbacks,
                 inputStartAt,
               })
-            : OpenAIStream(stream, { ...streamOptions, inputStartAt }),
+            : OpenAIStream(stream, { ...streamOptions, enabledTps: false, inputStartAt }),
           {
             headers: options?.headers,
           },

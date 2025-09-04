@@ -2,6 +2,82 @@
 
 # Changelog
 
+### [Version 1.121.1](https://github.com/lobehub/lobe-chat/compare/v1.121.0...v1.121.1)
+
+<sup>Released on **2025-09-03**</sup>
+
+#### 🐛 Bug Fixes
+
+- **misc**: Fix socks5 proxy not work problem, fix virtuaso minheight was null.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### What's fixed
+
+- **misc**: Fix socks5 proxy not work problem, closes [#9053](https://github.com/lobehub/lobe-chat/issues/9053) ([b13563c](https://github.com/lobehub/lobe-chat/commit/b13563c))
+- **misc**: Fix virtuaso minheight was null, closes [#9055](https://github.com/lobehub/lobe-chat/issues/9055) ([ef79721](https://github.com/lobehub/lobe-chat/commit/ef79721))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 1.121.0](https://github.com/lobehub/lobe-chat/compare/v1.120.7...v1.121.0)
+
+<sup>Released on **2025-09-03**</sup>
+
+#### ✨ Features
+
+- **misc**: Add nano banana Chinese prompt notify.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### What's improved
+
+- **misc**: Add nano banana Chinese prompt notify, closes [#9038](https://github.com/lobehub/lobe-chat/issues/9038) ([58e19f8](https://github.com/lobehub/lobe-chat/commit/58e19f8))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+### [Version 1.120.7](https://github.com/lobehub/lobe-chat/compare/v1.120.6...v1.120.7)
+
+<sup>Released on **2025-09-02**</sup>
+
+#### 💄 Styles
+
+- **misc**: Update i18n.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### Styles
+
+- **misc**: Update i18n, closes [#9033](https://github.com/lobehub/lobe-chat/issues/9033) ([650e552](https://github.com/lobehub/lobe-chat/commit/650e552))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
 ### [Version 1.120.6](https://github.com/lobehub/lobe-chat/compare/v1.120.5...v1.120.6)
 
 <sup>Released on **2025-09-01**</sup>

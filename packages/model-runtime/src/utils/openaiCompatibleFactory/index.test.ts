@@ -401,7 +401,7 @@ describe('LobeOpenAICompatibleFactory', () => {
 
           'id: output_speed\n',
           'event: speed\n',
-          'data: {"ttft":1}\n\n',
+          'data: {"ttft":0}\n\n',
 
           'id: a\n',
           'event: stop\n',

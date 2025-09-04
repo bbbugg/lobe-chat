@@ -126,7 +126,7 @@ describe('SparkAIStream', () => {
         type: 'function',
       },
     ]);
-    expect(chunks[1].choices[0].finish_reason).toBeDefined();
+    expect(chunks[2].choices[0].finish_reason).toBeDefined();
   });
 
   it('should transform streaming response with tool calls', async () => {

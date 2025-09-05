@@ -407,11 +407,12 @@ describe('LobeOpenAICompatibleFactory', () => {
 
         //  ttft
         const speedDataChunk = stream[8];
-        expect(speedDataChunk).toMatch(/^data: \{.*\}\n\n$/);
+        expect(speedDataChunk).toMatch(/^data: \{.*}\n\n$/);
         const dataJsonString = speedDataChunk.substring('data: '.length, speedDataChunk.length - 2); // 移除 'data: ' 和 '\n\n'
         const speedDataObject = JSON.parse(dataJsonString);
-        expect(speedDataObject).toHaveProperty('ttft');
-        expect(speedDataObject.ttft).toEqual(expect.any(Number));
+        expect(speedDataObject).toEqual({
+          ttft: expect.any(Number),
+        });
         expect(speedDataObject.ttft).toBeGreaterThanOrEqual(0);
 
         expect(stream[9]).toEqual('id: a\n');
@@ -485,13 +486,14 @@ describe('LobeOpenAICompatibleFactory', () => {
         expect(stream[9]).toEqual('id: output_speed\n');
         expect(stream[10]).toEqual('event: speed\n');
 
-        // stream[11]， ttft
+        //  ttft
         const speedDataChunk = stream[11];
-        expect(speedDataChunk).toMatch(/^data: \{.*\}\n\n$/);
+        expect(speedDataChunk).toMatch(/^data: \{.*}\n\n$/);
         const dataJsonString = speedDataChunk.substring('data: '.length, speedDataChunk.length - 2); // 移除 'data: ' 和 '\n\n'
         const speedDataObject = JSON.parse(dataJsonString);
-        expect(speedDataObject).toHaveProperty('ttft');
-        expect(speedDataObject.ttft).toEqual(expect.any(Number));
+        expect(speedDataObject).toEqual({
+          ttft: expect.any(Number),
+        });
         expect(speedDataObject.ttft).toBeGreaterThanOrEqual(0);
 
         expect(stream[12]).toEqual('id: a\n');

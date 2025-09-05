@@ -131,27 +131,30 @@ export function transformResponseToStream(data: OpenAI.ChatCompletion) {
         typeof message.reasoning_content === 'string' && message.reasoning_content.length > 0
           ? message.reasoning_content
           : null;
-      if (reasoningText) {
-        controller.enqueue({
-          choices: [
-            {
-              delta: { content: null, reasoning_content: reasoningText, role: 'assistant' },
-              finish_reason: null,
-              index: first?.index ?? 0,
-              logprobs: first?.logprobs ?? null,
-            },
-          ],
-          created: data.created,
-          finish_reason: null,
-          id: data.id,
-          model: data.model,
-          object: 'chat.completion.chunk',
-        } as unknown as OpenAI.ChatCompletionChunk);
-      }
+      // if (reasoningText) {
+      //   controller.enqueue({
+      //     choices: [
+      //       {
+      //         delta: { content: null, reasoning_content: reasoningText, role: 'assistant' },
+      //         finish_reason: null,
+      //         index: first?.index ?? 0,
+      //         logprobs: first?.logprobs ?? null,
+      //       },
+      //     ],
+      //     created: data.created,
+      //     id: data.id,
+      //     model: data.model,
+      //     object: 'chat.completion.chunk',
+      //   } as unknown as OpenAI.ChatCompletionChunk);
+      // }
+      const lobeThinking = reasoningText?.length
+        ? `<lobeThinking>${reasoningText.replaceAll(/\r?\n|\r/g, '')}</lobeThinking>\n\n`
+        : '';
+
       const chunk: OpenAI.ChatCompletionChunk = {
         choices: choices.map((choice: OpenAI.ChatCompletion.Choice) => ({
           delta: {
-            content: choice.message.content,
+            content: `${lobeThinking}${choice.message.content || ''}`,
             role: choice.message.role,
             tool_calls: choice.message.tool_calls?.map(
               (tool, index): OpenAI.ChatCompletionChunk.Choice.Delta.ToolCall => ({

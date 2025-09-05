@@ -470,8 +470,10 @@ describe('LobeOpenAICompatibleFactory', () => {
         expect(stream.length).toBe(15);
 
         expect(stream[0]).toEqual('id: a\n');
-        expect(stream[1]).toEqual('event: reasoning\n');
-        expect(stream[2]).toEqual('data: "Thinking content"\n\n');
+        expect(stream[1]).toEqual('event: text\n');
+        expect(stream[2]).toEqual(
+          'data: "<lobeThinking>Thinking content</lobeThinking>\\n\\n"\n\n',
+        );
 
         expect(stream[3]).toEqual('id: a\n');
         expect(stream[4]).toEqual('event: text\n');

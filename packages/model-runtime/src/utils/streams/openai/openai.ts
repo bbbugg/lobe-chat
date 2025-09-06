@@ -1,7 +1,7 @@
 import OpenAI from 'openai';
 import type { Stream } from 'openai/streaming';
 
-import { ChatMessageError, CitationItem } from '@/types/message';
+import { ChatCitationItem, ChatMessageError } from '@/types/message';
 
 import { ChatStreamCallbacks } from '../../../types';
 import { AgentRuntimeErrorType, ILobeAgentRuntimeErrorType } from '../../../types/error';
@@ -190,7 +190,7 @@ const transformOpenAIStream = (
                   ({
                     title: item.url_citation.title,
                     url: item.url_citation.url,
-                  }) as CitationItem,
+                  }) as ChatCitationItem,
               ),
             },
             id: chunk.id,
@@ -212,7 +212,7 @@ const transformOpenAIStream = (
                   ({
                     title: item.url,
                     url: item.url,
-                  }) as CitationItem,
+                  }) as ChatCitationItem,
               ),
             },
             id: chunk.id,
@@ -239,7 +239,7 @@ const transformOpenAIStream = (
                   ({
                     title: item,
                     url: item,
-                  }) as CitationItem,
+                  }) as ChatCitationItem,
               ),
             },
             id: chunk.id,

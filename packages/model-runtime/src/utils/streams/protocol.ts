@@ -380,7 +380,9 @@ export const createTokenSpeedCalculator = (
         data: {
           // 非流式计算 tps 从发出请求开始算
           tps:
-            (outputTokens / (Date.now() - (enableStreaming ? outputStartAt : inputStartAt))) * 1000,
+            (outputTokens /
+              (enableStreaming ? Date.now() - outputStartAt : outputStartAt - inputStartAt)) *
+            1000,
           ttft: outputStartAt - inputStartAt,
         } as ModelSpeed,
         id: TOKEN_SPEED_CHUNK_ID,

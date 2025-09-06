@@ -415,7 +415,7 @@ export interface OpenAIStreamOptions {
     name: string;
   }) => ILobeAgentRuntimeErrorType | undefined;
   callbacks?: ChatStreamCallbacks;
-  enabledTps?: boolean; // 是否启用 TPS 计算（非流式时传 false）
+  enableStreaming?: boolean; // 选择 TPS 计算方式（非流式时传 false）
   inputStartAt?: number;
   provider?: string;
 }
@@ -427,7 +427,7 @@ export const OpenAIStream = (
     provider,
     bizErrorTypeTransformer,
     inputStartAt,
-    enabledTps = true,
+    enableStreaming = true,
   }: OpenAIStreamOptions = {},
 ) => {
   const streamStack: StreamContext = { id: '' };
@@ -446,7 +446,7 @@ export const OpenAIStream = (
       .pipeThrough(createFirstErrorHandleTransformer(bizErrorTypeTransformer, provider))
       .pipeThrough(
         createTokenSpeedCalculator(transformWithProvider, {
-          enabledTps: enabledTps,
+          enableStreaming: enableStreaming,
           inputStartAt,
           streamStack,
         }),

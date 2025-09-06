@@ -143,14 +143,14 @@ const transformVertexAIStream = (
 
 export const VertexAIStream = (
   rawStream: ReadableStream<GenerateContentResponse>,
-  { callbacks, inputStartAt, enabledTps = true }: GoogleAIStreamOptions = {},
+  { callbacks, inputStartAt, enableStreaming = true }: GoogleAIStreamOptions = {},
 ) => {
   const streamStack: StreamContext = { id: 'chat_' + nanoid() };
 
   return rawStream
     .pipeThrough(
       createTokenSpeedCalculator(transformVertexAIStream, {
-        enabledTps: enabledTps,
+        enableStreaming: enableStreaming,
         inputStartAt,
         streamStack,
       }),

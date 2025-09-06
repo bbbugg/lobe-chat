@@ -189,7 +189,7 @@ export const OpenAIResponsesStream = (
     provider,
     bizErrorTypeTransformer,
     inputStartAt,
-    enabledTps = true,
+    enableStreaming = true,
   }: OpenAIStreamOptions = {},
 ) => {
   const streamStack: StreamContext = { id: '' };
@@ -205,7 +205,7 @@ export const OpenAIResponsesStream = (
       .pipeThrough(createFirstErrorHandleTransformer(bizErrorTypeTransformer, provider))
       .pipeThrough(
         createTokenSpeedCalculator(transformOpenAIStream, {
-          enabledTps: enabledTps,
+          enableStreaming: enableStreaming,
           inputStartAt,
           streamStack,
         }),

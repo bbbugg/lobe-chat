@@ -132,11 +132,10 @@ export function transformResponseToStream(data: OpenAI.ChatCompletion) {
           ? message.reasoning_content
           : null;
       if (reasoningText) {
-        const lobeThinking = `<lobeThinking>${reasoningText}</lobeThinking>\n\n`;
         controller.enqueue({
           choices: [
             {
-              delta: { content: lobeThinking, role: 'assistant' },
+              delta: { content: null, reasoning_content: reasoningText, role: 'assistant' },
               finish_reason: null,
               index: first?.index ?? 0,
               logprobs: first?.logprobs ?? null,
@@ -148,7 +147,6 @@ export function transformResponseToStream(data: OpenAI.ChatCompletion) {
           object: 'chat.completion.chunk',
         } as unknown as OpenAI.ChatCompletionChunk);
       }
-
       const chunk: OpenAI.ChatCompletionChunk = {
         choices: choices.map((choice: OpenAI.ChatCompletion.Choice) => ({
           delta: {
@@ -345,7 +343,7 @@ export const createOpenAICompatibleRuntime = <T extends Record<string, any> = an
                 callbacks: streamOptions.callbacks,
                 inputStartAt,
               })
-            : OpenAIStream(stream, { ...streamOptions, enabledTps: false, inputStartAt }),
+            : OpenAIStream(stream, { ...streamOptions, enableStreaming: false, inputStartAt }),
           {
             headers: options?.headers,
           },

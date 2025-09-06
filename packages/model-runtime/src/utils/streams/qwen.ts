@@ -119,8 +119,8 @@ export const QwenAIStream = (
   {
     callbacks,
     inputStartAt,
-    enabledTps = true,
-  }: { callbacks?: ChatStreamCallbacks; enabledTps?: boolean; inputStartAt?: number } = {},
+    enableStreaming = true,
+  }: { callbacks?: ChatStreamCallbacks; enableStreaming?: boolean; inputStartAt?: number } = {},
 ) => {
   const streamContext: StreamContext = { id: '' };
   const readableStream =
@@ -129,7 +129,7 @@ export const QwenAIStream = (
   return readableStream
     .pipeThrough(
       createTokenSpeedCalculator(transformQwenStream, {
-        enabledTps: enabledTps,
+        enableStreaming: enableStreaming,
         inputStartAt,
         streamStack: streamContext,
       }),

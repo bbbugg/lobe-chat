@@ -392,14 +392,111 @@ describe('LobeOpenAICompatibleFactory', () => {
           stream.push(decoder.decode(value));
         }
 
-        expect(stream).toEqual([
-          'id: a\n',
-          'event: text\n',
-          'data: "Hello"\n\n',
-          'id: a\n',
-          'event: stop\n',
-          'data: "stop"\n\n',
-        ]);
+        expect(stream.length).toBe(12);
+
+        expect(stream[0]).toEqual('id: a\n');
+        expect(stream[1]).toEqual('event: text\n');
+        expect(stream[2]).toEqual('data: "Hello"\n\n');
+
+        expect(stream[3]).toEqual('id: a\n');
+        expect(stream[4]).toEqual('event: usage\n');
+        expect(stream[5]).toEqual(
+          'data: {"inputTextTokens":5,"outputTextTokens":5,"totalInputTokens":5,"totalOutputTokens":5,"totalTokens":10}\n\n',
+        );
+
+        expect(stream[6]).toEqual('id: output_speed\n');
+        expect(stream[7]).toEqual('event: speed\n');
+
+        //  tps ttft
+        const speedDataChunk = stream[8];
+        expect(speedDataChunk).toMatch(/^data: \{.*}\n\n$/);
+        const dataJsonString = speedDataChunk.substring('data: '.length, speedDataChunk.length - 2); // 移除 'data: ' 和 '\n\n'
+        const speedDataObject = JSON.parse(dataJsonString);
+        expect(speedDataObject).toHaveProperty('tps');
+        expect(speedDataObject).toHaveProperty('ttft');
+        expect(speedDataObject.ttft).toBeGreaterThanOrEqual(0);
+
+        expect(stream[9]).toEqual('id: a\n');
+        expect(stream[10]).toEqual('event: stop\n');
+        expect(stream[11]).toEqual('data: "stop"\n\n');
+
+        expect((await reader.read()).done).toBe(true);
+      });
+
+      it('should transform non-streaming response to stream correctly with reasoning content', async () => {
+        const mockResponse = {
+          id: 'a',
+          object: 'chat.completion',
+          created: 123,
+          model: 'deepseek/deepseek-reasoner',
+          choices: [
+            {
+              index: 0,
+              message: {
+                role: 'assistant',
+                content: 'Hello',
+                reasoning_content: 'Thinking content',
+              },
+              finish_reason: 'stop',
+              logprobs: null,
+            },
+          ],
+          usage: {
+            prompt_tokens: 5,
+            completion_tokens: 5,
+            total_tokens: 10,
+          },
+        } as unknown as OpenAI.ChatCompletion;
+        vi.spyOn(instance['client'].chat.completions, 'create').mockResolvedValue(
+          mockResponse as any,
+        );
+
+        const result = await instance.chat({
+          messages: [{ content: 'Hello', role: 'user' }],
+          model: 'deepseek/deepseek-reasoner',
+          temperature: 0,
+          stream: false,
+        });
+
+        const decoder = new TextDecoder();
+        const reader = result.body!.getReader();
+        const stream: string[] = [];
+
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          stream.push(decoder.decode(value));
+        }
+
+        expect(stream[0]).toEqual('id: a\n');
+        expect(stream[1]).toEqual('event: reasoning\n');
+        expect(stream[2]).toEqual('data: "Thinking content"\n\n');
+
+        expect(stream[3]).toEqual('id: a\n');
+        expect(stream[4]).toEqual('event: text\n');
+        expect(stream[5]).toEqual('data: "Hello"\n\n');
+
+        expect(stream[6]).toEqual('id: a\n');
+        expect(stream[7]).toEqual('event: usage\n');
+        expect(stream[8]).toEqual(
+          'data: {"inputTextTokens":5,"outputTextTokens":5,"totalInputTokens":5,"totalOutputTokens":5,"totalTokens":10}\n\n',
+        );
+
+        expect(stream[9]).toEqual('id: output_speed\n');
+        expect(stream[10]).toEqual('event: speed\n');
+
+        //  tps ttft
+        const speedDataChunk = stream[11];
+        expect(speedDataChunk).toMatch(/^data: \{.*}\n\n$/);
+        const dataJsonString = speedDataChunk.substring('data: '.length, speedDataChunk.length - 2); // 移除 'data: ' 和 '\n\n'
+        const speedDataObject = JSON.parse(dataJsonString);
+        expect(speedDataObject).toHaveProperty('tps');
+        expect(speedDataObject).toHaveProperty('ttft');
+        expect(speedDataObject.ttft).toBeGreaterThanOrEqual(0);
+
+        expect(stream[12]).toEqual('id: a\n');
+        expect(stream[13]).toEqual('event: stop\n');
+        expect(stream[14]).toEqual('data: "stop"\n\n');
 
         expect((await reader.read()).done).toBe(true);
       });

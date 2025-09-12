@@ -1,5 +1,4 @@
-import { AiFullModelCard, LobeDefaultAiModelListItem } from '@/types/aiModel';
-
+import { AiFullModelCard, LobeDefaultAiModelListItem } from '../types/aiModel';
 import { default as ai21 } from './ai21';
 import { default as ai302 } from './ai302';
 import { default as ai360 } from './ai360';
@@ -13,6 +12,7 @@ import { default as bedrock } from './bedrock';
 import { default as bfl } from './bfl';
 import { default as cloudflare } from './cloudflare';
 import { default as cohere } from './cohere';
+import { default as cometapi } from './cometapi';
 import { default as deepseek } from './deepseek';
 import { default as fal } from './fal';
 import { default as fireworksai } from './fireworksai';
@@ -31,6 +31,8 @@ import { default as minimax } from './minimax';
 import { default as mistral } from './mistral';
 import { default as modelscope } from './modelscope';
 import { default as moonshot } from './moonshot';
+import { default as nebius } from './nebius';
+import { default as newapi } from './newapi';
 import { default as novita } from './novita';
 import { default as nvidia } from './nvidia';
 import { default as ollama } from './ollama';
@@ -93,6 +95,7 @@ export const LOBE_DEFAULT_MODEL_LIST = buildDefaultModelList({
   bfl,
   cloudflare,
   cohere,
+  cometapi,
   deepseek,
   fal,
   fireworksai,
@@ -111,6 +114,8 @@ export const LOBE_DEFAULT_MODEL_LIST = buildDefaultModelList({
   mistral,
   modelscope,
   moonshot,
+  nebius,
+  newapi,
   novita,
   nvidia,
   ollama,
@@ -154,6 +159,7 @@ export { default as bedrock } from './bedrock';
 export { default as bfl } from './bfl';
 export { default as cloudflare } from './cloudflare';
 export { default as cohere } from './cohere';
+export { default as cometapi } from './cometapi';
 export { default as deepseek } from './deepseek';
 export { default as fal, fluxSchnellParamsSchema } from './fal';
 export { default as fireworksai } from './fireworksai';
@@ -173,6 +179,8 @@ export { default as minimax } from './minimax';
 export { default as mistral } from './mistral';
 export { default as modelscope } from './modelscope';
 export { default as moonshot } from './moonshot';
+export { default as nebius } from './nebius';
+export { default as newapi } from './newapi';
 export { default as novita } from './novita';
 export { default as nvidia } from './nvidia';
 export { default as ollama } from './ollama';

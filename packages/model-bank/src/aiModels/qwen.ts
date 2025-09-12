@@ -1,11 +1,10 @@
-import { AIChatModelCard, AIImageModelCard } from '@/types/aiModel';
+import { AIChatModelCard, AIImageModelCard } from '../types/aiModel';
 
 // https://help.aliyun.com/zh/model-studio/models?spm=a2c4g.11186623
 
 const qwenChatModels: AIChatModelCard[] = [
   {
     abilities: {
-      functionCall: true,
       reasoning: true,
     },
     contextWindowTokens: 131_072,
@@ -19,6 +18,9 @@ const qwenChatModels: AIChatModelCard[] = [
         { name: 'textInput', rate: 4, strategy: 'fixed', unit: 'millionTokens' },
         { name: 'textOutput', rate: 12, strategy: 'fixed', unit: 'millionTokens' },
       ],
+    },
+    settings: {
+      extendParams: ['enableReasoning', 'reasoningBudgetToken'],
     },
     type: 'chat',
   },
@@ -208,6 +210,52 @@ const qwenChatModels: AIChatModelCard[] = [
       ],
     },
     releasedAt: '2025-07-29',
+    type: 'chat',
+  },
+  {
+    abilities: {
+      functionCall: true,
+      reasoning: true,
+    },
+    contextWindowTokens: 131_072,
+    description:
+      '基于 Qwen3 的新一代思考模式开源模型，相较上一版本（通义千问3-235B-A22B-Thinking-2507）指令遵循能力有提升、模型总结回复更加精简。',
+    displayName: 'Qwen3 Next 80B A3B Thinking',
+    id: 'qwen3-next-80b-a3b-thinking',
+    maxOutput: 32_768,
+    organization: 'Qwen',
+    pricing: {
+      currency: 'CNY',
+      units: [
+        { name: 'textInput', rate: 1, strategy: 'fixed', unit: 'millionTokens' },
+        { name: 'textOutput', rate: 4, strategy: 'fixed', unit: 'millionTokens' },
+      ],
+    },
+    releasedAt: '2025-09-12',
+    settings: {
+      extendParams: ['reasoningBudgetToken'],
+    },
+    type: 'chat',
+  },
+  {
+    abilities: {
+      functionCall: true,
+    },
+    contextWindowTokens: 131_072,
+    description:
+      '基于 Qwen3 的新一代非思考模式开源模型，相较上一版本（通义千问3-235B-A22B-Instruct-2507）中文文本理解能力更佳、逻辑推理能力有增强、文本生成类任务表现更好。',
+    displayName: 'Qwen3 Next 80B A3B Instruct',
+    id: 'qwen3-next-80b-a3b-instruct',
+    maxOutput: 32_768,
+    organization: 'Qwen',
+    pricing: {
+      currency: 'CNY',
+      units: [
+        { name: 'textInput', rate: 1, strategy: 'fixed', unit: 'millionTokens' },
+        { name: 'textOutput', rate: 10, strategy: 'fixed', unit: 'millionTokens' },
+      ],
+    },
+    releasedAt: '2025-09-12',
     type: 'chat',
   },
   {
@@ -605,13 +653,78 @@ const qwenChatModels: AIChatModelCard[] = [
       search: true,
     },
     config: {
+      deploymentName: 'qwen3-max-preview',
+    },
+    contextWindowTokens: 262_144,
+    description:
+      '通义千问3系列Max模型Preview版本，相较2.5系列整体通用能力有大幅度提升，中英文通用文本理解能力、复杂指令遵循能力、主观开放任务能力、多语言能力、工具调用能力均显著增强；模型知识幻觉更少。',
+    displayName: 'Qwen3 Max Preview',
+    enabled: true,
+    id: 'qwen3-max-preview',
+    maxOutput: 32_768,
+    organization: 'Qwen',
+    pricing: {
+      currency: 'CNY',
+      units: [
+        {
+          lookup: {
+            prices: {
+              '[0, 32_000]': 6 * 0.2,
+              '[32_000, 128_000]': 10 * 0.2,
+              '[128_000, infinity]': 15 * 0.2,
+            },
+            pricingParams: ['textInputRange'],
+          },
+          name: 'textInput_cacheRead',
+          strategy: 'lookup',
+          unit: 'millionTokens',
+        },
+        {
+          lookup: {
+            prices: {
+              '[0, 32_000]': 6,
+              '[32_000, 128_000]': 10,
+              '[128_000, infinity]': 15,
+            },
+            pricingParams: ['textInputRange'],
+          },
+          name: 'textInput',
+          strategy: 'lookup',
+          unit: 'millionTokens',
+        },
+        {
+          lookup: {
+            prices: {
+              '[0, 32_000]': 24,
+              '[32_000, 128_000]': 40,
+              '[128_000, infinity]': 60,
+            },
+            pricingParams: ['textInputRange'],
+          },
+          name: 'textOutput',
+          strategy: 'lookup',
+          unit: 'millionTokens',
+        },
+      ],
+    },
+    releasedAt: '2025-09-05',
+    settings: {
+      searchImpl: 'params',
+    },
+    type: 'chat',
+  },
+  {
+    abilities: {
+      functionCall: true,
+      search: true,
+    },
+    config: {
       deploymentName: 'qwen-max-2025-01-25',
     },
     contextWindowTokens: 131_072,
     description:
       '通义千问千亿级别超大规模语言模型，支持中文、英文等不同语言输入，当前通义千问2.5产品版本背后的API模型。',
     displayName: 'Qwen Max',
-    // enabled: true,
     id: 'qwen-max',
     maxOutput: 8192,
     organization: 'Qwen',

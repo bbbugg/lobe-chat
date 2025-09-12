@@ -1,10 +1,11 @@
-import { CHAT_MODEL_IMAGE_GENERATION_PARAMS } from '@/const/image';
-import type { AiModelType } from '@/types/aiModel';
+import { AiModelType, CHAT_MODEL_IMAGE_GENERATION_PARAMS } from 'model-bank';
+
 import type { ChatModelCard } from '@/types/llm';
 
 // Whitelist for automatic image model generation
 export const IMAGE_GENERATION_MODEL_WHITELIST = [
   'gemini-2.5-flash-image-preview',
+  'gemini-2.5-flash-image-preview:free',
   // More models can be added in the future
 ] as const;
 

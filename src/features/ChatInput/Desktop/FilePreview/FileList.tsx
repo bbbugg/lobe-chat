@@ -10,9 +10,6 @@ import FileItem from './FileItem';
 
 const useStyles = createStyles(({ css }) => ({
   container: css`
-    position: relative;
-    inset-block-start: -16px;
-
     overflow-x: scroll;
     width: 100%;
   `,

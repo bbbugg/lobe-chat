@@ -1,6 +1,20 @@
 [
   {
     "children": {
+      "features": ["Support google video understanding."]
+    },
+    "date": "2025-09-21",
+    "version": "1.132.0"
+  },
+  {
+    "children": {
+      "improvements": ["Enhanced AkashChat experience."]
+    },
+    "date": "2025-09-21",
+    "version": "1.131.4"
+  },
+  {
+    "children": {
       "fixes": ["Update Responses search tool to web_search."]
     },
     "date": "2025-09-21",

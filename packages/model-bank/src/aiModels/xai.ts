@@ -12,7 +12,7 @@ const xaiChatModels: AIChatModelCard[] = [
     description:
       '我们很高兴发布 Grok 4 Fast，这是我们在成本效益推理模型方面的最新进展。',
     displayName: 'Grok 4 Fast (Non-Reasoning)',
-    enabled: true,
+    // enabled: true,
     id: 'grok-4-fast-non-reasoning',
     pricing: {
       units: [
@@ -120,7 +120,7 @@ const xaiChatModels: AIChatModelCard[] = [
     description:
       '我们最新最强大的旗舰模型，在自然语言处理、数学计算和推理方面表现卓越 —— 是一款完美的全能型选手。',
     displayName: 'Grok 4 0709',
-    enabled: true,
+    // enabled: true,
     id: 'grok-4',
     pricing: {
       units: [

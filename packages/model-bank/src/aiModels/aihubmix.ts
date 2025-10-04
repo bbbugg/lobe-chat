@@ -9,8 +9,7 @@ const aihubmixModels: AIChatModelCard[] = [
       vision: true,
     },
     contextWindowTokens: 400_000,
-    description:
-      'GPT-5 Codex 是一个针对 Codex 或类似环境中的代理编码任务优化的 GPT-5 版本。',
+    description: 'GPT-5 Codex 是一个针对 Codex 或类似环境中的代理编码任务优化的 GPT-5 版本。',
     displayName: 'GPT-5 Codex',
     id: 'gpt-5-codex',
     maxOutput: 128_000,
@@ -357,8 +356,7 @@ const aihubmixModels: AIChatModelCard[] = [
       vision: true,
     },
     contextWindowTokens: 2_000_000,
-    description:
-      '我们很高兴发布 Grok 4 Fast，这是我们在成本效益推理模型方面的最新进展。',
+    description: '我们很高兴发布 Grok 4 Fast，这是我们在成本效益推理模型方面的最新进展。',
     displayName: 'Grok 4 Fast (Non-Reasoning)',
     id: 'grok-4-fast-non-reasoning',
     pricing: {
@@ -381,8 +379,7 @@ const aihubmixModels: AIChatModelCard[] = [
       vision: true,
     },
     contextWindowTokens: 2_000_000,
-    description:
-      '我们很高兴发布 Grok 4 Fast，这是我们在成本效益推理模型方面的最新进展。',
+    description: '我们很高兴发布 Grok 4 Fast，这是我们在成本效益推理模型方面的最新进展。',
     displayName: 'Grok 4 Fast',
     id: 'grok-4-fast-reasoning',
     pricing: {
@@ -405,7 +402,7 @@ const aihubmixModels: AIChatModelCard[] = [
     },
     contextWindowTokens: 256_000,
     description:
-      '我们最新最强大的旗舰模型，在自然语言处理、数学计算和推理方面表现卓越 —— 是一款完美的全能型选手。',
+      'Grok最新旗舰模型，在自然语言、数学和推理方面提供了无与伦比的性能——堪称完美的‘多面手’。 当前指向模型版本为grok-4-0709；注意该模型由于资源有限暂时比官方贵 10% 预计后续会降至官方原价。',
     displayName: 'Grok 4 0709',
     enabled: true,
     id: 'grok-4',
@@ -654,6 +651,46 @@ const aihubmixModels: AIChatModelCard[] = [
     settings: {
       extendParams: ['disableContextCaching'],
     },
+    type: 'chat',
+  },
+  {
+    abilities: {
+      functionCall: true,
+    },
+    contextWindowTokens: 131_072,
+    description:
+      'DeepSeek V3.2 是 DeepSeek 最新发布的通用大模型，支持混合推理架构，具备更强的 Agent 能力。',
+    displayName: 'DeepSeek V3.2 Exp',
+    id: 'DeepSeek-V3.2-Exp',
+    maxOutput: 8192,
+    pricing: {
+      units: [
+        { name: 'textInput', rate: 0.28, strategy: 'fixed', unit: 'millionTokens' },
+        { name: 'textOutput', rate: 0.42, strategy: 'fixed', unit: 'millionTokens' },
+      ],
+    },
+    releasedAt: '2025-09-29',
+    type: 'chat',
+  },
+  {
+    abilities: {
+      functionCall: true,
+      reasoning: true,
+    },
+    contextWindowTokens: 131_072,
+    description:
+      'DeepSeek V3.2 思考模式。在输出最终回答之前，模型会先输出一段思维链内容，以提升最终答案的准确性。',
+    displayName: 'DeepSeek V3.2 Exp Thinking',
+    enabled: true,
+    id: 'DeepSeek-V3.2-Exp-Think',
+    maxOutput: 65_536,
+    pricing: {
+      units: [
+        { name: 'textInput', rate: 0.28, strategy: 'fixed', unit: 'millionTokens' },
+        { name: 'textOutput', rate: 0.42, strategy: 'fixed', unit: 'millionTokens' },
+      ],
+    },
+    releasedAt: '2025-09-29',
     type: 'chat',
   },
   {

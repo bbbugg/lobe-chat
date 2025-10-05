@@ -223,7 +223,7 @@ export class AiInfraRepos {
               providerId: provider.id,
               settings: item.settings,
               sort: user.sort || undefined,
-              type: item.type,
+              type: user.type || item.type,
             };
             return injectSearchSettings(provider.id, mergedModel); // 用户修改本地模型，检查搜索设置
           })

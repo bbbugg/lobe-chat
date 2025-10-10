@@ -1,9 +1,9 @@
 name: Docker Image CI
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
+#  push:
+#    branches: [ "main" ]
+#  pull_request:
   workflow_dispatch:
 
 env:
@@ -45,7 +45,7 @@ jobs:
           # 变化 1: 指定 Dockerfile 的路径
           file: Dockerfile.database
           context: .
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           push: ${{ github.event_name != 'pull_request' }}
           load: false
           # 变化 2: 直接指定镜像的标签
@@ -53,5 +53,7 @@ jobs:
           # 变化 3: 添加构建参数，强烈建议使用 secrets
           build-args: |
             NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${{ secrets.CLERK_PUBLISHABLE_KEY }}
+            NEXT_PUBLIC_ENABLE_NEXT_AUTH=0
+            NEXT_PUBLIC_ENABLE_CLERK_AUTH=1
           cache-from: type=gha,scope=${{ github.workflow }}
           cache-to: type=gha,scope=${{ github.workflow }}

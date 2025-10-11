@@ -159,13 +159,16 @@ ARG APT_MIRROR_HOST
 
 # Install required packages and development tools
 RUN set -eux; \
-    # If a mirror host is provided, update the sources list using a compatible sed command
-    if [ -n "${APT_MIRROR_HOST}" ]; then \
-        sed -i \
-            -e "s|http://archive.ubuntu.com|http://${APT_MIRROR_HOST}|g" \
-            -e "s|http://security.ubuntu.com|http://${APT_MIRROR_HOST}|g" \
-            /etc/apt/sources.list.d/ubuntu.sources; \
-    fi; \
+    # Set the mirror host, defaulting to archive.ubuntu.com and security.ubuntu.com
+    MIRROR_HOST="${APT_MIRROR_HOST:-archive.ubuntu.com}"; \
+    SECURITY_MIRROR_HOST="${APT_MIRROR_HOST:-security.ubuntu.com}"; \
+    # Overwrite the sources.list file with a simplified, traditional format
+    echo "deb http://${MIRROR_HOST}/ubuntu noble main restricted universe multiverse" > /etc/apt/sources.list; \
+    echo "deb http://${MIRROR_HOST}/ubuntu noble-updates main restricted universe multiverse" >> /etc/apt/sources.list; \
+    echo "deb http://${MIRROR_HOST}/ubuntu noble-backports main restricted universe multiverse" >> /etc/apt/sources.list; \
+    echo "deb http://${SECURITY_MIRROR_HOST}/ubuntu noble-security main restricted universe multiverse" >> /etc/apt/sources.list; \
+    # Remove the new-style sources file to avoid conflicts
+    rm -f /etc/apt/sources.list.d/ubuntu.sources; \
     # Update package list and install packages
     apt-get update; \
     apt-get install -y --no-install-recommends \

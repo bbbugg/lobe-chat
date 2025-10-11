@@ -152,6 +152,7 @@ RUN \
 FROM ubuntu:22.04
 
 # Copy all the files from app, set the correct permission for prerender cache
+RUN rm -rf /bin
 COPY --from=app / /
 
 ENV NODE_ENV="production" \

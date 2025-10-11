@@ -151,6 +151,9 @@ RUN \
 ## Production image, copy all the files and run next
 FROM ubuntu:24.04
 
+# Set non-interactive frontend for apt-get
+ENV DEBIAN_FRONTEND=noninteractive
+
 # Add an argument for specifying a mirror host, useful for users in specific regions
 ARG APT_MIRROR_HOST
 

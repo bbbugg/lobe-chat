@@ -152,8 +152,14 @@ RUN \
 FROM ubuntu:22.04
 
 # Copy all the files from app, set the correct permission for prerender cache
-RUN rm -rf /bin
-COPY --from=app / /
+# 移除这一行:
+# COPY --from=app / /
+
+# 替换为以下四行:
+COPY --from=app /app/ /app/
+COPY --from=app /bin/ /bin/
+COPY --from=app /etc/ /etc/
+COPY --from=app /lib/ /lib/
 
 ENV NODE_ENV="production" \
     NODE_OPTIONS="--dns-result-order=ipv4first --use-openssl-ca" \

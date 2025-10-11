@@ -149,7 +149,34 @@ RUN \
     && chown -R nextjs:nodejs /app /etc/proxychains4.conf
 
 ## Production image, copy all the files and run next
-FROM ubuntu:22.04
+FROM ubuntu:24.04
+
+# Add an argument for specifying a mirror host, useful for users in specific regions
+ARG APT_MIRROR_HOST
+
+# Install required packages and development tools
+RUN set -eux; \
+    # If a mirror host is provided via build-arg, update the sources list
+    if [ -n "${APT_MIRROR_HOST}" ]; then \
+        sed -i "s@//.*archive.ubuntu.com@//${APT_MIRROR_HOST}@g" /etc/apt/sources.list.d/ubuntu.sources; \
+        sed -i "s/security.ubuntu.com/${APT_MIRROR_HOST}/g" /etc/apt/sources.list.d/ubuntu.sources; \
+    fi; \
+    # Update package list and install packages
+    apt-get update; \
+    apt-get install -y --no-install-recommends --fix-missing \
+        ca-certificates \
+        sudo \
+        vim \
+        iputils-ping \
+        build-essential \
+        gdb \
+        git \
+        cmake \
+        iproute2 \
+        net-tools \
+        curl; \
+    # Clean up APT cache to reduce final image size
+    rm -rf /var/lib/apt/lists/*;
 
 # Copy all the files from app, set the correct permission for prerender cache
 # 移除这一行:

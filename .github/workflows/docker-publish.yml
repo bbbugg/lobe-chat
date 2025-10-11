@@ -55,5 +55,7 @@ jobs:
             NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${{ secrets.CLERK_PUBLISHABLE_KEY }}
             NEXT_PUBLIC_ENABLE_NEXT_AUTH=0
             NEXT_PUBLIC_ENABLE_CLERK_AUTH=1
+            NEXT_PUBLIC_BRANDING_DOMAIN=${{ secrets.BRANDING_DOMAIN }}
+            NEXT_PUBLIC_BRANDING_NAME=${{ secrets.BRANDING_NAME }}
           cache-from: type=gha,scope=${{ github.workflow }}
           cache-to: type=gha,scope=${{ github.workflow }}

@@ -8,7 +8,9 @@ export async function register() {
     process.env.http_proxy ||
     process.env.https_proxy;
 
+  console.info('[instrumentation] Proxy=', proxy);
   if (!proxy) return;
+
 
   const { setGlobalDispatcher, ProxyAgent } = await import('undici');
 

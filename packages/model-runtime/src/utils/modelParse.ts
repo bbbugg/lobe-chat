@@ -441,9 +441,7 @@ const processModelCard = (
     functionCall:
       model.functionCall ??
       knownModel?.abilities?.functionCall ??
-      ((isKeywordListMatch(model.id.toLowerCase(), functionCallKeywords) &&
-        !isExcludedModel &&
-        !isKeywordListMatch(model.id.toLowerCase(), imageOutputKeywords)) ||
+      ((isKeywordListMatch(model.id.toLowerCase(), functionCallKeywords) && !isExcludedModel) ||
         false),
     id: model.id,
     imageOutput:

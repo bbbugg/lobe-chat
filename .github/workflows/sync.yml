@@ -18,12 +18,20 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
+        with:
+          token: ${{ secrets.MY_PAT }} # ⚠️ 注意：这里的 checkout action 也需要使用 PAT, 这样后续的 git 操作才能继承正确的权限
 
       - name: Clean issue notice
         uses: actions-cool/issues-helper@v3
         with:
           actions: 'close-issues'
           labels: '🚨 Sync Fail'
+
+      # ✨ 新增步骤：配置 Git 用户信息 ✨
+      - name: Setup Git User
+        run: |
+          git config --global user.name "bbbugg"
+          git config --global user.email "daming20120101@163.com"
 
       - name: Sync upstream changes
         id: sync

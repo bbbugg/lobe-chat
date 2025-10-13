@@ -7,7 +7,7 @@ permissions:
 
 on:
   schedule:
-    - cron: '0 */6 * * *' # every 2 hours
+    - cron: '0 */6 * * *' # every 6 hours
   workflow_dispatch:
 
 jobs:
@@ -32,7 +32,8 @@ jobs:
           upstream_sync_repo: lobehub/lobe-chat
           upstream_sync_branch: main
           target_sync_branch: main
-          target_repo_token: ${{ secrets.GITHUB_TOKEN }} # automatically generated, no need to set
+#          target_repo_token: ${{ secrets.GITHUB_TOKEN }} # automatically generated, no need to set
+          target_repo_token: ${{ secrets.MY_PAT }} # 在项目仓库中，进入 Settings -> Secrets and variables -> Actions。 创建一个新的 repository secret，例如命名为 MY_PAT，并将刚刚生成的 PAT 粘贴进去。
           test_mode: false
 
       - name: Sync check

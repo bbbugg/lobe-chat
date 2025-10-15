@@ -149,52 +149,10 @@ RUN \
     && chown -R nextjs:nodejs /app /etc/proxychains4.conf
 
 ## Production image, copy all the files and run next
-FROM ubuntu:24.04
-
-# Set non-interactive frontend for apt-get
-ENV DEBIAN_FRONTEND=noninteractive
-
-# Add an argument for specifying a mirror host, useful for users in specific regions
-ARG APT_MIRROR_HOST
-
-# Install required packages and development tools
-RUN set -eux; \
-    # Set the mirror host, defaulting to archive.ubuntu.com and security.ubuntu.com
-    MIRROR_HOST="${APT_MIRROR_HOST:-archive.ubuntu.com}"; \
-    SECURITY_MIRROR_HOST="${APT_MIRROR_HOST:-security.ubuntu.com}"; \
-    # Overwrite the sources.list file with a simplified, traditional format
-    echo "deb http://${MIRROR_HOST}/ubuntu noble main restricted universe multiverse" > /etc/apt/sources.list; \
-    echo "deb http://${MIRROR_HOST}/ubuntu noble-updates main restricted universe multiverse" >> /etc/apt/sources.list; \
-    echo "deb http://${MIRROR_HOST}/ubuntu noble-backports main restricted universe multiverse" >> /etc/apt/sources.list; \
-    echo "deb http://${SECURITY_MIRROR_HOST}/ubuntu noble-security main restricted universe multiverse" >> /etc/apt/sources.list; \
-    # Remove the new-style sources file to avoid conflicts
-    rm -f /etc/apt/sources.list.d/ubuntu.sources; \
-    # Update package list and install packages
-    apt-get update; \
-    apt-get install -y --no-install-recommends \
-        ca-certificates \
-        sudo \
-        vim \
-        iputils-ping \
-        build-essential \
-        gdb \
-        git \
-        cmake \
-        iproute2 \
-        net-tools \
-        curl; \
-    # Clean up APT cache to reduce final image size
-    rm -rf /var/lib/apt/lists/*;
+FROM scratch
 
 # Copy all the files from app, set the correct permission for prerender cache
-# 移除这一行:
-# COPY --from=app / /
-
-# 替换为以下四行:
-COPY --from=app /app/ /app/
-COPY --from=app /bin/ /bin/
-COPY --from=app /etc/ /etc/
-COPY --from=app /lib/ /lib/
+COPY --from=app / /
 
 ENV NODE_ENV="production" \
     NODE_OPTIONS="--dns-result-order=ipv4first --use-openssl-ca" \

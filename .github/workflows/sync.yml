@@ -7,44 +7,58 @@ permissions:
 
 on:
   schedule:
-    - cron: '0 */6 * * *' # every 6 hours
-  workflow_dispatch:
+    - cron: '0 */6 * * *' # 每 6 小时执行一次
+  workflow_dispatch:  # 支持手动触发
 
 jobs:
   sync_latest_from_upstream:
-    name: Sync latest commits from upstream repo
+    name: Sync latest commits from upstream repo  # 同步上游仓库的最新提交
     runs-on: ubuntu-latest
-    if: ${{ github.event.repository.fork }}
+    if: ${{ github.event.repository.fork }}  # 仅在 fork 仓库中运行
 
     steps:
       - uses: actions/checkout@v5
         with:
-          token: ${{ secrets.MY_PAT }} # ⚠️ 注意：这里的 checkout action 也需要使用 PAT, 这样后续的 git 操作才能继承正确的权限
+          token: ${{ secrets.MY_PAT }}  # 使用 PAT 确保后续 git 操作有权限
+          ref: main  # 明确检出 main 分支
+          fetch-depth: 0  # 获取完整历史，便于 merge 操作
 
-      - name: Clean issue notice
+      - name: Clean issue notice  # 清理之前的失败 issue
         uses: actions-cool/issues-helper@v3
         with:
           actions: 'close-issues'
           labels: '🚨 Sync Fail'
 
-      # ✨ 新增步骤：配置 Git 用户信息 ✨
+      # 配置 Git 用户信息
       - name: Setup Git User
         run: |
           git config --global user.name "bbbugg"
           git config --global user.email "daming20120101@163.com"
 
-      - name: Sync upstream changes
-        id: sync
-        uses: aormsby/Fork-Sync-With-Upstream-action@v3.4
-        with:
-          upstream_sync_repo: lobehub/lobe-chat
-          upstream_sync_branch: main
-          target_sync_branch: main
-#          target_repo_token: ${{ secrets.GITHUB_TOKEN }} # automatically generated, no need to set
-          target_repo_token: ${{ secrets.MY_PAT }} # 在项目仓库中，进入 Settings -> Secrets and variables -> Actions。 创建一个新的 repository secret，例如命名为 MY_PAT，并将刚刚生成的 PAT 粘贴进去。
-          test_mode: false
-          commit_message: "Action: 自动同步上游代码"
+      # 手动同步上游变更（使用 merge 策略）
+      - name: Manual Sync upstream changes
+        run: |
+          set -e  # 严格模式：任何命令失败即退出
+          # 添加上游 remote（如果已存在则忽略）
+          git remote add upstream https://github.com/lobehub/lobe-chat.git || true
+          # 获取上游最新变更
+          git fetch upstream main
+          # 切换到目标分支
+          git checkout main
+          # 显式 merge（--no-ff 强制创建 merge commit，-m 自定义消息）
+          git merge upstream/main --no-ff -m "Action: 自动同步上游代码"
+          # 检查是否有冲突（unmerged paths）
+          if git diff --name-only --diff-filter=U | grep -q . ; then
+            echo "Merge conflict detected. Files need manual resolution:"
+            git diff --name-only --diff-filter=U  # 输出冲突文件，便于日志查看
+            exit 1  # 明确失败，触发 issue
+          fi
+          # 无冲突：已自动 commit
 
+          # 推送目标分支（精确 ref，确保 --force-with-lease 安全）
+          git push origin main --force-with-lease=main:origin/main
+
+      # 同步检查：如果失败，创建 issue
       - name: Sync check
         if: failure()
         uses: actions-cool/issues-helper@v3

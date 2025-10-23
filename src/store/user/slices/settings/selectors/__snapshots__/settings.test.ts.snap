@@ -59,10 +59,6 @@ exports[`settingsSelectors > currentSystemAgent > should merge DEFAULT_SYSTEM_AG
     "model": "deepseek-ai/DeepSeek-V3",
     "provider": "siliconcloud",
   },
-  "groupChatSupervisor": {
-    "model": "deepseek-ai/DeepSeek-V3",
-    "provider": "siliconcloud",
-  },
   "historyCompress": {
     "model": "deepseek-ai/DeepSeek-V3",
     "provider": "siliconcloud",

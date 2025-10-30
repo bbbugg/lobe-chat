@@ -2,7 +2,7 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "next" ]
   pull_request:
   workflow_dispatch:
 
@@ -43,7 +43,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           # 变化 1: 指定 Dockerfile 的路径
-          file: Dockerfile.database
+          file: Dockerfile
           context: .
           platforms: linux/amd64
           push: ${{ github.event_name != 'pull_request' }}

@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@v5
         with:
           token: ${{ secrets.MY_PAT }}  # 使用 PAT 确保后续 git 操作有权限
-          ref: main  # 明确检出 main 分支
+          ref: next  # 明确检出 next 分支
           fetch-depth: 0  # 获取完整历史，便于 merge 操作
 
       - name: Clean issue notice  # 清理之前的失败 issue
@@ -42,11 +42,11 @@ jobs:
           # 添加上游 remote（如果已存在则忽略）
           git remote add upstream https://github.com/lobehub/lobe-chat.git || true
           # 获取上游最新变更
-          git fetch upstream main
+          git fetch upstream next
           # 切换到目标分支
-          git checkout main
+          git checkout next
           # 显式 merge（--no-ff 强制创建 merge commit，-m 自定义消息）
-          git merge upstream/main --no-ff -m "Action: 自动同步上游代码"
+          git merge upstream/next --no-ff -m "Action: 自动同步上游代码"
           # 检查是否有冲突（unmerged paths）
           if git diff --name-only --diff-filter=U | grep -q . ; then
             echo "Merge conflict detected. Files need manual resolution:"
@@ -56,7 +56,7 @@ jobs:
           # 无冲突：已自动 commit
 
           # 推送目标分支（精确 ref，确保 --force-with-lease 安全）
-          git push origin main --force-with-lease=main:origin/main
+          git push origin next --force-with-lease=next:origin/next
 
       # 同步检查：如果失败，创建 issue
       - name: Sync check

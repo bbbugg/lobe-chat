@@ -52,6 +52,7 @@ jobs:
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           # 变化 3: 添加构建参数，强烈建议使用 secrets
           build-args: |
+            FEATURE_FLAGS=-welcome_suggest,+api_key_manage
             NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${{ secrets.CLERK_PUBLISHABLE_KEY }}
             NEXT_PUBLIC_ENABLE_NEXT_AUTH=0
             NEXT_PUBLIC_ENABLE_CLERK_AUTH=1

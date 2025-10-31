@@ -2,6 +2,64 @@
 
 # Changelog
 
+## [Version 2.0.0-next.5](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.4...v2.0.0-next.5)
+
+<sup>Released on **2025-10-31**</sup>
+
+#### ♻ Code Refactoring
+
+- **misc**: Migrating Firecrawl to v2.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### Code refactoring
+
+- **misc**: Migrating Firecrawl to v2, closes [#9850](https://github.com/lobehub/lobe-chat/issues/9850) ([efb4c22](https://github.com/lobehub/lobe-chat/commit/efb4c22))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.4](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.3...v2.0.0-next.4)
+
+<sup>Released on **2025-10-31**</sup>
+
+#### ♻ Code Refactoring
+
+- **misc**: Remove azure-ad auth provider.
+
+#### 💄 Styles
+
+- **misc**: Update i18n.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### Code refactoring
+
+- **misc**: Remove azure-ad auth provider, closes [#9942](https://github.com/lobehub/lobe-chat/issues/9942) ([103c4d7](https://github.com/lobehub/lobe-chat/commit/103c4d7))
+
+#### Styles
+
+- **misc**: Update i18n, closes [#9944](https://github.com/lobehub/lobe-chat/issues/9944) ([3a6468f](https://github.com/lobehub/lobe-chat/commit/3a6468f))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
 ## [Version 2.0.0-next.3](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.2...v2.0.0-next.3)
 
 <sup>Released on **2025-10-30**</sup>

@@ -2,6 +2,56 @@
 
 # Changelog
 
+## [Version 2.0.0-next.9](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.8...v2.0.0-next.9)
+
+<sup>Released on **2025-11-02**</sup>
+
+#### ♻ Code Refactoring
+
+- **misc**: Remove dalle builtin plugin.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### Code refactoring
+
+- **misc**: Remove dalle builtin plugin, closes [#9952](https://github.com/lobehub/lobe-chat/issues/9952) ([2d4d70a](https://github.com/lobehub/lobe-chat/commit/2d4d70a))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.8](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.7...v2.0.0-next.8)
+
+<sup>Released on **2025-11-02**</sup>
+
+#### 💄 Styles
+
+- **misc**: Update i18n.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### Styles
+
+- **misc**: Update i18n, closes [#9958](https://github.com/lobehub/lobe-chat/issues/9958) ([f49996c](https://github.com/lobehub/lobe-chat/commit/f49996c))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
 ## [Version 2.0.0-next.7](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.6...v2.0.0-next.7)
 
 <sup>Released on **2025-11-01**</sup>

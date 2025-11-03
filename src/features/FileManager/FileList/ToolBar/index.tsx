@@ -1,17 +1,19 @@
-import { useTranslation } from 'react-i18next';
+import { App } from 'antd';
 import { createStyles } from 'antd-style';
 import { rgba } from 'polished';
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Flexbox } from 'react-layout-kit';
 
+import { fetchErrorNotification } from '@/components/Error/fetchErrorNotification';
 import { useAddFilesToKnowledgeBaseModal } from '@/features/KnowledgeBaseModal';
 import { useFileStore } from '@/store/file';
 import { useKnowledgeBaseStore } from '@/store/knowledgeBase';
+import { downloadFile } from '@/utils/client/downloadFile';
 import { isChunkingUnsupported } from '@/utils/isChunkingUnsupported';
 
 import Config from './Config';
 import MultiSelectActions, { MultiSelectActionType } from './MultiSelectActions';
-import { App } from 'antd';
 import ViewSwitcher, { ViewMode } from './ViewSwitcher';
 
 const useStyles = createStyles(({ css, token, isDarkMode }) => ({
@@ -51,9 +53,7 @@ const ToolBar = memo<MultiSelectActionsProps>(
     onViewChange,
   }) => {
     const { styles } = useStyles();
-    // const { t } = useTranslation('file');
     const { t } = useTranslation('components');
-
 
     const [removeFiles, parseFilesToChunks, fileList] = useFileStore((s) => [
       s.removeFiles,
@@ -112,19 +112,8 @@ const ToolBar = memo<MultiSelectActionsProps>(
           if (selectFileIds.length === 1) {
             const file = fileList.find((f) => f.id === selectFileIds[0]);
             if (file) {
-              const key = 'file-downloading';
-              message.loading({
-                content: t('FileManager.actions.batchDownloading'),
-                duration: 0,
-                key,
-              });
-              // 导入并调用客户端下载函数
-              import('@/utils/client/downloadFile').then(({ downloadFile }) => {
-                downloadFile(file.url, file.name);
-                message.destroy(key);
-                setSelectedFileIds([]);
-                message.success(t('FileManager.actions.batchDownloadSuccess'));
-              });
+              downloadFile(file.url, file.name);
+              setSelectedFileIds([]);
             } else {
               message.error(t('FileManager.actions.batchDownloadFailed'));
             }
@@ -143,21 +132,18 @@ const ToolBar = memo<MultiSelectActionsProps>(
             const lobeError = res.headers.get('X-Lobe-Error');
 
             if (lobeError) {
-              // 如果存在自定义错误头部，显示错误信息
               const decodedError = decodeURIComponent(lobeError);
-              import('@/components/Error/fetchErrorNotification').then(
-                ({ fetchErrorNotification }) => {
-                  fetchErrorNotification.error({
-                    errorMessage: `${t('FileManager.actions.batchDownloadFailed')}: ${decodedError}`,
-                    status: 500,
-                  });
-                },
-              );
-              // 即使有部分文件未找到，也尝试处理已下载的部分
+              fetchErrorNotification.error({
+                errorMessage: `${t('FileManager.actions.batchDownloadFailed')}: ${decodedError}`,
+                status: 500,
+              });
             }
 
             if (!res.ok && !lobeError) {
-              throw new Error(`HTTP error! status: ${res.status}`);
+              fetchErrorNotification.error({
+                errorMessage: `${t('FileManager.actions.batchDownloadFailed')}`,
+                status: 500,
+              });
             }
 
             const blob = await res.blob();
@@ -182,17 +168,12 @@ const ToolBar = memo<MultiSelectActionsProps>(
 
             setSelectedFileIds([]);
             if (!lobeError) {
-              // 只有在没有自定义错误头部时才显示成功消息
               message.success(t('FileManager.actions.batchDownloadSuccess'));
             }
           } catch (error) {
-            console.error('Download failed:', error);
-            // 使用项目通用的错误消息组件显示在页面右上角
-            import('@/components/Error/fetchErrorNotification').then(({ fetchErrorNotification }) => {
-              fetchErrorNotification.error({
-                errorMessage: t('FileManager.actions.batchDownloadFailed'),
-                status: 500,
-              });
+            fetchErrorNotification.error({
+              errorMessage: t('FileManager.actions.batchDownloadFailed'),
+              status: 500,
             });
           }
           return;

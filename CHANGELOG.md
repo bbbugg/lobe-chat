@@ -2,6 +2,123 @@
 
 # Changelog
 
+## [Version 2.0.0-next.17](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.16...v2.0.0-next.17)
+
+<sup>Released on **2025-11-03**</sup>
+
+#### 🐛 Bug Fixes
+
+- **misc**: Fix regex ReDoS.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### What's fixed
+
+- **misc**: Fix regex ReDoS, closes [#10012](https://github.com/lobehub/lobe-chat/issues/10012) ([1d8d5cd](https://github.com/lobehub/lobe-chat/commit/1d8d5cd))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.16](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.15...v2.0.0-next.16)
+
+<sup>Released on **2025-11-03**</sup>
+
+#### ♻ Code Refactoring
+
+- **misc**: Remove deperated code.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### Code refactoring
+
+- **misc**: Remove deperated code, closes [#10001](https://github.com/lobehub/lobe-chat/issues/10001) ([4ee4590](https://github.com/lobehub/lobe-chat/commit/4ee4590))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.15](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.14...v2.0.0-next.15)
+
+<sup>Released on **2025-11-03**</sup>
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.14](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.13...v2.0.0-next.14)
+
+<sup>Released on **2025-11-02**</sup>
+
+#### ♻ Code Refactoring
+
+- **misc**: Remove client service.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### Code refactoring
+
+- **misc**: Remove client service, closes [#9991](https://github.com/lobehub/lobe-chat/issues/9991) ([9137dba](https://github.com/lobehub/lobe-chat/commit/9137dba))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.13](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.12...v2.0.0-next.13)
+
+<sup>Released on **2025-11-02**</sup>
+
+#### 🐛 Bug Fixes
+
+- **misc**: Fix image prompt form.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### What's fixed
+
+- **misc**: Fix image prompt form, closes [#9995](https://github.com/lobehub/lobe-chat/issues/9995) ([799e6fd](https://github.com/lobehub/lobe-chat/commit/799e6fd))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
 ## [Version 2.0.0-next.12](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.11...v2.0.0-next.12)
 
 <sup>Released on **2025-11-02**</sup>

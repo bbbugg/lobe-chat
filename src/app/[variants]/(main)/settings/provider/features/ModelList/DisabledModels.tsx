@@ -2,7 +2,7 @@ import { ActionIcon, Button, Dropdown, Icon, Text } from '@lobehub/ui';
 import type { ItemType } from 'antd/es/menu/interface';
 import isEqual from 'fast-deep-equal';
 import { ArrowDownUpIcon, ChevronDown, LucideCheck } from 'lucide-react';
-import { memo, useEffect, useMemo, useState } from 'react';
+import { memo, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Flexbox } from 'react-layout-kit';
 
@@ -30,17 +30,14 @@ const DisabledModels = memo<DisabledModelsProps>(({ activeTab }) => {
   const { t } = useTranslation('modelProvider');
 
   const [showMore, setShowMore] = useState(false);
-  const [sortType, setSortType] = useState<SortType>(
-    () =>
-      (systemStatusSelectors.disabledModelsSortType(useGlobalStore.getState()) as SortType) ||
-      SortType.Default,
-  );
 
-  useEffect(() => {
+  const sortType = useGlobalStore(systemStatusSelectors.disabledModelsSortType) || SortType.Default;
+
+  const handleSortTypeChange = (newSortType: SortType) => {
     useGlobalStore.getState().updateSystemStatus({
-      disabledModelsSortType: sortType,
+      disabledModelsSortType: newSortType,
     });
-  }, [sortType]);
+  };
 
   const disabledModels = useAiInfraStore(aiModelSelectors.disabledAiProviderModelList, isEqual);
 
@@ -118,28 +115,22 @@ const DisabledModels = memo<DisabledModelsProps>(({ activeTab }) => {
                     icon: sortType === SortType.Default ? <Icon icon={LucideCheck} /> : <div />,
                     key: 'default',
                     label: t('providerModels.list.disabledActions.sortDefault'),
-                    onClick: () => setSortType(SortType.Default),
+                    onClick: () => handleSortTypeChange(SortType.Default),
                   },
                   {
                     type: 'divider',
                   },
                   {
-                    icon:
-                      sortType === SortType.Alphabetical ? <Icon icon={LucideCheck} /> : <div />,
+                    icon: sortType === SortType.Alphabetical ? <Icon icon={LucideCheck} /> : <div />,
                     key: 'alphabetical',
                     label: t('providerModels.list.disabledActions.sortAlphabetical'),
-                    onClick: () => setSortType(SortType.Alphabetical),
+                    onClick: () => handleSortTypeChange(SortType.Alphabetical),
                   },
                   {
-                    icon:
-                      sortType === SortType.AlphabeticalDesc ? (
-                        <Icon icon={LucideCheck} />
-                      ) : (
-                        <div />
-                      ),
+                    icon: sortType === SortType.AlphabeticalDesc ? <Icon icon={LucideCheck} /> : <div />,
                     key: 'alphabeticalDesc',
                     label: t('providerModels.list.disabledActions.sortAlphabeticalDesc'),
-                    onClick: () => setSortType(SortType.AlphabeticalDesc),
+                    onClick: () => handleSortTypeChange(SortType.AlphabeticalDesc),
                   },
                   {
                     type: 'divider',
@@ -148,14 +139,13 @@ const DisabledModels = memo<DisabledModelsProps>(({ activeTab }) => {
                     icon: sortType === SortType.ReleasedAt ? <Icon icon={LucideCheck} /> : <div />,
                     key: 'releasedAt',
                     label: t('providerModels.list.disabledActions.sortReleasedAt'),
-                    onClick: () => setSortType(SortType.ReleasedAt),
+                    onClick: () => handleSortTypeChange(SortType.ReleasedAt),
                   },
                   {
-                    icon:
-                      sortType === SortType.ReleasedAtDesc ? <Icon icon={LucideCheck} /> : <div />,
+                    icon: sortType === SortType.ReleasedAtDesc ? <Icon icon={LucideCheck} /> : <div />,
                     key: 'releasedAtDesc',
                     label: t('providerModels.list.disabledActions.sortReleasedAtDesc'),
-                    onClick: () => setSortType(SortType.ReleasedAtDesc),
+                    onClick: () => handleSortTypeChange(SortType.ReleasedAtDesc),
                   },
                 ] as ItemType[],
               }}

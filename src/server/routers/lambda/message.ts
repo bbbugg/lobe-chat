@@ -1,6 +1,6 @@
 import {
-  BatchTaskResult,
-  UIChatMessage,
+  CreateMessageParamsSchema,
+  CreateNewMessageParamsSchema,
   UpdateMessageParamsSchema,
   UpdateMessageRAGParamsSchema,
 } from '@lobechat/types';
@@ -12,8 +12,6 @@ import { getServerDB } from '@/database/server';
 import { authedProcedure, publicProcedure, router } from '@/libs/trpc/lambda';
 import { serverDatabase } from '@/libs/trpc/lambda/middleware';
 import { FileService } from '@/server/services/file';
-
-type ChatMessageList = UIChatMessage[];
 
 const messageProcedure = authedProcedure.use(serverDatabase).use(async (opts) => {
   const { ctx } = opts;
@@ -27,14 +25,6 @@ const messageProcedure = authedProcedure.use(serverDatabase).use(async (opts) =>
 });
 
 export const messageRouter = router({
-  batchCreateMessages: messageProcedure
-    .input(z.array(z.any()))
-    .mutation(async ({ input, ctx }): Promise<BatchTaskResult> => {
-      const data = await ctx.messageModel.batchCreate(input);
-
-      return { added: data.rowCount as number, ids: [], skips: [], success: true };
-    }),
-
   count: messageProcedure
     .input(
       z
@@ -64,7 +54,7 @@ export const messageRouter = router({
     }),
 
   createMessage: messageProcedure
-    .input(z.object({}).passthrough().partial())
+    .input(CreateMessageParamsSchema)
     .mutation(async ({ input, ctx }) => {
       const data = await ctx.messageModel.create(input as any);
 
@@ -72,27 +62,11 @@ export const messageRouter = router({
     }),
 
   createNewMessage: messageProcedure
-    .input(z.object({}).passthrough().partial())
+    .input(CreateNewMessageParamsSchema)
     .mutation(async ({ input, ctx }) => {
       return ctx.messageModel.createNewMessage(input as any, {
         postProcessUrl: (path) => ctx.fileService.getFullFileUrl(path),
       });
-    }),
-
-  // TODO: it will be removed in V2
-  getAllMessages: messageProcedure.query(async ({ ctx }): Promise<ChatMessageList> => {
-    return ctx.messageModel.queryAll() as any;
-  }),
-
-  // TODO: it will be removed in V2
-  getAllMessagesInSession: messageProcedure
-    .input(
-      z.object({
-        sessionId: z.string().nullable().optional(),
-      }),
-    )
-    .query(async ({ ctx, input }): Promise<ChatMessageList> => {
-      return ctx.messageModel.queryBySessionId(input.sessionId) as any;
     }),
 
   getHeatmaps: messageProcedure.query(async ({ ctx }) => {
@@ -108,16 +82,20 @@ export const messageRouter = router({
         pageSize: z.number().optional(),
         sessionId: z.string().nullable().optional(),
         topicId: z.string().nullable().optional(),
+        useGroup: z.boolean().optional(),
       }),
     )
     .query(async ({ input, ctx }) => {
       if (!ctx.userId) return [];
       const serverDB = await getServerDB();
 
+      const { useGroup, ...queryParams } = input;
+
       const messageModel = new MessageModel(serverDB, ctx.userId);
       const fileService = new FileService(serverDB, ctx.userId);
 
-      return messageModel.query(input, {
+      return messageModel.query(queryParams, {
+        groupAssistantMessages: useGroup ?? false,
         postProcessUrl: (path) => fileService.getFullFileUrl(path),
       });
     }),
@@ -290,5 +268,3 @@ export const messageRouter = router({
       return ctx.messageModel.updateTranslate(input.id, input.value);
     }),
 });
-
-export type MessageRouter = typeof messageRouter;

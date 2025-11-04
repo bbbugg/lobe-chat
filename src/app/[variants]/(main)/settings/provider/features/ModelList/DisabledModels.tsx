@@ -2,12 +2,14 @@ import { ActionIcon, Button, Dropdown, Icon, Text } from '@lobehub/ui';
 import type { ItemType } from 'antd/es/menu/interface';
 import isEqual from 'fast-deep-equal';
 import { ArrowDownUpIcon, ChevronDown, LucideCheck } from 'lucide-react';
-import { memo, useEffect, useMemo, useState } from 'react';
+import { memo, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Flexbox } from 'react-layout-kit';
 
 import { useAiInfraStore } from '@/store/aiInfra';
 import { aiModelSelectors } from '@/store/aiInfra/selectors';
+import { useGlobalStore } from '@/store/global';
+import { systemStatusSelectors } from '@/store/global/selectors';
 
 import ModelItem from './ModelItem';
 
@@ -28,13 +30,14 @@ const DisabledModels = memo<DisabledModelsProps>(({ activeTab }) => {
   const { t } = useTranslation('modelProvider');
 
   const [showMore, setShowMore] = useState(false);
-  const [sortType, setSortType] = useState<SortType>(
-    () => (localStorage.getItem('disabledModelsSortType') as SortType) || SortType.Default,
-  );
 
-  useEffect(() => {
-    localStorage.setItem('disabledModelsSortType', sortType);
-  }, [sortType]);
+  const sortType = useGlobalStore(systemStatusSelectors.disabledModelsSortType) || SortType.Default;
+
+  const handleSortTypeChange = (newSortType: SortType) => {
+    useGlobalStore.getState().updateSystemStatus({
+      disabledModelsSortType: newSortType,
+    });
+  };
 
   const disabledModels = useAiInfraStore(aiModelSelectors.disabledAiProviderModelList, isEqual);
 
@@ -112,7 +115,7 @@ const DisabledModels = memo<DisabledModelsProps>(({ activeTab }) => {
                     icon: sortType === SortType.Default ? <Icon icon={LucideCheck} /> : <div />,
                     key: 'default',
                     label: t('providerModels.list.disabledActions.sortDefault'),
-                    onClick: () => setSortType(SortType.Default),
+                    onClick: () => handleSortTypeChange(SortType.Default),
                   },
                   {
                     type: 'divider',
@@ -122,7 +125,7 @@ const DisabledModels = memo<DisabledModelsProps>(({ activeTab }) => {
                       sortType === SortType.Alphabetical ? <Icon icon={LucideCheck} /> : <div />,
                     key: 'alphabetical',
                     label: t('providerModels.list.disabledActions.sortAlphabetical'),
-                    onClick: () => setSortType(SortType.Alphabetical),
+                    onClick: () => handleSortTypeChange(SortType.Alphabetical),
                   },
                   {
                     icon:
@@ -133,7 +136,7 @@ const DisabledModels = memo<DisabledModelsProps>(({ activeTab }) => {
                       ),
                     key: 'alphabeticalDesc',
                     label: t('providerModels.list.disabledActions.sortAlphabeticalDesc'),
-                    onClick: () => setSortType(SortType.AlphabeticalDesc),
+                    onClick: () => handleSortTypeChange(SortType.AlphabeticalDesc),
                   },
                   {
                     type: 'divider',
@@ -142,14 +145,14 @@ const DisabledModels = memo<DisabledModelsProps>(({ activeTab }) => {
                     icon: sortType === SortType.ReleasedAt ? <Icon icon={LucideCheck} /> : <div />,
                     key: 'releasedAt',
                     label: t('providerModels.list.disabledActions.sortReleasedAt'),
-                    onClick: () => setSortType(SortType.ReleasedAt),
+                    onClick: () => handleSortTypeChange(SortType.ReleasedAt),
                   },
                   {
                     icon:
                       sortType === SortType.ReleasedAtDesc ? <Icon icon={LucideCheck} /> : <div />,
                     key: 'releasedAtDesc',
                     label: t('providerModels.list.disabledActions.sortReleasedAtDesc'),
-                    onClick: () => setSortType(SortType.ReleasedAtDesc),
+                    onClick: () => handleSortTypeChange(SortType.ReleasedAtDesc),
                   },
                 ] as ItemType[],
               }}

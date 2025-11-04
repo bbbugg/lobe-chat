@@ -4,12 +4,14 @@ import { ActionIcon, Dropdown, Icon, ScrollShadow, Text } from '@lobehub/ui';
 import type { ItemType } from 'antd/es/menu/interface';
 import isEqual from 'fast-deep-equal';
 import { ArrowDownUpIcon, LucideCheck } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Flexbox } from 'react-layout-kit';
 
 import { aiProviderSelectors } from '@/store/aiInfra';
 import { useAiInfraStore } from '@/store/aiInfra/store';
+import { useGlobalStore } from '@/store/global';
+import { systemStatusSelectors } from '@/store/global/selectors';
 
 import All from './All';
 import ProviderItem from './Item';
@@ -29,13 +31,15 @@ const ProviderList = (props: {
   const { onProviderSelect, mobile } = props;
   const { t } = useTranslation('modelProvider');
   const [open, setOpen] = useState(false);
-  const [sortType, setSortType] = useState<SortType>(
-    () => (localStorage.getItem('disabledModelProvidersSortType') as SortType) || SortType.Default,
-  );
 
-  useEffect(() => {
-    localStorage.setItem('disabledModelProvidersSortType', sortType);
-  }, [sortType]);
+  const sortType =
+    useGlobalStore(systemStatusSelectors.disabledModelProvidersSortType) || SortType.Default;
+
+  const handleSortTypeChange = (newSortType: SortType) => {
+    useGlobalStore.getState().updateSystemStatus({
+      disabledModelProvidersSortType: newSortType,
+    });
+  };
 
   const enabledModelProviderList = useAiInfraStore(
     aiProviderSelectors.enabledAiProviderList,
@@ -119,7 +123,7 @@ const ProviderList = (props: {
                   icon: sortType === SortType.Default ? <Icon icon={LucideCheck} /> : <div />,
                   key: 'default',
                   label: t('menu.list.disabledActions.sortDefault'),
-                  onClick: () => setSortType(SortType.Default),
+                  onClick: () => handleSortTypeChange(SortType.Default),
                 },
                 {
                   type: 'divider',
@@ -128,14 +132,14 @@ const ProviderList = (props: {
                   icon: sortType === SortType.Alphabetical ? <Icon icon={LucideCheck} /> : <div />,
                   key: 'alphabetical',
                   label: t('menu.list.disabledActions.sortAlphabetical'),
-                  onClick: () => setSortType(SortType.Alphabetical),
+                  onClick: () => handleSortTypeChange(SortType.Alphabetical),
                 },
                 {
                   icon:
                     sortType === SortType.AlphabeticalDesc ? <Icon icon={LucideCheck} /> : <div />,
                   key: 'alphabeticalDesc',
                   label: t('menu.list.disabledActions.sortAlphabeticalDesc'),
-                  onClick: () => setSortType(SortType.AlphabeticalDesc),
+                  onClick: () => handleSortTypeChange(SortType.AlphabeticalDesc),
                 },
               ] as ItemType[],
             }}

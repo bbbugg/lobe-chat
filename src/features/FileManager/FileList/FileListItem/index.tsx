@@ -216,7 +216,13 @@ const FileRenderItem = memo<FileRenderItemProps>(
               </div>
             )}
             <div className={styles.hover}>
-              <DropdownMenu filename={name} id={id} knowledgeBaseId={knowledgeBaseId} url={url} />
+              <DropdownMenu
+                disabled={downloading}
+                filename={name}
+                id={id}
+                knowledgeBaseId={knowledgeBaseId}
+                url={url}
+              />
             </div>
           </Flexbox>
         </Flexbox>

@@ -1,7 +1,14 @@
 import { Button, Icon } from '@lobehub/ui';
 import { App, Checkbox, Skeleton } from 'antd';
 import { createStyles } from 'antd-style';
-import { BookMinusIcon, BookPlusIcon, DownloadIcon, FileBoxIcon, Trash2Icon } from 'lucide-react';
+import {
+  BookMinusIcon,
+  BookPlusIcon,
+  DownloadIcon,
+  FileBoxIcon,
+  LoaderCircle,
+  Trash2Icon,
+} from 'lucide-react';
 import { rgba } from 'polished';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -28,6 +35,7 @@ export type MultiSelectActionType =
   | 'batchDownload';
 
 interface MultiSelectActionsProps {
+  downloading?: boolean;
   isInKnowledgeBase?: boolean;
   onActionClick: (type: MultiSelectActionType) => Promise<void>;
   onClickCheckbox: () => void;
@@ -36,7 +44,15 @@ interface MultiSelectActionsProps {
 }
 
 const MultiSelectActions = memo<MultiSelectActionsProps>(
-  ({ selectCount, isInKnowledgeBase, total, onActionClick, onClickCheckbox }) => {
+  (props) => {
+    const {
+      downloading,
+      selectCount,
+      isInKnowledgeBase,
+      total,
+      onActionClick,
+      onClickCheckbox,
+    } = props;
     const { t } = useTranslation(['components', 'common']);
     const { styles } = useStyles();
 
@@ -49,11 +65,14 @@ const MultiSelectActions = memo<MultiSelectActionsProps>(
           className={styles.total}
           gap={8}
           horizontal
-          onClick={onClickCheckbox}
+          onClick={() => {
+            if (!downloading) onClickCheckbox();
+          }}
           paddingInline={4}
         >
           <Checkbox
             checked={selectCount === total}
+            disabled={downloading}
             indeterminate={isSelectedFiles && selectCount !== total}
           />
           {typeof total === 'undefined' ? (
@@ -75,6 +94,7 @@ const MultiSelectActions = memo<MultiSelectActionsProps>(
             {isInKnowledgeBase ? (
               <>
                 <Button
+                  disabled={downloading}
                   icon={BookMinusIcon}
                   onClick={() => {
                     modal.confirm({
@@ -96,6 +116,7 @@ const MultiSelectActions = memo<MultiSelectActionsProps>(
                 </Button>
                 <Button
                   color={'default'}
+                  disabled={downloading}
                   icon={<Icon icon={BookPlusIcon} />}
                   onClick={() => {
                     onActionClick('addToOtherKnowledgeBase');
@@ -109,6 +130,7 @@ const MultiSelectActions = memo<MultiSelectActionsProps>(
             ) : (
               <Button
                 color={'default'}
+                disabled={downloading}
                 icon={<Icon icon={BookPlusIcon} />}
                 onClick={() => {
                   onActionClick('addToKnowledgeBase');
@@ -121,6 +143,7 @@ const MultiSelectActions = memo<MultiSelectActionsProps>(
             )}
             <Button
               color={'default'}
+              disabled={downloading}
               icon={<Icon icon={FileBoxIcon} />}
               onClick={async () => {
                 await onActionClick('batchChunking');
@@ -132,7 +155,8 @@ const MultiSelectActions = memo<MultiSelectActionsProps>(
             </Button>
             <Button
               color={'default'}
-              icon={<Icon icon={DownloadIcon} />}
+              disabled={downloading}
+              icon={downloading ? <Icon icon={LoaderCircle} spin /> : <Icon icon={DownloadIcon} />}
               onClick={async () => {
                 await onActionClick('batchDownload');
               }}
@@ -144,6 +168,7 @@ const MultiSelectActions = memo<MultiSelectActionsProps>(
             <Button
               color={'danger'}
               danger
+              disabled={downloading}
               icon={<Icon icon={Trash2Icon} />}
               onClick={async () => {
                 modal.confirm({

@@ -1,7 +1,7 @@
 import { App } from 'antd';
 import { createStyles } from 'antd-style';
 import { rgba } from 'polished';
-import { memo } from 'react';
+import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Flexbox } from 'react-layout-kit';
 
@@ -26,11 +26,13 @@ const useStyles = createStyles(({ css, token, isDarkMode }) => ({
 
 interface MultiSelectActionsProps {
   config: { showFilesInKnowledgeBase: boolean };
+  downloading: boolean;
   knowledgeBaseId?: string;
   onConfigChange: (config: { showFilesInKnowledgeBase: boolean }) => void;
   onViewChange: (view: ViewMode) => void;
   selectCount: number;
   selectFileIds: string[];
+  setDownloading: (downloading: boolean) => void;
   setSelectedFileIds: (ids: string[]) => void;
   showConfig?: boolean;
   total?: number;
@@ -51,6 +53,8 @@ const ToolBar = memo<MultiSelectActionsProps>(
     knowledgeBaseId,
     viewMode,
     onViewChange,
+    downloading,
+    setDownloading,
   }) => {
     const { styles } = useStyles();
     const { t } = useTranslation('components');
@@ -67,7 +71,9 @@ const ToolBar = memo<MultiSelectActionsProps>(
     const { open } = useAddFilesToKnowledgeBaseModal();
     const { message } = App.useApp();
 
-    const onActionClick = async (type: MultiSelectActionType) => {
+    const onActionClick = useCallback(async (type: MultiSelectActionType) => {
+      if (downloading) return; // 下载中禁用所有操作
+
       switch (type) {
         case 'delete': {
           await removeFiles(selectFileIds);
@@ -119,7 +125,8 @@ const ToolBar = memo<MultiSelectActionsProps>(
             }
             return;
           }
-
+          setDownloading(true);
+          message.loading(t('FileManager.actions.batchDownloading'));
           try {
             const res = await fetch('/webapi/files/download', {
               headers: {
@@ -131,19 +138,30 @@ const ToolBar = memo<MultiSelectActionsProps>(
 
             const lobeError = res.headers.get('X-Lobe-Error');
 
+            // 有压缩成功的文件，返回压缩包
             if (lobeError) {
               const decodedError = decodeURIComponent(lobeError);
               fetchErrorNotification.error({
-                errorMessage: `${t('FileManager.actions.batchDownloadFailed')}: ${decodedError}`,
+                errorMessage: `${t('FileManager.actions.batchDownloadFailed')}: ${decodedError}`,//todo
                 status: 500,
               });
             }
 
-            if (!res.ok && !lobeError) {
+            // 所有文件下载失败，返回错误信息
+            if (!res.ok) {
+              const text = await res.text();
+              let bodyMsg = text;
+              try {
+                const json = JSON.parse(text);
+                if (json && typeof json === 'object' && 'body' in json) {
+                  bodyMsg = (json as any).body;
+                }
+              } catch { /* empty */ }
               fetchErrorNotification.error({
-                errorMessage: `${t('FileManager.actions.batchDownloadFailed')}`,
+                errorMessage: `${t('FileManager.actions.batchDownloadFailed')}: ${bodyMsg}`,
                 status: 500,
               });
+              return; // 会执行finally
             }
 
             const blob = await res.blob();
@@ -166,25 +184,28 @@ const ToolBar = memo<MultiSelectActionsProps>(
             a.remove();
             window.URL.revokeObjectURL(url);
 
-            setSelectedFileIds([]);
             if (!lobeError) {
+              setSelectedFileIds([]);
               message.success(t('FileManager.actions.batchDownloadSuccess'));
             }
           } catch (error) {
             fetchErrorNotification.error({
-              errorMessage: t('FileManager.actions.batchDownloadFailed'),
+              errorMessage: `${t('FileManager.actions.batchDownloadFailed')}: ${error}`,
               status: 500,
             });
+          } finally {
+            setDownloading(false);
           }
           return;
         }
       }
-    };
+    }, [selectFileIds, downloading, fileList, knowledgeBaseId]);
 
     const isInKnowledgeBase = !!knowledgeBaseId;
     return (
       <Flexbox align={'center'} className={styles.container} horizontal justify={'space-between'}>
         <MultiSelectActions
+          downloading={downloading}
           isInKnowledgeBase={isInKnowledgeBase}
           onActionClick={onActionClick}
           onClickCheckbox={() => {

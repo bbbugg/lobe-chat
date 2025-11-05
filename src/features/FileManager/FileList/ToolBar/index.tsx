@@ -71,7 +71,7 @@ const ToolBar = memo<MultiSelectActionsProps>(
     const { open } = useAddFilesToKnowledgeBaseModal();
     const { message } = App.useApp();
 
-    const onActionClick = useCallback(async (type: MultiSelectActionType) => {
+    const onActionClick = async (type: MultiSelectActionType) => {
       if (downloading) return; // 下载中禁用所有操作
 
       switch (type) {
@@ -199,7 +199,7 @@ const ToolBar = memo<MultiSelectActionsProps>(
           return;
         }
       }
-    }, [selectFileIds, downloading, fileList, knowledgeBaseId]);
+    };
 
     const isInKnowledgeBase = !!knowledgeBaseId;
     return (

@@ -64,8 +64,8 @@ jobs:
           set -e  # 严格模式：任何命令失败即退出
           # 获取上游 main 分支最新变更
           git fetch upstream main
-          # 切换到本地 main 分支
-          git checkout main
+          # 切换到本地 main 分支或创建它并跟踪 origin/main
+          git checkout -B main origin/main
           # 显式 merge 上游 main 分支（--no-ff 强制创建 merge commit，-m 自定义消息）
           git merge upstream/main --no-ff -m "Action: 自动同步上游代码"
           # 检查是否有冲突（unmerged paths）

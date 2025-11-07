@@ -1,3 +1,4 @@
+import { Unsubscribable } from '@trpc/server/observable';
 import pMap from 'p-map';
 import { SWRResponse, mutate } from 'swr';
 import { StateCreator } from 'zustand/vanilla';
@@ -6,6 +7,7 @@ import { FILE_UPLOAD_BLACKLIST, MAX_UPLOAD_FILE_COUNT } from '@/const/file';
 import { useClientDataSWR } from '@/libs/swr';
 import { fileService } from '@/services/file';
 import { ServerService } from '@/services/file/server';
+import { TrpcSubscriptionCallback } from '@/services/file/type';
 import { ragService } from '@/services/rag';
 import {
   UploadFileListDispatch,
@@ -21,6 +23,7 @@ import { fileManagerSelectors } from './selectors';
 const serverFileService = new ServerService();
 
 export interface FileManageAction {
+  batchDownload: (fileIds: string[], callbacks: TrpcSubscriptionCallback) => Unsubscribable;
   dispatchDockFileList: (payload: UploadFileListDispatch) => void;
   embeddingChunks: (fileIds: string[]) => Promise<void>;
   parseFilesToChunks: (ids: string[], params?: { skipExist?: boolean }) => Promise<void>;
@@ -48,6 +51,9 @@ export const createFileManageSlice: StateCreator<
   [],
   FileManageAction
 > = (set, get) => ({
+  batchDownload: (fileIds: string[], callbacks: TrpcSubscriptionCallback) => {
+    return serverFileService.batchDownload(fileIds, callbacks);
+  },
   dispatchDockFileList: (payload: UploadFileListDispatch) => {
     const nextValue = uploadFileListReducer(get().dockUploadFileList, payload);
     if (nextValue === get().dockUploadFileList) return;

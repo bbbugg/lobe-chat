@@ -1,6 +1,23 @@
-import { CheckFileHashResult, FileItem, UploadFileParams } from '@/types/files';
+// 修正 Bug 2 的导入
+import { TRPCClientError } from '@trpc/client';
+import { Unsubscribable } from '@trpc/server/observable';
+
+import { LambdaRouter } from '@/server/routers/lambda';
+import {
+  BatchDownloadEventType,
+  CheckFileHashResult,
+  FileItem,
+  UploadFileParams,
+} from '@/types/files';
+
+export type TrpcSubscriptionCallback = {
+  onComplete?: () => void;
+  onData?: (data: BatchDownloadEventType) => void;
+  onError?: (err: TRPCClientError<LambdaRouter>) => void;
+};
 
 export interface IFileService {
+  batchDownload(fileIds: string[], callbacks: TrpcSubscriptionCallback): Unsubscribable;
   checkFileHash(hash: string): Promise<CheckFileHashResult>;
   createFile(
     file: UploadFileParams,

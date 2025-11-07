@@ -1,7 +1,9 @@
+import { Unsubscribable } from '@trpc/server/observable';
+
 import { lambdaClient } from '@/libs/trpc/client';
 import { QueryFileListParams, QueryFileListSchemaType, UploadFileParams } from '@/types/files';
 
-import { IFileService } from './type';
+import { IFileService, TrpcSubscriptionCallback } from './type';
 
 interface CreateFileParams extends Omit<UploadFileParams, 'url'> {
   knowledgeBaseId?: string;
@@ -9,6 +11,10 @@ interface CreateFileParams extends Omit<UploadFileParams, 'url'> {
 }
 
 export class ServerService implements IFileService {
+  batchDownload = (fileIds: string[], callbacks: TrpcSubscriptionCallback): Unsubscribable => {
+    return lambdaClient.file.batchDownload.subscribe({ fileIds }, callbacks);
+  };
+
   createFile: IFileService['createFile'] = async (params, knowledgeBaseId) => {
     return lambdaClient.file.createFile.mutate({ ...params, knowledgeBaseId } as CreateFileParams);
   };

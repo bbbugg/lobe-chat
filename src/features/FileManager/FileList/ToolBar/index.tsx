@@ -7,6 +7,7 @@ import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Flexbox } from 'react-layout-kit';
 
+import { fetchErrorNotification } from '@/components/Error/fetchErrorNotification';
 import { useAddFilesToKnowledgeBaseModal } from '@/features/KnowledgeBaseModal';
 import type { LambdaRouter } from '@/server/routers/lambda';
 import { useFileStore } from '@/store/file';
@@ -131,7 +132,7 @@ const ToolBar = memo<MultiSelectActionsProps>(
           setDownloading(true);
           message.loading({
             content: t('FileManager.actions.batchDownloading'),
-            duration: 0, // 持续显示，直到手动关闭
+            duration: 0,
             key: 'batch-download',
           });
 
@@ -155,22 +156,32 @@ const ToolBar = memo<MultiSelectActionsProps>(
                 }
                 case 'progress': {
                   message.loading({
-                    content: `${t('FileManager.actions.batchDownloading')} - ${event.message} (${Math.round(
+                    content: `${t('FileManager.actions.batchDownloading')} ${event.message} (${Math.round(
                       event.percent,
                     )}%)`,
+                    duration: 0,
                     key: 'batch-download',
                   });
                   break;
                 }
                 case 'warning': {
-                  message.warning(event.message);
+                  // 部分文件下载失败，不影响其他文件
+                  fetchErrorNotification.error({
+                    errorMessage: `${t('FileManager.actions.batchDownloadFailed')}: ${event.message}`,
+                    status: 500,
+                  });
                   break;
                 }
                 case 'done': {
-                  message.success({
-                    content: t('FileManager.actions.batchDownloadSuccess'),
-                    key: 'batch-download',
-                  });
+                  if (event.downloadedCount === selectFileIds.length) {
+                    message.success({
+                      content: t('FileManager.actions.batchDownloadSuccess'),
+                      key: 'batch-download',
+                    });
+                    setSelectedFileIds([]);
+                  } else {
+                    message.destroy?.();
+                  }
                   const blob = new Blob(blobParts as BlobPart[], { type: 'application/zip' });
                   const url = window.URL.createObjectURL(blob);
                   const a = document.createElement('a');
@@ -180,26 +191,25 @@ const ToolBar = memo<MultiSelectActionsProps>(
                   a.click();
                   a.remove();
                   window.URL.revokeObjectURL(url);
-
                   setDownloading(false);
-                  setSelectedFileIds([]);
                   break;
                 }
                 case 'error': {
-                  message.error({
-                    content: `${t('FileManager.actions.batchDownloadFailed')}: ${event.message}`,
-                    key: 'batch-download',
+                  message.destroy?.();
+                  fetchErrorNotification.error({
+                    errorMessage: `${t('FileManager.actions.batchDownloadFailed')}: ${event.message}`,
+                    status: 500,
                   });
                   setDownloading(false);
-                  // setSelectedFileIds([]);
                   break;
                 }
               }
             },
             onError: (err: TRPCClientError<LambdaRouter>) => {
-              message.error({
-                content: `${t('FileManager.actions.batchDownloadFailed')}: ${err.message}`,
-                key: 'batch-download',
+              message.destroy?.();
+              fetchErrorNotification.error({
+                errorMessage: `${t('FileManager.actions.batchDownloadFailed')}: ${err.message}`,
+                status: 500,
               });
               setDownloading(false);
             },

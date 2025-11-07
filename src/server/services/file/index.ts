@@ -142,8 +142,6 @@ export class FileService {
   async *batchDownloadSubscription(
     fileIds: string[],
   ): AsyncGenerator<BatchDownloadEventType, void, unknown> {
-    console.log('batchDownloadSubscription');
-
     const { userId } = await getUserAuth();
     if (!userId) {
       yield { message: 'User not authorized', type: 'error' };
@@ -155,8 +153,6 @@ export class FileService {
       return;
     }
 
-    console.log('fileIds', fileIds);
-
     try {
       const files = await this.findFilesByIds(fileIds);
       if (files.length === 0) {
@@ -164,13 +160,9 @@ export class FileService {
         return;
       }
 
-      console.log('files', files.length);
-
       const archive = archiver('zip', { zlib: { level: 1 } });
       const passThrough = new PassThrough();
       archive.pipe(passThrough);
-
-      console.log('archive.pipe');
 
       // 创建一个 Promise 来捕获来自 archiver 的底层错误
       const archiveFinished = new Promise((resolve, reject) => {
@@ -178,8 +170,6 @@ export class FileService {
         archive.on('error', reject);
         passThrough.on('error', reject);
       });
-
-      console.log('archiveFinished');
 
       // 1. **执行文件处理循环**
       // `archive.append` 是非阻塞的，它会把任务加入队列，压缩在后台进行。
@@ -190,13 +180,10 @@ export class FileService {
         const progress = ((i + 1) / files.length) * 100;
 
         yield {
-          message: `Processing file ${i + 1}/${files.length}`,
+          message: `${i + 1}/${files.length}`,
           percent: progress,
           type: 'progress',
         };
-        console.log(
-          "yield { message: `Processing file ${i + 1}/${files.length}`, percent: progress, type: 'progress' }",
-        );
 
         try {
           const fileContent = await this.getFileByteArray(file.url);
@@ -206,24 +193,22 @@ export class FileService {
           } else {
             failedFiles.push(file.name);
           }
-        } catch (error: any) {
+        } catch {
           failedFiles.push(file.name);
-          if (error.Code === 'NoSuchKey' || error.message?.includes('File not found')) {
-            yield { message: `File not found, skipping: ${file.name}`, type: 'warning' };
-          } else {
-            yield { message: `Error processing ${file.name}: ${error.message}`, type: 'warning' };
-          }
         }
-      }
-
-      console.log('downloadedFileCount', downloadedFileCount);
-
-      if (failedFiles.length > 0) {
-        yield { message: `Failed to process files: ${failedFiles.join(', ')}`, type: 'warning' };
       }
 
       // 2. **完成归档**
       archive.finalize();
+
+      if (downloadedFileCount === 0 && files.length > 0) {
+        yield { message: 'All files failed to process.', type: 'error' };
+        return;
+      }
+
+      if (failedFiles.length > 0) {
+        yield { message: `Failed to process files: ${failedFiles.join(', ')}`, type: 'warning' };
+      }
 
       // 3. **消费数据流**
       // `for await...of` 会等待后台的 archiver 生成数据块，然后 yield 出去。
@@ -247,10 +232,6 @@ export class FileService {
         totalCount: files.length,
         type: 'done',
       };
-
-      if (downloadedFileCount === 0 && files.length > 0) {
-        yield { message: 'All files failed to download.', type: 'error' };
-      }
     } catch (error: any) {
       yield { message: error instanceof Error ? error.message : 'Unknown error.', type: 'error' };
     }

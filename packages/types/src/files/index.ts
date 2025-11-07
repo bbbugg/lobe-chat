@@ -37,14 +37,7 @@ const BatchDownloadEventSchema = z.union([
   z.object({ message: z.string(), type: z.literal('error') }),
 ]);
 
-export type BatchDownloadEventType = z.infer<typeof BatchDownloadEventSchema>; // 改名
-export interface BatchDownloadResult {
-  chunks: Uint8Array[];
-  downloadedCount: number;
-  error?: string;
-  fileName: string;
-  totalCount: number;
-}
+export type BatchDownloadEventType = z.infer<typeof BatchDownloadEventSchema>;
 
 export * from './list';
 export * from './upload';

@@ -1,6 +1,49 @@
 [
   {
     "children": {
+      "features": ["Refactor to use agent runtime as the generation core and support branch mode."]
+    },
+    "date": "2025-11-07",
+    "version": "2.0.0-next.36"
+  },
+  {
+    "children": {
+      "improvements": ["Use react-router-dom change /chat page to spa mode."]
+    },
+    "date": "2025-11-07",
+    "version": "2.0.0-next.35"
+  },
+  {
+    "children": {
+      "improvements": [
+        "Add sorting functionality for disabled models and model providers with tooltip support."
+      ]
+    },
+    "date": "2025-11-07",
+    "version": "2.0.0-next.34"
+  },
+  {
+    "children": {
+      "improvements": ["Refactor message create name."],
+      "fixes": ["Model name display in the assistant panel disappears."]
+    },
+    "date": "2025-11-06",
+    "version": "2.0.0-next.33"
+  },
+  {
+    "children": {
+      "fixes": ["Should install new version after quit this instance."]
+    },
+    "date": "2025-11-05",
+    "version": "2.0.0-next.32"
+  },
+  {
+    "children": {},
+    "date": "2025-11-05",
+    "version": "2.0.0-next.31"
+  },
+  {
+    "children": {
       "improvements": ["Enhance message router with service layer and comprehensive tests."]
     },
     "date": "2025-11-05",

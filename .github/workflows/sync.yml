@@ -49,7 +49,7 @@ jobs:
           git merge upstream/next --no-ff -m "Action: 自动同步上游代码"
           # 检查是否有冲突（unmerged paths）
           if git diff --name-only --diff-filter=U | grep -q . ; then
-            echo "Merge conflict detected. Files need manual resolution:"
+            echo "Merge conflict detected in next branch. Files need manual resolution:"
             git diff --name-only --diff-filter=U  # 输出冲突文件，便于日志查看
             exit 1  # 明确失败，触发 issue
           fi
@@ -57,6 +57,27 @@ jobs:
 
           # 推送目标分支（精确 ref，确保 --force-with-lease 安全）
           git push origin next --force-with-lease=next:origin/next
+
+      # 同步上游 main 分支到本地 main 分支
+      - name: Sync upstream main branch to local main branch
+        run: |
+          set -e  # 严格模式：任何命令失败即退出
+          # 获取上游 main 分支最新变更
+          git fetch upstream main
+          # 切换到本地 main 分支
+          git checkout main
+          # 显式 merge 上游 main 分支（--no-ff 强制创建 merge commit，-m 自定义消息）
+          git merge upstream/main --no-ff -m "Action: 自动同步上游代码"
+          # 检查是否有冲突（unmerged paths）
+          if git diff --name-only --diff-filter=U | grep -q . ; then
+            echo "Merge conflict detected in main branch. Files need manual resolution:"
+            git diff --name-only --diff-filter=U  # 输出冲突文件，便于日志查看
+            exit 1  # 明确失败，触发 issue
+          fi
+          # 无冲突：已自动 commit
+
+          # 推送 main 分支到 origin（精确 ref，确保 --force-with-lease 安全）
+          git push origin main --force-with-lease=main:origin/main
 
       # 同步检查：如果失败，创建 issue
       - name: Sync check

@@ -37,7 +37,7 @@ export const POST = async (req: NextRequest) => {
     }
 
     const archive = archiver('zip', {
-      zlib: { level: 0 },
+      zlib: { level: 1 },
     });
 
     const fileName = `${BRANDING_NAME}_batch_download_${getYYYYmmddHHMMss(new Date())}.zip`;

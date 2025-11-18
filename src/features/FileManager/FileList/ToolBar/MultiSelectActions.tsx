@@ -1,7 +1,7 @@
 import { Button, Icon } from '@lobehub/ui';
 import { App, Checkbox, Skeleton } from 'antd';
 import { createStyles } from 'antd-style';
-import { BookMinusIcon, BookPlusIcon, DownloadIcon, FileBoxIcon, Trash2Icon } from 'lucide-react';
+import { BookMinusIcon, BookPlusIcon, FileBoxIcon, Trash2Icon } from 'lucide-react';
 import { rgba } from 'polished';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -24,8 +24,7 @@ export type MultiSelectActionType =
   | 'delete'
   | 'batchChunking'
   | 'removeFromKnowledgeBase'
-  | 'addToOtherKnowledgeBase'
-  | 'batchDownload';
+  | 'addToOtherKnowledgeBase';
 
 interface MultiSelectActionsProps {
   isInKnowledgeBase?: boolean;
@@ -129,17 +128,6 @@ const MultiSelectActions = memo<MultiSelectActionsProps>(
               variant={'filled'}
             >
               {t('FileManager.actions.batchChunking')}
-            </Button>
-            <Button
-              color={'default'}
-              icon={<Icon icon={DownloadIcon} />}
-              onClick={async () => {
-                await onActionClick('batchDownload');
-              }}
-              size={'small'}
-              variant={'filled'}
-            >
-              {t('FileManager.actions.batchDownload')}
             </Button>
             <Button
               color={'danger'}

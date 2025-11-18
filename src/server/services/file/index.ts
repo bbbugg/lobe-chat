@@ -122,11 +122,4 @@ export class FileService {
     const filePath = await tempManager.writeTempFile(content, file.name);
     return { cleanup: () => tempManager.cleanup(), file, filePath };
   }
-
-  /**
-   * 根据文件ID批量查找文件
-   */
-  public async findFilesByIds(fileIds: string[]) {
-    return this.fileModel.findByIds(fileIds);
-  }
 }

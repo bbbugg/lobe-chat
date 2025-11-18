@@ -6,7 +6,7 @@ import { Mock, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { searchService } from '@/services/search';
 import { useChatStore } from '@/store/chat';
-import { chatSelectors } from '@/store/chat/selectors';
+import { dbMessageSelectors } from '@/store/chat/selectors';
 import { CRAWL_CONTENT_LIMITED_COUNT } from '@/tools/web-browsing/const';
 
 // Mock services
@@ -18,8 +18,8 @@ vi.mock('@/services/search', () => ({
 }));
 
 vi.mock('@/store/chat/selectors', () => ({
-  chatSelectors: {
-    getMessageById: vi.fn(),
+  dbMessageSelectors: {
+    getDbMessageById: vi.fn(),
   },
 }));
 
@@ -32,12 +32,15 @@ describe('search actions', () => {
       searchLoading: {},
       optimisticUpdateMessageContent: vi.fn(),
       optimisticUpdateMessagePluginError: vi.fn(),
-      updatePluginArguments: vi.fn(),
-      updatePluginState: vi.fn(),
+      optimisticUpdatePluginArguments: vi.fn(),
+      optimisticUpdatePluginState: vi.fn(),
       optimisticCreateMessage: vi.fn(),
-      internal_addToolToAssistantMessage: vi.fn(),
+      optimisticAddToolToAssistantMessage: vi.fn(),
       openToolUI: vi.fn(),
     });
+
+    // Default mock for dbMessageSelectors - returns undefined to use activeId/activeTopicId
+    vi.spyOn(dbMessageSelectors, 'getDbMessageById').mockImplementation(() => () => undefined);
   });
 
   describe('search', () => {
@@ -90,6 +93,8 @@ describe('search actions', () => {
       expect(result.current.optimisticUpdateMessageContent).toHaveBeenCalledWith(
         messageId,
         searchResultsPrompt(expectedContent),
+        undefined,
+        { sessionId: undefined, topicId: undefined },
       );
     });
 
@@ -126,6 +131,8 @@ describe('search actions', () => {
       expect(result.current.optimisticUpdateMessageContent).toHaveBeenCalledWith(
         messageId,
         searchResultsPrompt([]),
+        undefined,
+        { sessionId: undefined, topicId: undefined },
       );
     });
 
@@ -145,15 +152,21 @@ describe('search actions', () => {
         await search(messageId, query);
       });
 
-      expect(result.current.optimisticUpdateMessagePluginError).toHaveBeenCalledWith(messageId, {
-        body: error,
-        message: 'Search failed',
-        type: 'PluginServerError',
-      });
+      expect(result.current.optimisticUpdateMessagePluginError).toHaveBeenCalledWith(
+        messageId,
+        {
+          body: error,
+          message: 'Search failed',
+          type: 'PluginServerError',
+        },
+        { sessionId: undefined, topicId: undefined },
+      );
       expect(result.current.searchLoading[messageId]).toBe(false);
       expect(result.current.optimisticUpdateMessageContent).toHaveBeenCalledWith(
         messageId,
         'Search failed',
+        undefined,
+        { sessionId: undefined, topicId: undefined },
       );
     });
   });
@@ -193,6 +206,8 @@ describe('search actions', () => {
       expect(result.current.optimisticUpdateMessageContent).toHaveBeenCalledWith(
         messageId,
         crawlResultsPrompt(expectedContent as any),
+        undefined,
+        { sessionId: undefined, topicId: undefined },
       );
     });
 
@@ -219,6 +234,8 @@ describe('search actions', () => {
       expect(result.current.optimisticUpdateMessageContent).toHaveBeenCalledWith(
         messageId,
         crawlResultsPrompt(mockResponse.results),
+        undefined,
+        { sessionId: undefined, topicId: undefined },
       );
     });
   });
@@ -238,7 +255,7 @@ describe('search actions', () => {
         await triggerSearchAgain(messageId, query, { aiSummary: true });
       });
 
-      expect(result.current.updatePluginArguments).toHaveBeenCalledWith(messageId, query);
+      expect(result.current.optimisticUpdatePluginArguments).toHaveBeenCalledWith(messageId, query);
       expect(spy).toHaveBeenCalledWith(messageId, query, true);
     });
   });
@@ -250,6 +267,8 @@ describe('search actions', () => {
       const mockMessage: Partial<UIChatMessage> = {
         id: messageId,
         parentId,
+        sessionId: undefined,
+        topicId: undefined,
         content: 'test content',
         plugin: {
           identifier: 'search',
@@ -264,7 +283,7 @@ describe('search actions', () => {
         meta: {},
       };
 
-      vi.spyOn(chatSelectors, 'getMessageById').mockImplementation(
+      vi.spyOn(dbMessageSelectors, 'getDbMessageById').mockImplementation(
         () => () => mockMessage as UIChatMessage,
       );
 
@@ -282,20 +301,24 @@ describe('search actions', () => {
           plugin: mockMessage.plugin,
           pluginState: mockMessage.pluginState,
           role: 'tool',
+          sessionId: 'session-id',
+          topicId: 'topic-id',
         }),
+        { sessionId: 'session-id', topicId: 'topic-id' },
       );
 
-      expect(result.current.internal_addToolToAssistantMessage).toHaveBeenCalledWith(
+      expect(result.current.optimisticAddToolToAssistantMessage).toHaveBeenCalledWith(
         parentId,
         expect.objectContaining({
           identifier: 'search',
           type: 'default',
         }),
+        { sessionId: undefined, topicId: undefined },
       );
     });
 
     it('should not save if message not found', async () => {
-      vi.spyOn(chatSelectors, 'getMessageById').mockImplementation(() => () => undefined);
+      vi.spyOn(dbMessageSelectors, 'getDbMessageById').mockImplementation(() => () => undefined);
 
       const { result } = renderHook(() => useChatStore());
       const { saveSearchResult } = result.current;
@@ -305,7 +328,7 @@ describe('search actions', () => {
       });
 
       expect(result.current.optimisticCreateMessage).not.toHaveBeenCalled();
-      expect(result.current.internal_addToolToAssistantMessage).not.toHaveBeenCalled();
+      expect(result.current.optimisticAddToolToAssistantMessage).not.toHaveBeenCalled();
     });
   });
 
@@ -325,6 +348,177 @@ describe('search actions', () => {
       });
 
       expect(result.current.searchLoading[messageId]).toBe(false);
+    });
+  });
+
+  describe('OptimisticUpdateContext isolation', () => {
+    it('search should pass context to optimistic methods', async () => {
+      const mockResponse: UniformSearchResponse = {
+        results: [
+          {
+            title: 'Test',
+            content: 'Content',
+            url: 'https://test.com',
+            category: 'general',
+            engines: ['google'],
+            parsedUrl: 'test.com',
+            score: 1,
+          },
+        ],
+        costTime: 1,
+        resultNumbers: 1,
+        query: 'test',
+      };
+
+      (searchService.webSearch as Mock).mockResolvedValue(mockResponse);
+
+      const messageId = 'test-message-id';
+      const contextSessionId = 'context-session-id';
+      const contextTopicId = 'context-topic-id';
+
+      const mockMessage: Partial<UIChatMessage> = {
+        id: messageId,
+        sessionId: contextSessionId,
+        topicId: contextTopicId,
+        role: 'tool',
+        content: '',
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        meta: {},
+      };
+
+      vi.spyOn(dbMessageSelectors, 'getDbMessageById').mockImplementation(
+        () => () => mockMessage as UIChatMessage,
+      );
+
+      const { result } = renderHook(() => useChatStore());
+      const query: SearchQuery = { query: 'test' };
+
+      await act(async () => {
+        await result.current.search(messageId, query);
+      });
+
+      expect(result.current.optimisticUpdatePluginState).toHaveBeenCalledWith(
+        messageId,
+        expect.any(Object),
+        { sessionId: contextSessionId, topicId: contextTopicId },
+      );
+      expect(result.current.optimisticUpdateMessageContent).toHaveBeenCalledWith(
+        messageId,
+        expect.any(String),
+        undefined,
+        { sessionId: contextSessionId, topicId: contextTopicId },
+      );
+    });
+
+    it('crawlMultiPages should pass context to optimistic methods', async () => {
+      const mockResponse = {
+        results: [
+          {
+            data: {
+              content: 'Test content',
+              title: 'Test',
+            },
+            crawler: 'naive',
+            originalUrl: 'https://test.com',
+          },
+        ],
+      };
+
+      (searchService.crawlPages as Mock).mockResolvedValue(mockResponse);
+
+      const messageId = 'test-message-id';
+      const contextSessionId = 'context-session-id';
+      const contextTopicId = 'context-topic-id';
+
+      const mockMessage: Partial<UIChatMessage> = {
+        id: messageId,
+        sessionId: contextSessionId,
+        topicId: contextTopicId,
+        role: 'tool',
+        content: '',
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        meta: {},
+      };
+
+      vi.spyOn(dbMessageSelectors, 'getDbMessageById').mockImplementation(
+        () => () => mockMessage as UIChatMessage,
+      );
+
+      const { result } = renderHook(() => useChatStore());
+
+      await act(async () => {
+        await result.current.crawlMultiPages(messageId, { urls: ['https://test.com'] });
+      });
+
+      expect(result.current.optimisticUpdateMessageContent).toHaveBeenCalledWith(
+        messageId,
+        expect.any(String),
+        undefined,
+        { sessionId: contextSessionId, topicId: contextTopicId },
+      );
+      expect(result.current.optimisticUpdatePluginState).toHaveBeenCalledWith(
+        messageId,
+        expect.any(Object),
+        { sessionId: contextSessionId, topicId: contextTopicId },
+      );
+    });
+
+    it('saveSearchResult should pass context to optimistic methods', async () => {
+      const messageId = 'test-message-id';
+      const parentId = 'parent-message-id';
+      const contextSessionId = 'context-session-id';
+      const contextTopicId = 'context-topic-id';
+
+      const mockMessage: Partial<UIChatMessage> = {
+        id: messageId,
+        parentId,
+        sessionId: contextSessionId,
+        topicId: contextTopicId,
+        content: 'test content',
+        plugin: {
+          identifier: 'search',
+          arguments: '{}',
+          apiName: 'search',
+          type: 'default',
+        },
+        pluginState: {},
+        role: 'tool',
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        meta: {},
+      };
+
+      vi.spyOn(dbMessageSelectors, 'getDbMessageById').mockImplementation(
+        () => () => mockMessage as UIChatMessage,
+      );
+
+      (useChatStore.getState().optimisticCreateMessage as Mock).mockResolvedValue({
+        id: 'new-message-id',
+      });
+
+      const { result } = renderHook(() => useChatStore());
+
+      await act(async () => {
+        await result.current.saveSearchResult(messageId);
+      });
+
+      expect(result.current.optimisticAddToolToAssistantMessage).toHaveBeenCalledWith(
+        parentId,
+        expect.objectContaining({
+          identifier: 'search',
+          type: 'default',
+        }),
+        { sessionId: contextSessionId, topicId: contextTopicId },
+      );
+      expect(result.current.optimisticCreateMessage).toHaveBeenCalledWith(
+        expect.objectContaining({
+          sessionId: contextSessionId,
+          topicId: contextTopicId,
+        }),
+        { sessionId: contextSessionId, topicId: contextTopicId },
+      );
     });
   });
 });

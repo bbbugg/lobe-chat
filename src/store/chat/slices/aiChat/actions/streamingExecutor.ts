@@ -1,6 +1,6 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix, typescript-sort-keys/interface */
 // Disable the auto sort key eslint rule to make the code more logic and readable
-import { AgentRuntime, type AgentRuntimeContext } from '@lobechat/agent-runtime';
+import { AgentRuntime, type AgentRuntimeContext, type AgentState } from '@lobechat/agent-runtime';
 import { isDesktop } from '@lobechat/const';
 import { knowledgeBaseQAPrompts } from '@lobechat/prompts';
 import {
@@ -23,8 +23,11 @@ import { agentChatConfigSelectors, agentSelectors } from '@/store/agent/selector
 import { getAgentStoreState } from '@/store/agent/store';
 import { GeneralChatAgent } from '@/store/chat/agents/GeneralChatAgent';
 import { createAgentExecutors } from '@/store/chat/agents/createAgentExecutors';
+import { createAgentToolsEngine } from '@/store/chat/agents/createToolEngine';
 import { ChatStore } from '@/store/chat/store';
 import { getFileStoreState } from '@/store/file/store';
+import { toolInterventionSelectors } from '@/store/user/selectors';
+import { getUserStoreState } from '@/store/user/store';
 import { setNamespace } from '@/utils/storeDebug';
 
 import { topicSelectors } from '../../../selectors';
@@ -47,12 +50,42 @@ interface ProcessMessageParams {
   groupId?: string;
   agentId?: string;
   agentConfig?: any; // Agent configuration for group chat agents
+
+  /**
+   * Explicit sessionId for this execution (avoids using global activeId)
+   */
+  sessionId?: string;
+  /**
+   * Explicit topicId for this execution (avoids using global activeTopicId)
+   */
+  topicId?: string | null;
 }
 
 /**
  * Core streaming execution actions for AI chat
  */
 export interface StreamingExecutorAction {
+  /**
+   * Creates initial agent state and context with user intervention config
+   */
+  internal_createAgentState: (params: {
+    messages: UIChatMessage[];
+    parentMessageId: string;
+    /**
+     * Explicit sessionId for this execution (avoids using global activeId)
+     */
+    sessionId?: string;
+    /**
+     * Explicit topicId for this execution (avoids using global activeTopicId)
+     */
+    topicId?: string | null;
+    threadId?: string;
+    initialState?: AgentState;
+    initialContext?: AgentRuntimeContext;
+  }) => {
+    state: AgentState;
+    context: AgentRuntimeContext;
+  };
   /**
    * Retrieves an AI-generated chat message from the backend service with streaming
    */
@@ -77,7 +110,15 @@ export interface StreamingExecutorAction {
   internal_execAgentRuntime: (params: {
     messages: UIChatMessage[];
     parentMessageId: string;
-    parentMessageType: 'user' | 'assistant';
+    parentMessageType: 'user' | 'assistant' | 'tool';
+    /**
+     * Explicit sessionId for this execution (avoids using global activeId)
+     */
+    sessionId?: string;
+    /**
+     * Explicit topicId for this execution (avoids using global activeTopicId)
+     */
+    topicId?: string | null;
     inSearchWorkflow?: boolean;
     /**
      * the RAG query content, should be embedding and used in the semantic search
@@ -85,8 +126,17 @@ export interface StreamingExecutorAction {
     ragQuery?: string;
     threadId?: string;
     inPortalThread?: boolean;
+    skipCreateFirstMessage?: boolean;
     traceId?: string;
     ragMetadata?: { ragQueryId: string; fileChunks: MessageSemanticSearchChunk[] };
+    /**
+     * Initial agent state (for resuming execution from a specific point)
+     */
+    initialState?: AgentState;
+    /**
+     * Initial agent runtime context (for resuming execution from a specific phase)
+     */
+    initialContext?: AgentRuntimeContext;
   }) => Promise<void>;
 }
 
@@ -96,6 +146,79 @@ export const streamingExecutor: StateCreator<
   [],
   StreamingExecutorAction
 > = (set, get) => ({
+  internal_createAgentState: ({
+    messages,
+    parentMessageId,
+    sessionId: paramSessionId,
+    topicId: paramTopicId,
+    threadId,
+    initialState,
+    initialContext,
+  }) => {
+    // Use provided sessionId/topicId or fallback to global state
+    const { activeId, activeTopicId } = get();
+    const sessionId = paramSessionId ?? activeId;
+    const topicId = paramTopicId !== undefined ? paramTopicId : activeTopicId;
+
+    const agentStoreState = getAgentStoreState();
+    const agentConfigData = agentSelectors.currentAgentConfig(agentStoreState);
+
+    // Get tools manifest map
+    const toolsEngine = createAgentToolsEngine({
+      model: agentConfigData.model,
+      provider: agentConfigData.provider!,
+    });
+    const { enabledToolIds } = toolsEngine.generateToolsDetailed({
+      model: agentConfigData.model,
+      provider: agentConfigData.provider!,
+      toolIds: agentConfigData.plugins,
+    });
+    const toolManifestMap = Object.fromEntries(
+      toolsEngine.getEnabledPluginManifests(enabledToolIds).entries(),
+    );
+
+    // Get user intervention config
+    const userStore = getUserStoreState();
+    const userInterventionConfig = {
+      approvalMode: toolInterventionSelectors.approvalMode(userStore),
+      allowList: toolInterventionSelectors.allowList(userStore),
+    };
+
+    // Create initial state or use provided state
+    const state =
+      initialState ||
+      AgentRuntime.createInitialState({
+        sessionId,
+        messages,
+        maxSteps: 400,
+        metadata: {
+          sessionId,
+          topicId,
+          threadId,
+        },
+        toolManifestMap,
+        userInterventionConfig,
+      });
+
+    // Create initial context or use provided context
+    const context: AgentRuntimeContext = initialContext || {
+      phase: 'init',
+      payload: {
+        model: agentConfigData.model,
+        provider: agentConfigData.provider,
+        parentMessageId,
+      },
+      session: {
+        sessionId,
+        messageCount: messages.length,
+        status: state.status,
+        stepCount: 0,
+      },
+    };
+
+    return { state, context };
+  },
+
   internal_fetchAIChatMessage: async ({ messages, messageId, params, provider, model }) => {
     const {
       internal_toggleChatLoading,
@@ -137,18 +260,25 @@ export const streamingExecutor: StateCreator<
     let output = '';
     let thinking = '';
     let thinkingStartAt: number;
-    let duration: number;
+    let duration: number | undefined;
     // to upload image
     const uploadTasks: Map<string, Promise<{ id?: string; url?: string }>> = new Map();
 
+    const context: { sessionId: string; topicId?: string | null } = {
+      sessionId: params?.sessionId || get().activeId,
+      topicId: params?.topicId,
+    };
     // Throttle tool_calls updates to prevent excessive re-renders (max once per 300ms)
     const throttledUpdateToolCalls = throttle(
       (toolCalls: any[]) => {
-        internal_dispatchMessage({
-          id: messageId,
-          type: 'updateMessage',
-          value: { tools: get().internal_transformToolCalls(toolCalls) },
-        });
+        internal_dispatchMessage(
+          {
+            id: messageId,
+            type: 'updateMessage',
+            value: { tools: get().internal_transformToolCalls(toolCalls) },
+          },
+          context,
+        );
       },
       300,
       { leading: true, trailing: true },
@@ -169,13 +299,14 @@ export const streamingExecutor: StateCreator<
       historySummary: historySummary?.content,
       trace: {
         traceId: params?.traceId,
-        sessionId: get().activeId,
-        topicId: get().activeTopicId,
+        sessionId: params?.sessionId ?? get().activeId,
+        topicId:
+          (params?.topicId !== undefined ? params.topicId : get().activeTopicId) ?? undefined,
         traceName: TraceNameMap.Conversation,
       },
       onErrorHandle: async (error) => {
-        await messageService.updateMessageError(messageId, error);
-        await refreshMessages();
+        await messageService.updateMessageError(messageId, error, context);
+        await refreshMessages(params?.sessionId, params?.topicId);
       },
       onFinish: async (
         content,
@@ -184,10 +315,11 @@ export const streamingExecutor: StateCreator<
         // if there is traceId, update it
         if (traceId) {
           msgTraceId = traceId;
-          messageService.updateMessage(messageId, {
-            traceId,
-            observationId: observationId ?? undefined,
-          });
+          messageService.updateMessage(
+            messageId,
+            { traceId, observationId: observationId ?? undefined },
+            context,
+          );
         }
 
         // 等待所有图片上传完成
@@ -229,13 +361,20 @@ export const streamingExecutor: StateCreator<
         internal_toggleChatReasoning(false, messageId, n('toggleChatReasoning/false') as string);
 
         // update the content after fetch result
-        await optimisticUpdateMessageContent(messageId, content, {
-          toolCalls: parsedToolCalls,
-          reasoning: !!reasoning ? { ...reasoning, duration } : undefined,
-          search: !!grounding?.citations ? grounding : undefined,
-          imageList: finalImages.length > 0 ? finalImages : undefined,
-          metadata: speed ? { ...usage, ...speed } : usage,
-        });
+        await optimisticUpdateMessageContent(
+          messageId,
+          content,
+          {
+            toolCalls: parsedToolCalls,
+            reasoning: !!reasoning
+              ? { ...reasoning, duration: duration && !isNaN(duration) ? duration : undefined }
+              : undefined,
+            search: !!grounding?.citations ? grounding : undefined,
+            imageList: finalImages.length > 0 ? finalImages : undefined,
+            metadata: speed ? { ...usage, ...speed } : usage,
+          },
+          context,
+        );
       },
       onMessageHandle: async (chunk) => {
         switch (chunk.type) {
@@ -248,27 +387,33 @@ export const streamingExecutor: StateCreator<
             )
               return;
 
-            internal_dispatchMessage({
-              id: messageId,
-              type: 'updateMessage',
-              value: {
-                search: {
-                  citations: chunk.grounding.citations,
-                  searchQueries: chunk.grounding.searchQueries,
+            internal_dispatchMessage(
+              {
+                id: messageId,
+                type: 'updateMessage',
+                value: {
+                  search: {
+                    citations: chunk.grounding.citations,
+                    searchQueries: chunk.grounding.searchQueries,
+                  },
                 },
               },
-            });
+              context,
+            );
             break;
           }
 
           case 'base64_image': {
-            internal_dispatchMessage({
-              id: messageId,
-              type: 'updateMessage',
-              value: {
-                imageList: chunk.images.map((i) => ({ id: i.id, url: i.data, alt: i.id })),
+            internal_dispatchMessage(
+              {
+                id: messageId,
+                type: 'updateMessage',
+                value: {
+                  imageList: chunk.images.map((i) => ({ id: i.id, url: i.data, alt: i.id })),
+                },
               },
-            });
+              context,
+            );
             const image = chunk.image;
 
             const task = getFileStoreState()
@@ -301,14 +446,17 @@ export const streamingExecutor: StateCreator<
               }
             }
 
-            internal_dispatchMessage({
-              id: messageId,
-              type: 'updateMessage',
-              value: {
-                content: output,
-                reasoning: !!thinking ? { content: thinking, duration } : undefined,
+            internal_dispatchMessage(
+              {
+                id: messageId,
+                type: 'updateMessage',
+                value: {
+                  content: output,
+                  reasoning: !!thinking ? { content: thinking, duration } : undefined,
+                },
               },
-            });
+              context,
+            );
             break;
           }
 
@@ -325,11 +473,14 @@ export const streamingExecutor: StateCreator<
 
             thinking += chunk.text;
 
-            internal_dispatchMessage({
-              id: messageId,
-              type: 'updateMessage',
-              value: { reasoning: { content: thinking } },
-            });
+            internal_dispatchMessage(
+              {
+                id: messageId,
+                type: 'updateMessage',
+                value: { reasoning: { content: thinking } },
+              },
+              context,
+            );
             break;
           }
 
@@ -340,6 +491,10 @@ export const streamingExecutor: StateCreator<
             isFunctionCall = true;
             const isInChatReasoning = get().reasoningLoadingIds.includes(messageId);
             if (isInChatReasoning) {
+              if (!duration) {
+                duration = Date.now() - thinkingStartAt;
+              }
+
               internal_toggleChatReasoning(
                 false,
                 messageId,
@@ -364,17 +519,29 @@ export const streamingExecutor: StateCreator<
   },
 
   internal_execAgentRuntime: async (params) => {
-    const { messages: originalMessages, parentMessageId, parentMessageType } = params;
+    const {
+      messages: originalMessages,
+      parentMessageId,
+      parentMessageType,
+      sessionId: paramSessionId,
+      topicId: paramTopicId,
+    } = params;
+
+    // Use provided sessionId/topicId or fallback to global state
+    const { activeId, activeTopicId } = get();
+    const sessionId = paramSessionId ?? activeId;
+    const topicId = paramTopicId !== undefined ? paramTopicId : activeTopicId;
+    const messageKey = messageMapKey(sessionId, topicId);
 
     log(
-      '[internal_execAgentRuntime] start, parentMessageId: %s,parentMessageType: %s, messages count: %d',
+      '[internal_execAgentRuntime] start, sessionId: %s, topicId: %s, messageKey: %s, parentMessageId: %s, parentMessageType: %s, messages count: %d',
+      sessionId,
+      topicId,
+      messageKey,
       parentMessageId,
       parentMessageType,
       originalMessages.length,
     );
-
-    const { activeId, activeTopicId } = get();
-    const messageKey = messageMapKey(activeId, activeTopicId);
 
     // Create a new array to avoid modifying the original messages
     let messages = [...originalMessages];
@@ -390,6 +557,7 @@ export const streamingExecutor: StateCreator<
     // ===========================================
     // Step 1: RAG Preprocessing (if enabled)
     // ===========================================
+    // Skip RAG preprocessing if initialState is provided (messages already preprocessed)
     if (params.ragQuery && parentMessageType === 'user') {
       const userMessageId = parentMessageId;
       log('[internal_execAgentRuntime] RAG preprocessing start');
@@ -451,39 +619,35 @@ export const streamingExecutor: StateCreator<
         provider: provider!,
       },
     });
+
     const runtime = new AgentRuntime(agent, {
       executors: createAgentExecutors({
         get,
         messageKey,
         parentId: params.parentMessageId,
-        parentMessageType,
-        params,
+        params: {
+          ...params,
+          sessionId,
+          topicId,
+        },
+        skipCreateFirstMessage: params.skipCreateFirstMessage,
       }),
     });
 
-    // Create initial state
-    let state = AgentRuntime.createInitialState({
-      sessionId: activeId,
-      messages,
-      maxSteps: 20, // Prevent infinite loops
-      metadata: {
-        sessionId: activeId,
-        topicId: activeTopicId,
+    // Create agent state and context with user intervention config
+    const { state: initialAgentState, context: initialAgentContext } =
+      get().internal_createAgentState({
+        messages,
+        parentMessageId: params.parentMessageId,
+        sessionId,
+        topicId,
         threadId: params.threadId,
-      },
-    });
+        initialState: params.initialState,
+        initialContext: params.initialContext,
+      });
 
-    // Initial context - use 'init' phase since state already contains messages
-    let nextContext: AgentRuntimeContext = {
-      phase: 'init',
-      payload: { model, provider, parentMessageId: params.parentMessageId },
-      session: {
-        sessionId: activeId,
-        messageCount: messages.length,
-        status: state.status,
-        stepCount: 0,
-      },
-    };
+    let state = initialAgentState;
+    let nextContext = initialAgentContext;
 
     log(
       '[internal_execAgentRuntime] Agent runtime loop start, initial phase: %s',
@@ -512,23 +676,27 @@ export const streamingExecutor: StateCreator<
 
       // Handle completion and error events
       for (const event of result.events) {
-        if (event.type === 'done') {
-          log('[internal_execAgentRuntime] Received done event, syncing to database');
-          // Sync final state to database
-          const finalMessages = get().messagesMap[messageKey] || [];
-          get().replaceMessages(finalMessages);
-        }
-
-        if (event.type === 'error') {
-          log('[internal_execAgentRuntime] Received error event: %o', event.error);
-          // Find the assistant message to update error
-          const currentMessages = get().messagesMap[messageKey] || [];
-          const assistantMessage = currentMessages.findLast((m) => m.role === 'assistant');
-          if (assistantMessage) {
-            await messageService.updateMessageError(assistantMessage.id, event.error);
+        switch (event.type) {
+          case 'done': {
+            log('[internal_execAgentRuntime] Received done event');
+            break;
           }
-          const finalMessages = get().messagesMap[messageKey] || [];
-          get().replaceMessages(finalMessages);
+
+          case 'error': {
+            log('[internal_execAgentRuntime] Received error event: %o', event.error);
+            // Find the assistant message to update error
+            const currentMessages = get().messagesMap[messageKey] || [];
+            const assistantMessage = currentMessages.findLast((m) => m.role === 'assistant');
+            if (assistantMessage) {
+              await messageService.updateMessageError(assistantMessage.id, event.error, {
+                sessionId,
+                topicId,
+              });
+            }
+            const finalMessages = get().messagesMap[messageKey] || [];
+            get().replaceMessages(finalMessages, { sessionId, topicId });
+            break;
+          }
         }
       }
 
@@ -554,7 +722,10 @@ export const streamingExecutor: StateCreator<
       const finalMessages = get().messagesMap[messageKey] || [];
       const assistantMessage = finalMessages.findLast((m) => m.role === 'assistant');
       if (assistantMessage) {
-        await get().optimisticUpdateMessageRAG(assistantMessage.id, params.ragMetadata);
+        await get().optimisticUpdateMessageRAG(assistantMessage.id, params.ragMetadata, {
+          sessionId,
+          topicId,
+        });
         log('[internal_execAgentRuntime] RAG metadata updated for assistant message');
       }
     }

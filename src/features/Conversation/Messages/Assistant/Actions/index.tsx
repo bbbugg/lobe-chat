@@ -6,7 +6,7 @@ import { memo, use, useCallback, useContext, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ShareMessageModal from '@/features/Conversation/components/ShareMessageModal';
-import { VirtuosoContext } from '@/features/Conversation/components/VirtualizedList/VirtuosoContext';
+import { VirtuaContext } from '@/features/Conversation/components/VirtualizedList/VirtuosoContext';
 import { useChatStore } from '@/store/chat';
 import { messageStateSelectors, threadSelectors } from '@/store/chat/selectors';
 import { useSessionStore } from '@/store/session';
@@ -23,10 +23,11 @@ interface AssistantActionsProps {
 }
 export const AssistantActionsBar = memo<AssistantActionsProps>(({ id, data, index }) => {
   const { error, tools } = data;
-  const [isThreadMode, hasThread, isRegenerating] = useChatStore((s) => [
+  const [isThreadMode, hasThread, isRegenerating, isCollapsed] = useChatStore((s) => [
     !!s.activeThreadId,
     threadSelectors.hasThreadBySourceMsgId(id)(s),
     messageStateSelectors.isMessageRegenerating(id)(s),
+    messageStateSelectors.isMessageCollapsed(id)(s),
   ]);
   const isGroupSession = useSessionStore(sessionSelectors.isCurrentSessionGroupSession);
   const [showShareModal, setShareModal] = useState(false);
@@ -43,6 +44,8 @@ export const AssistantActionsBar = memo<AssistantActionsProps>(({ id, data, inde
     share,
     tts,
     translate,
+    collapse,
+    expand,
   } = useChatListActionsBar({ hasThread, isRegenerating });
 
   const hasTools = !!tools;
@@ -53,11 +56,9 @@ export const AssistantActionsBar = memo<AssistantActionsProps>(({ id, data, inde
   const items = useMemo(() => {
     if (hasTools) return [delAndRegenerate, copy];
 
-    return [
-      edit,
-      copy,
-      // inThread || isGroupSession ? null : branching
-    ].filter(Boolean) as ActionIconGroupItemType[];
+    return [edit, copy, inThread || isGroupSession ? null : branching].filter(
+      Boolean,
+    ) as ActionIconGroupItemType[];
   }, [inThread, hasTools, isGroupSession, delAndRegenerate, copy, edit, branching]);
 
   const { t } = useTranslation('common');
@@ -74,6 +75,7 @@ export const AssistantActionsBar = memo<AssistantActionsProps>(({ id, data, inde
     resendThreadMessage,
     delAndResendThreadMessage,
     toggleMessageEditing,
+    toggleMessageCollapsed,
   ] = useChatStore((s) => [
     s.deleteMessage,
     s.regenerateAssistantMessage,
@@ -85,9 +87,10 @@ export const AssistantActionsBar = memo<AssistantActionsProps>(({ id, data, inde
     s.resendThreadMessage,
     s.delAndResendThreadMessage,
     s.toggleMessageEditing,
+    s.toggleMessageCollapsed,
   ]);
   const { message } = App.useApp();
-  const virtuosoRef = use(VirtuosoContext);
+  const virtuaRef = use(VirtuaContext);
 
   const onActionClick = useCallback(
     async (action: ActionIconGroupEvent) => {
@@ -95,7 +98,7 @@ export const AssistantActionsBar = memo<AssistantActionsProps>(({ id, data, inde
         case 'edit': {
           toggleMessageEditing(id, true);
 
-          virtuosoRef?.current?.scrollIntoView({ align: 'start', behavior: 'auto', index });
+          virtuaRef?.current?.scrollToIndex(index, { align: 'start' });
         }
       }
       if (!data) return;
@@ -144,6 +147,12 @@ export const AssistantActionsBar = memo<AssistantActionsProps>(({ id, data, inde
           break;
         }
 
+        case 'collapse':
+        case 'expand': {
+          toggleMessageCollapsed(id);
+          break;
+        }
+
         // case 'export': {
         //   setModal(true);
         //   break;
@@ -168,6 +177,8 @@ export const AssistantActionsBar = memo<AssistantActionsProps>(({ id, data, inde
 
   if (error) return <ErrorActionsBar onActionClick={onActionClick} />;
 
+  const collapseAction = isCollapsed ? expand : collapse;
+
   return (
     <>
       <ActionIconGroup
@@ -176,6 +187,7 @@ export const AssistantActionsBar = memo<AssistantActionsProps>(({ id, data, inde
           items: [
             edit,
             copy,
+            collapseAction,
             divider,
             tts,
             translate,

@@ -1,11 +1,22 @@
-import { ActionIcon } from '@lobehub/ui';
+import { ToolIntervention } from '@lobechat/types';
+import { ActionIcon, Icon, Tooltip } from '@lobehub/ui';
 import { createStyles } from 'antd-style';
-import { Check, LayoutPanelTop, LogsIcon, LucideBug, LucideBugOff, X } from 'lucide-react';
-import { CSSProperties, memo, useState } from 'react';
+import {
+  Ban,
+  Check,
+  LayoutPanelTop,
+  LogsIcon,
+  LucideBug,
+  LucideBugOff,
+  Trash2,
+  X,
+} from 'lucide-react';
+import { CSSProperties, memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Flexbox } from 'react-layout-kit';
 
 import { LOADING_FLAT } from '@/const/message';
+import { useChatStore } from '@/store/chat';
 import { shinyTextStylish } from '@/styles/loading';
 
 import Debug from './Debug';
@@ -62,11 +73,12 @@ export const useStyles = createStyles(({ css, token, cx }) => ({
 interface InspectorProps {
   apiName: string;
   arguments?: string;
+  assistantMessageId: string;
   hidePluginUI?: boolean;
   id: string;
   identifier: string;
   index: number;
-  messageId: string;
+  intervention?: ToolIntervention;
   result?: { content: string | null; error?: any; state?: any };
   setShowPluginRender: (show: boolean) => void;
   setShowRender: (show: boolean) => void;
@@ -79,30 +91,46 @@ interface InspectorProps {
 
 const Inspectors = memo<InspectorProps>(
   ({
-    messageId,
+    assistantMessageId,
     index,
     identifier,
     apiName,
     id,
     arguments: requestArgs,
-    showRender,
     result,
     setShowRender,
     showPluginRender,
     setShowPluginRender,
-    hidePluginUI = false,
     type,
+    intervention,
   }) => {
     const { t } = useTranslation('plugin');
     const { styles, theme } = useStyles();
 
     const [showDebug, setShowDebug] = useState(false);
+    const [isPinned, setIsPinned] = useState(false);
+    const [isHovered, setIsHovered] = useState(false);
+
+    const [deleteAssistantMessage] = useChatStore((s) => [s.deleteAssistantMessage]);
 
     const hasError = !!result?.error;
     const hasSuccessResult = !!result?.content && result.content !== LOADING_FLAT;
 
     const hasResult = hasSuccessResult || hasError;
 
+    const isPending = intervention?.status === 'pending';
+    const isReject = intervention?.status === 'rejected';
+    const isTitleLoading = !hasResult && !isPending;
+
+    // Compute actual render state based on pinned or hovered
+    const shouldShowRender = isPinned || isHovered;
+
+    // Sync with parent state
+    useEffect(() => {
+      setShowRender(shouldShowRender);
+    }, [shouldShowRender, setShowRender]);
+
+    const showCustomPluginRender = shouldShowRender && !isPending && !isReject;
     return (
       <Flexbox className={styles.container} gap={4}>
         <Flexbox align={'center'} distribution={'space-between'} gap={8} horizontal>
@@ -112,22 +140,32 @@ const Inspectors = memo<InspectorProps>(
             gap={8}
             horizontal
             onClick={() => {
-              setShowRender(!showRender);
+              setIsPinned(!isPinned);
+            }}
+            onMouseEnter={() => {
+              if (!isPinned) {
+                setIsHovered(true);
+              }
+            }}
+            onMouseLeave={() => {
+              if (!isPinned) {
+                setIsHovered(false);
+              }
             }}
             paddingInline={4}
           >
             <ToolTitle
               apiName={apiName}
-              hasResult={hasResult}
               identifier={identifier}
               index={index}
-              messageId={messageId}
+              isLoading={isTitleLoading}
+              messageId={assistantMessageId}
               toolCallId={id}
             />
           </Flexbox>
           <Flexbox align={'center'} gap={8} horizontal>
             <Flexbox className={styles.actions} horizontal>
-              {showRender && !hidePluginUI && (
+              {showCustomPluginRender && (
                 <ActionIcon
                   icon={showPluginRender ? LogsIcon : LayoutPanelTop}
                   onClick={() => {
@@ -145,14 +183,27 @@ const Inspectors = memo<InspectorProps>(
                 size={'small'}
                 title={t(showDebug ? 'debug.off' : 'debug.on')}
               />
+              <ActionIcon
+                icon={Trash2}
+                onClick={() => {
+                  deleteAssistantMessage(assistantMessageId);
+                }}
+                size={'small'}
+                title={t('inspector.delete')}
+              />
+
               <Settings id={identifier} />
             </Flexbox>
             {hasResult && (
               <Flexbox align={'center'} gap={4} horizontal style={{ fontSize: 12 }}>
-                {hasError ? (
-                  <X color={theme.colorError} size={14} />
+                {isReject ? (
+                  <Tooltip title={t('tool.intervention.toolRejected', { ns: 'chat' })}>
+                    <Icon color={theme.colorTextTertiary} icon={Ban} />
+                  </Tooltip>
+                ) : hasError ? (
+                  <Icon color={theme.colorError} icon={X} />
                 ) : (
-                  <Check color={theme.colorSuccess} size={14} />
+                  <Icon color={theme.colorSuccess} icon={Check} />
                 )}
               </Flexbox>
             )}

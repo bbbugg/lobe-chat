@@ -1,16 +1,23 @@
 import type { ChatStoreState } from '../../../initialState';
 import { mainDisplayChatIDs } from './chat';
 import { getDbMessageByToolCallId } from './dbMessage';
+import { getDisplayMessageById } from './displayMessage';
 
 const isMessageEditing = (id: string) => (s: ChatStoreState) => s.messageEditingIds.includes(id);
 const isMessageLoading = (id: string) => (s: ChatStoreState) => s.messageLoadingIds.includes(id);
 const isMessageRegenerating = (id: string) => (s: ChatStoreState) => s.regeneratingIds.includes(id);
+const isMessageContinuing = (id: string) => (s: ChatStoreState) => s.continuingIds.includes(id);
 
 const isMessageGenerating = (id: string) => (s: ChatStoreState) => s.chatLoadingIds.includes(id);
 const isMessageInRAGFlow = (id: string) => (s: ChatStoreState) =>
   s.messageRAGLoadingIds.includes(id);
 const isMessageInChatReasoning = (id: string) => (s: ChatStoreState) =>
   s.reasoningLoadingIds.includes(id);
+
+const isMessageCollapsed = (id: string) => (s: ChatStoreState) => {
+  const message = getDisplayMessageById(id)(s);
+  return message?.metadata?.collapsed ?? false;
+};
 
 const isPluginApiInvoking = (id: string) => (s: ChatStoreState) =>
   s.pluginApiLoadingIds.includes(id);
@@ -70,6 +77,8 @@ export const messageStateSelectors = {
   isHasMessageLoading,
   isInRAGFlow,
   isInToolsCalling,
+  isMessageCollapsed,
+  isMessageContinuing,
   isMessageEditing,
   isMessageGenerating,
   isMessageInChatReasoning,

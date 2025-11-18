@@ -1,4 +1,4 @@
-import { StandardErrorType } from '@lobechat/model-runtime';
+import { AgentRuntimeErrorType, StandardErrorType } from '@lobechat/model-runtime';
 import archiver from 'archiver';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -15,7 +15,7 @@ export const POST = async (req: NextRequest) => {
   const { userId } = await getUserAuth();
 
   if (!userId) {
-    return createErrorResponse(StandardErrorType.Unauthorized, 'User not authorized');
+    return createErrorResponse(AgentRuntimeErrorType.PermissionDenied, 'User not authorized');
   }
 
   if (!fileIds || fileIds.length === 0) {
@@ -31,7 +31,7 @@ export const POST = async (req: NextRequest) => {
 
     if (files.length === 0) {
       return createErrorResponse(
-        StandardErrorType.ContentNotFound,
+        StandardErrorType.InternalServerError,
         'No files found for the given IDs',
       );
     }

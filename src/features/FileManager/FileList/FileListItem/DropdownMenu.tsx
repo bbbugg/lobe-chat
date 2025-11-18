@@ -18,14 +18,13 @@ import { useKnowledgeBaseStore } from '@/store/knowledgeBase';
 import { downloadFile } from '@/utils/client/downloadFile';
 
 interface DropdownMenuProps {
-  disabled?: boolean;
   filename: string;
   id: string;
   knowledgeBaseId?: string;
   url: string;
 }
 
-const DropdownMenu = memo<DropdownMenuProps>(({ id, knowledgeBaseId, url, filename, disabled}) => {
+const DropdownMenu = memo<DropdownMenuProps>(({ id, knowledgeBaseId, url, filename }) => {
   const { t } = useTranslation(['components', 'common']);
   const { message, modal } = App.useApp();
 
@@ -142,7 +141,7 @@ const DropdownMenu = memo<DropdownMenuProps>(({ id, knowledgeBaseId, url, filena
     ).filter(Boolean);
   }, [inKnowledgeBase]);
   return (
-    <Dropdown disabled={disabled} menu={{ items }}>
+    <Dropdown menu={{ items }}>
       <ActionIcon icon={MoreHorizontalIcon} size={'small'} />
     </Dropdown>
   );

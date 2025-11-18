@@ -366,7 +366,7 @@ const MasonryFileItem = memo<MasonryFileItemProps>(
         </div>
 
         <div className={cx('dropdown', styles.dropdown)} onClick={(e) => e.stopPropagation()}>
-          <DropdownMenu disabled={downloading} filename={name} id={id} knowledgeBaseId={knowledgeBaseId} url={url} />
+          <DropdownMenu filename={name} id={id} knowledgeBaseId={knowledgeBaseId} url={url} />
         </div>
 
         <div

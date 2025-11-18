@@ -77,7 +77,6 @@ const useStyles = createStyles(({ css, token, cx, isDarkMode }) => {
 });
 
 interface FileRenderItemProps extends FileListItem {
-  downloading?: boolean;
   index: number;
   knowledgeBaseId?: string;
   onSelectedChange: (id: string, selected: boolean, shiftKey: boolean, index: number) => void;
@@ -88,7 +87,6 @@ const FileRenderItem = memo<FileRenderItemProps>(
   ({
     size,
     chunkingError,
-    downloading,
     embeddingError,
     embeddingStatus,
     finishEmbedding,
@@ -157,7 +155,6 @@ const FileRenderItem = memo<FileRenderItemProps>(
               <Checkbox
                 checked={selected}
                 className={selected ? '' : styles.hover}
-                disabled={downloading}
                 style={{ borderRadius: '50%' }}
               />
             </Center>

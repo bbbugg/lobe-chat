@@ -54,7 +54,6 @@ const FileList = memo<FileListProps>(({ knowledgeBaseId, category, onOpenFile })
   const [viewConfig, setViewConfig] = useState({ showFilesInKnowledgeBase: false });
   const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [downloading, setDownloading] = useState(false);
 
   const viewMode = useGlobalStore((s) => s.status.fileManagerViewMode || 'list') as ViewMode;
   const updateSystemStatus = useGlobalStore((s) => s.updateSystemStatus);
@@ -148,13 +147,12 @@ const FileList = memo<FileListProps>(({ knowledgeBaseId, category, onOpenFile })
   // Memoize context object to avoid recreating on every render
   const masonryContext = useMemo(
     () => ({
-      downloading,
       knowledgeBaseId,
       openFile: onOpenFile,
       selectFileIds,
       setSelectedFileIds,
     }),
-    [onOpenFile, knowledgeBaseId, selectFileIds, downloading],
+    [onOpenFile, knowledgeBaseId, selectFileIds],
   );
 
   return !isLoading && data?.length === 0 ? (
@@ -164,14 +162,12 @@ const FileList = memo<FileListProps>(({ knowledgeBaseId, category, onOpenFile })
       <Flexbox style={{ fontSize: 12, marginInline: 24 }}>
         <ToolBar
           config={viewConfig}
-          downloading={downloading}
           key={selectFileIds.join('-')}
           knowledgeBaseId={knowledgeBaseId}
           onConfigChange={setViewConfig}
           onViewChange={setViewMode}
           selectCount={selectFileIds.length}
           selectFileIds={selectFileIds}
-          setDownloading={setDownloading}
           setSelectedFileIds={setSelectedFileIds}
           showConfig={!knowledgeBaseId}
           total={data?.length}
@@ -212,13 +208,10 @@ const FileList = memo<FileListProps>(({ knowledgeBaseId, category, onOpenFile })
           data={data}
           itemContent={(index, item) => (
             <FileListItem
-              downloading={downloading}
               index={index}
               key={item.id}
               knowledgeBaseId={knowledgeBaseId}
               onSelectedChange={(id, checked, shiftKey, clickedIndex) => {
-                if (downloading) return;
-
                 if (shiftKey && lastSelectedIndex !== null && selectFileIds.length > 0 && data) {
                   // Range selection with shift key
                   const start = Math.min(lastSelectedIndex, clickedIndex);
@@ -256,7 +249,7 @@ const FileList = memo<FileListProps>(({ knowledgeBaseId, category, onOpenFile })
               <VirtuosoMasonry
                 ItemContent={MasonryItemWrapper}
                 columnCount={columnCount}
-                context={{...masonryContext, downloading}}
+                context={masonryContext}
                 data={data || []}
                 style={{
                   gap: '16px',

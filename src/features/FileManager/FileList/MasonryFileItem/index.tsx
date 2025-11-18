@@ -264,7 +264,6 @@ const useStyles = createStyles(({ css, token }) => ({
 }));
 
 interface MasonryFileItemProps extends FileListItem {
-  downloading?: boolean;
   knowledgeBaseId?: string;
   onOpen: (id: string) => void;
   onSelectedChange: (id: string, selected: boolean) => void;
@@ -288,7 +287,6 @@ const MasonryFileItem = memo<MasonryFileItemProps>(
     knowledgeBaseId,
     size,
     onOpen,
-    downloading,
   }) => {
     const { t } = useTranslation('components');
     const { styles, cx } = useStyles();
@@ -362,7 +360,7 @@ const MasonryFileItem = memo<MasonryFileItemProps>(
             onSelectedChange(id, !selected);
           }}
         >
-          <Checkbox checked={selected}  disabled={downloading} />
+          <Checkbox checked={selected} />
         </div>
 
         <div className={cx('dropdown', styles.dropdown)} onClick={(e) => e.stopPropagation()}>

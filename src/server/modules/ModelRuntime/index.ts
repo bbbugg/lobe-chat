@@ -162,7 +162,7 @@ const buildVertexOptions = (
   payload: ClientSecretPayload,
   params: Partial<GoogleGenAIOptions> = {},
 ): GoogleGenAIOptions => {
-  const rawCredentials = payload.apiKey ?? process.env.VERTEXAI_CREDENTIALS ?? '';
+  const rawCredentials = payload.apiKey || process.env.VERTEXAI_CREDENTIALS || '';
   const credentials = safeParseJSON<Record<string, string>>(rawCredentials);
 
   const projectFromParams = params.project as string | undefined;

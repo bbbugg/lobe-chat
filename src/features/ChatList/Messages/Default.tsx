@@ -12,19 +12,16 @@ export const DefaultMessage = memo<
   UIChatMessage & {
     addIdOnDOM?: boolean;
     editableContent: ReactNode;
+    hasImages?: boolean;
     isToolCallGenerating?: boolean;
   }
->(({ id, editableContent, content, isToolCallGenerating, addIdOnDOM = true }) => {
+>(({ id, editableContent, content, isToolCallGenerating, addIdOnDOM = true, hasImages }) => {
   const editing = useChatStore(messageStateSelectors.isMessageEditing(id));
 
   if (isToolCallGenerating) return;
 
-  if (!content) return <BubblesLoading />;
+  if (!content && !hasImages) return <BubblesLoading />;
   if (content === LOADING_FLAT && !editing) return <BubblesLoading />;
 
   return <div id={addIdOnDOM ? id : undefined}>{editableContent}</div>;
-});
-
-export const DefaultBelowMessage = memo<UIChatMessage>(() => {
-  return null;
 });

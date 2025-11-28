@@ -2,6 +2,232 @@
 
 # Changelog
 
+## [Version 2.0.0-next.131](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.130...v2.0.0-next.131)
+
+<sup>Released on **2025-11-28**</sup>
+
+#### 🐛 Bug Fixes
+
+- **misc**: Implement uniform callback URL for SSO providers.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### What's fixed
+
+- **misc**: Implement uniform callback URL for SSO providers, closes [#10479](https://github.com/lobehub/lobe-chat/issues/10479) ([74554c6](https://github.com/lobehub/lobe-chat/commit/74554c6))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.130](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.129...v2.0.0-next.130)
+
+<sup>Released on **2025-11-28**</sup>
+
+#### 🐛 Bug Fixes
+
+- **misc**: Add handling for `content_part` and `reasoning_part` events in fetchSSE.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### What's fixed
+
+- **misc**: Add handling for `content_part` and `reasoning_part` events in fetchSSE, closes [#10470](https://github.com/lobehub/lobe-chat/issues/10470) ([8aff3ab](https://github.com/lobehub/lobe-chat/commit/8aff3ab))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.129](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.128...v2.0.0-next.129)
+
+<sup>Released on **2025-11-28**</sup>
+
+#### 🐛 Bug Fixes
+
+- **misc**: Filter out file with `sourceType` = `file`.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### What's fixed
+
+- **misc**: Filter out file with `sourceType` = `file`, closes [#10474](https://github.com/lobehub/lobe-chat/issues/10474) ([e1c99a0](https://github.com/lobehub/lobe-chat/commit/e1c99a0))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.128](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.127...v2.0.0-next.128)
+
+<sup>Released on **2025-11-28**</sup>
+
+#### 💄 Styles
+
+- **misc**: Update i18n.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### Styles
+
+- **misc**: Update i18n, closes [#10466](https://github.com/lobehub/lobe-chat/issues/10466) ([37bd67a](https://github.com/lobehub/lobe-chat/commit/37bd67a))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.127](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.126...v2.0.0-next.127)
+
+<sup>Released on **2025-11-27**</sup>
+
+#### 🐛 Bug Fixes
+
+- **misc**: Better-auth fallback next-auth providers env.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### What's fixed
+
+- **misc**: Better-auth fallback next-auth providers env, closes [#10459](https://github.com/lobehub/lobe-chat/issues/10459) ([e167075](https://github.com/lobehub/lobe-chat/commit/e167075))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.126](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.125...v2.0.0-next.126)
+
+<sup>Released on **2025-11-27**</sup>
+
+#### 🐛 Bug Fixes
+
+- **misc**: Align docker auth defaults and better-auth docs.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### What's fixed
+
+- **misc**: Align docker auth defaults and better-auth docs, closes [#10457](https://github.com/lobehub/lobe-chat/issues/10457) ([1375314](https://github.com/lobehub/lobe-chat/commit/1375314))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.125](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.124...v2.0.0-next.125)
+
+<sup>Released on **2025-11-27**</sup>
+
+#### ✨ Features
+
+- **misc**: Support better-auth.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### What's improved
+
+- **misc**: Support better-auth, closes [#10215](https://github.com/lobehub/lobe-chat/issues/10215) ([dc62cc9](https://github.com/lobehub/lobe-chat/commit/dc62cc9))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.124](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.123...v2.0.0-next.124)
+
+<sup>Released on **2025-11-27**</sup>
+
+#### 🐛 Bug Fixes
+
+- **misc**: Fixed the agent settings plugins pages error problem, improve topic item interaction and editing behavior.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### What's fixed
+
+- **misc**: Fixed the agent settings plugins pages error problem, closes [#10437](https://github.com/lobehub/lobe-chat/issues/10437) ([c58f37a](https://github.com/lobehub/lobe-chat/commit/c58f37a))
+- **misc**: Improve topic item interaction and editing behavior, closes [#10409](https://github.com/lobehub/lobe-chat/issues/10409) ([85b45cb](https://github.com/lobehub/lobe-chat/commit/85b45cb))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.123](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.122...v2.0.0-next.123)
+
+<sup>Released on **2025-11-27**</sup>
+
+#### 💄 Styles
+
+- **misc**: Update i18n.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### Styles
+
+- **misc**: Update i18n, closes [#10445](https://github.com/lobehub/lobe-chat/issues/10445) ([4942bc9](https://github.com/lobehub/lobe-chat/commit/4942bc9))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
 ## [Version 2.0.0-next.122](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.121...v2.0.0-next.122)
 
 <sup>Released on **2025-11-26**</sup>

@@ -11,7 +11,7 @@ import { ChatStreamPayload } from '@/types/openai/chat';
 import { createErrorResponse } from '@/utils/errorResponse';
 import { getTracePayload } from '@/utils/trace';
 
-export const maxDuration = 600;
+export const maxDuration = process.env.VERCEL ? 300 : 600;
 
 export const POST = checkAuth(async (req: Request, { params, jwtPayload, createRuntime }) => {
   const provider = (await params)!.provider!;

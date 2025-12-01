@@ -52,11 +52,12 @@ jobs:
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           # 变化 3: 添加构建参数，强烈建议使用 secrets
           build-args: |
-            FEATURE_FLAGS=-welcome_suggest,+api_key_manage
+            FEATURE_FLAGS=+api_key_manage
             NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${{ secrets.CLERK_PUBLISHABLE_KEY }}
             NEXT_PUBLIC_ENABLE_NEXT_AUTH=0
             NEXT_PUBLIC_ENABLE_CLERK_AUTH=1
             NEXT_PUBLIC_BRANDING_DOMAIN=${{ secrets.BRANDING_DOMAIN }}
             NEXT_PUBLIC_BRANDING_NAME=${{ secrets.BRANDING_NAME }}
+            MAX_DURATION=600
           cache-from: type=gha,scope=${{ github.workflow }}
           cache-to: type=gha,scope=${{ github.workflow }}

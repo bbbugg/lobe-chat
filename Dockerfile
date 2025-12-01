@@ -118,6 +118,11 @@ RUN \
 
 COPY . .
 
+# 【新增】在构建前，强行把代码里的 maxDuration = 300 替换为环境变量里的值 (默认为 300)
+# 注意：这里假设你的 route.ts 文件在 src/app/api/chat/[provider]/route.ts
+# 如果你的路径不同，请修改下面的路径。可以用 find 命令模糊匹配。
+RUN sed -i "s/export const maxDuration = 300;/export const maxDuration = ${MAX_DURATION};/g" "src/app/(backend)/webapi/chat/[provider]/route.ts"
+
 # run build standalone for docker version
 RUN npm run build:docker
 

@@ -169,11 +169,11 @@ const buildVertexOptions = (
   const projectFromCredentials = credentials?.project_id;
   const projectFromEnv = process.env.VERTEXAI_PROJECT;
 
-  const project = projectFromParams ?? projectFromCredentials ?? projectFromEnv;
+  const project = projectFromParams || projectFromCredentials || projectFromEnv;
   const location =
-    (params.location as string | undefined) ?? payload.vertexAIRegion ?? process.env.VERTEXAI_LOCATION ?? undefined;
+    (params.location as string | undefined) || payload.vertexAIRegion || process.env.VERTEXAI_LOCATION || undefined;
 
-  const googleAuthOptions = params.googleAuthOptions ?? (credentials ? { credentials } : undefined);
+  const googleAuthOptions = params.googleAuthOptions || (credentials ? { credentials } : undefined);
 
   const options: GoogleGenAIOptions = {
     ...params,

@@ -1,6 +1,41 @@
 [
   {
     "children": {
+      "fixes": ["User email unique migration error."]
+    },
+    "date": "2025-12-02",
+    "version": "2.0.0-next.144"
+  },
+  {
+    "children": {
+      "features": ["Support market cloud endpoint mcp."]
+    },
+    "date": "2025-12-02",
+    "version": "2.0.0-next.143"
+  },
+  {
+    "children": {
+      "fixes": ["Remove internal apiMode param from chat completion API requests."]
+    },
+    "date": "2025-12-01",
+    "version": "2.0.0-next.142"
+  },
+  {
+    "children": {
+      "fixes": ["Drop user.phoneNumber and reuse user.phone."]
+    },
+    "date": "2025-12-01",
+    "version": "2.0.0-next.141"
+  },
+  {
+    "children": {
+      "features": ["Integrate better-auth admin plugin."]
+    },
+    "date": "2025-12-01",
+    "version": "2.0.0-next.140"
+  },
+  {
+    "children": {
       "improvements": ["Update i18n."]
     },
     "date": "2025-12-01",

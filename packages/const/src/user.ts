@@ -7,7 +7,7 @@ export const DEFAULT_PREFERENCE: UserPreference = {
   },
   lab: {
     enableGroupChat: false,
-    enableInputMarkdown: true,
+    enableInputMarkdown: false,
   },
   telemetry: null,
   topicDisplayMode: TopicDisplayMode.ByTime,

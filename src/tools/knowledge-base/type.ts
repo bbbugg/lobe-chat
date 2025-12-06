@@ -1,5 +1,6 @@
 import { ChatSemanticSearchChunk, FileSearchResult } from '@lobechat/types';
 
+
 export interface SearchKnowledgeBaseArgs {
   query: string;
   topK?: number;

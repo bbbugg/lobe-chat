@@ -1,7 +1,10 @@
 import { InterceptRouteParams, OpenSettingsWindowOptions } from '@lobechat/electron-client-ipc';
 import { findMatchingRoute } from '~common/routes';
 
-import { AppBrowsersIdentifiers, WindowTemplateIdentifiers } from '@/appBrowsers';
+import {
+  AppBrowsersIdentifiers,
+  WindowTemplateIdentifiers,
+} from '@/appBrowsers';
 import { IpcClientEventSender } from '@/types/ipcClientEvent';
 
 import { ControllerModule, ipcClientEvent, shortcut } from './index';

@@ -116,8 +116,10 @@ export const List = memo(() => {
                 columnCount={columnCount}
                 context={masonryContext}
                 data={data || []}
+                key={JSON.stringify(data)}
                 style={{
                   gap: '16px',
+                  overflow: 'hidden',
                 }}
               />
             </div>

@@ -36,7 +36,7 @@ const Layout = memo(({ children, mobile }: ProviderMenuProps) => {
         background: theme.colorBgLayout,
         borderRight: `1px solid ${theme.colorBorderSecondary}`,
         minWidth: width,
-        overflow: mobile ? undefined : 'scroll',
+        overflow: mobile ? undefined : 'auto',
       }}
       width={width}
     >
@@ -70,7 +70,7 @@ const Layout = memo(({ children, mobile }: ProviderMenuProps) => {
 
 const ProviderMenu = ({
   mobile,
-  onProviderSelect = () => {},
+  onProviderSelect = () => { },
 }: {
   mobile?: boolean;
   onProviderSelect?: (providerKey: string) => void;

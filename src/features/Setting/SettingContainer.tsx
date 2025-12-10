@@ -16,7 +16,7 @@ const SettingContainer = memo<PropsWithChildren<SettingContainerProps>>(
 
     return (
       <Flexbox
-        align={'center'}
+        align={'flex-start'}
         height={'100%'}
         style={{
           background:

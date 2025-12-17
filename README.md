@@ -346,14 +346,14 @@ In addition, these plugins are not limited to news aggregation, but can also ext
 
 <!-- PLUGIN LIST -->
 
-| Recent Submits                                                                                                              | Description                                                                                                                               |
-| --------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| [AladinBooks](https://lobechat.com/discover/plugin/AladinSearchBooks)<br/><sup>By **azurewebsites** on **2025-12-08**</sup> | Search for books on Aladin.<br/>`book` `search`                                                                                           |
-| [PortfolioMeta](https://lobechat.com/discover/plugin/StockData)<br/><sup>By **portfoliometa** on **2025-11-28**</sup>       | Analyze stocks and get comprehensive real-time investment data and analytics.<br/>`stock`                                                 |
-| [SEO](https://lobechat.com/discover/plugin/SEO)<br/><sup>By **orrenprunckun** on **2025-11-14**</sup>                       | Enter any URL and keyword and get an On-Page SEO analysis & insights!<br/>`seo`                                                           |
-| [Shopping tools](https://lobechat.com/discover/plugin/ShoppingTools)<br/><sup>By **shoppingtools** on **2025-10-27**</sup>  | Search for products on eBay & AliExpress, find eBay events & coupons. Get prompt examples.<br/>`shopping` `e-bay` `ali-express` `coupons` |
+| Recent Submits                                                                                                          | Description                                                                                                                                        |
+| ----------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [Video Captions](https://lobechat.com/discover/plugin/VideoCaptions)<br/><sup>By **maila** on **2025-12-13**</sup>      | Convert Youtube links into transcribed text, enable asking questions, create chapters, and summarize its content.<br/>`video-to-text` `youtube`    |
+| [WeatherGPT](https://lobechat.com/discover/plugin/WeatherGPT)<br/><sup>By **steven-tey** on **2025-12-13**</sup>        | Get current weather information for a specific location.<br/>`weather`                                                                             |
+| [Git OSS Stats](https://lobechat.com/discover/plugin/gitUserRepoStats)<br/><sup>By **yunwei37** on **2025-12-13**</sup> | Dynamically generate and analyze stats and history for OSS repos and developers.<br/>`github` `oss`                                                |
+| [Questmate Forms](https://lobechat.com/discover/plugin/questmate)<br/><sup>By **questmate** on **2025-12-13**</sup>     | Create forms, checklists and workflows (we call 'em Quests!) that you can assign, schedule or make public.<br/>`forms` `checklists` `productivity` |
 
-> 📊 Total plugins: [<kbd>**37**</kbd>](https://lobechat.com/discover/plugins)
+> 📊 Total plugins: [<kbd>**39**</kbd>](https://lobechat.com/discover/plugins)
 
  <!-- PLUGIN LIST -->
 
@@ -821,7 +821,7 @@ This project is [LobeHub Community License](./LICENSE) licensed.
 [docker-size-link]: https://hub.docker.com/r/lobehub/lobe-chat-database
 [docker-size-shield]: https://img.shields.io/docker/image-size/lobehub/lobe-chat-database?color=369eff&labelColor=black&style=flat-square&sort=semver
 [docs]: https://lobehub.com/docs/usage/start
-[docs-dev-guide]: https://github.com/lobehub/lobe-chat/wiki/index
+[docs-dev-guide]: https://lobehub.com/docs/development/start
 [docs-docker]: https://lobehub.com/docs/self-hosting/server-database/docker-compose
 [docs-env-var]: https://lobehub.com/docs/self-hosting/environment-variables
 [docs-feat-agent]: https://lobehub.com/docs/usage/features/agent-market
@@ -841,7 +841,7 @@ This project is [LobeHub Community License](./LICENSE) licensed.
 [docs-feat-tts]: https://lobehub.com/docs/usage/features/tts
 [docs-feat-vision]: https://lobehub.com/docs/usage/features/vision
 [docs-function-call]: https://lobehub.com/blog/openai-function-call
-[docs-lighthouse]: https://github.com/lobehub/lobe-chat/wiki/Lighthouse
+[docs-lighthouse]: https://lobehub.com/docs/development/others/lighthouse
 [docs-plugin-dev]: https://lobehub.com/docs/usage/plugins/development
 [docs-self-hosting]: https://lobehub.com/docs/self-hosting/start
 [docs-upstream-sync]: https://lobehub.com/docs/self-hosting/advanced/upstream-sync

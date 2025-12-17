@@ -3,7 +3,7 @@
 import { CheckCircleFilled } from '@ant-design/icons';
 import { ChatMessageError, TraceNameMap } from '@lobechat/types';
 import { ModelIcon } from '@lobehub/icons';
-import { Alert, Button, Highlighter, Icon, Select } from '@lobehub/ui';
+import { Alert, Button, Highlighter, Icon, Select, Text } from '@lobehub/ui';
 import { useTheme } from 'antd-style';
 import { Loader2Icon } from 'lucide-react';
 import { ReactNode, memo, useState } from 'react';
@@ -62,7 +62,7 @@ const Checker = memo<ConnectionCheckerProps>(
     const isProviderConfigUpdating = useAiInfraStore(
       aiProviderSelectors.isProviderConfigUpdating(provider),
     );
-    const totalModels = useAiInfraStore(aiModelSelectors.aiProviderChatModelListIds);
+    const totalModels = useAiInfraStore(aiModelSelectors.enabledAiProviderModelList);
     const updateAiProviderConfig = useAiInfraStore((s) => s.updateAiProviderConfig);
     const currentConfig = useAiInfraStore(aiProviderSelectors.providerConfigById(provider));
 
@@ -132,32 +132,76 @@ const Checker = memo<ConnectionCheckerProps>(
     return (
       <Flexbox gap={8}>
         <Flexbox gap={8} horizontal>
-          <Select
-            listItemHeight={36}
-            onSelect={async (value) => {
-              setCheckModel(value);
-              await updateAiProviderConfig(provider, {
-                ...currentConfig,
-                checkModel: value,
-              });
-            }}
-            optionRender={({ value }) => {
-              return (
-                <Flexbox align={'center'} gap={6} horizontal>
-                  <ModelIcon model={value as string} size={20} />
-                  {value}
-                </Flexbox>
-              );
-            }}
-            options={totalModels.map((id) => ({ label: id, value: id }))}
+          <Flexbox
             style={{
               flex: 1,
-              overflow: 'hidden',
+              position: 'relative',
             }}
-            suffixIcon={isProviderConfigUpdating && <Icon icon={Loader2Icon} spin />}
-            value={checkModel}
-            virtual
-          />
+          >
+            <Select
+              style={{ width: '100%' }}
+              menuStyle={{
+                minWidth: '320px',
+                maxWidth: 'none',
+                overflowX: 'visible',
+              }}
+              variant={'filled'}
+              options={totalModels.map((model) => ({
+                label: (
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      padding: '8px 12px',
+                      width: '100%',
+                      userSelect: 'none',
+                      touchAction: 'pan-x',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <ModelIcon model={model.id} size={20} />
+                    <div
+                      style={{
+                        display: 'inline-block',
+                        overflowX: 'auto',
+                        whiteSpace: 'nowrap',
+                        scrollbarWidth: 'thin',
+                        scrollbarColor: 'rgba(0, 0, 0, 0.3) transparent',
+                        flexShrink: 1,
+                        paddingBottom: '2px',
+                        maxWidth: '400px',
+                        WebkitOverflowScrolling: 'touch',
+                      }}
+                    >
+                      {model.displayName || model.id}
+                    </div>
+                  </div>
+                ),
+                value: model.id,
+              }))}
+              value={checkModel}
+              onChange={async (value) => {
+                setCheckModel(value);
+                await updateAiProviderConfig(provider, {
+                  ...currentConfig,
+                  checkModel: value,
+                });
+              }}
+            />
+            {isProviderConfigUpdating && (
+              <Icon
+                icon={Loader2Icon}
+                spin
+                style={{
+                  position: 'absolute',
+                  right: 8,
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                }}
+              />
+            )}
+          </Flexbox>
           <Button
             disabled={isProviderConfigUpdating}
             loading={loading}

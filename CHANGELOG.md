@@ -2,6 +2,98 @@
 
 # Changelog
 
+## [Version 2.0.0-next.173](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.172...v2.0.0-next.173)
+
+<sup>Released on **2025-12-16**</sup>
+
+#### 🐛 Bug Fixes
+
+- **misc**: Request to gpt5 series should not with `top_p`, temperature when reasoning effort is not none.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### What's fixed
+
+- **misc**: Request to gpt5 series should not with `top_p`, temperature when reasoning effort is not none, closes [#10800](https://github.com/lobehub/lobe-chat/issues/10800) ([b4ad470](https://github.com/lobehub/lobe-chat/commit/b4ad470))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.172](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.171...v2.0.0-next.172)
+
+<sup>Released on **2025-12-15**</sup>
+
+#### 💄 Styles
+
+- **misc**: Update i18n.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### Styles
+
+- **misc**: Update i18n, closes [#10759](https://github.com/lobehub/lobe-chat/issues/10759) ([24cae77](https://github.com/lobehub/lobe-chat/commit/24cae77))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.171](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.170...v2.0.0-next.171)
+
+<sup>Released on **2025-12-14**</sup>
+
+#### 💄 Styles
+
+- **misc**: Update GPT-5.2 models.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### Styles
+
+- **misc**: Update GPT-5.2 models, closes [#10749](https://github.com/lobehub/lobe-chat/issues/10749) ([0446127](https://github.com/lobehub/lobe-chat/commit/0446127))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.170](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.169...v2.0.0-next.170)
+
+<sup>Released on **2025-12-12**</sup>
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
 ## [Version 2.0.0-next.169](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.168...v2.0.0-next.169)
 
 <sup>Released on **2025-12-12**</sup>

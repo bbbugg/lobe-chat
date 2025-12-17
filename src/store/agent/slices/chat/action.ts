@@ -49,7 +49,7 @@ export interface AgentChatAction {
   updateAgentChatConfig: (config: Partial<LobeAgentChatConfig>) => Promise<void>;
   updateAgentConfig: (config: PartialDeep<LobeAgentConfig>) => Promise<void>;
   useFetchAgentConfig: (isLogin: boolean | undefined, id: string) => SWRResponse<LobeAgentConfig>;
-  useFetchFilesAndKnowledgeBases: (activeAgentId?: string) => SWRResponse<KnowledgeItem[]>;
+  useFetchFilesAndKnowledgeBases: (agentId?: string) => SWRResponse<KnowledgeItem[]>;
   useInitInboxAgentStore: (
     isLogin: boolean | undefined,
     defaultAgentConfig?: PartialDeep<LobeAgentConfig>,
@@ -180,11 +180,9 @@ export const createChatSlice: StateCreator<
         },
       },
     ),
-  useFetchFilesAndKnowledgeBases: (activeAgentId?: string) => {
-    const agentId = activeAgentId || get().activeAgentId;
-
+  useFetchFilesAndKnowledgeBases: (agentId) => {
     return useClientDataSWR<KnowledgeItem[]>(
-      [FETCH_AGENT_KNOWLEDGE_KEY, agentId],
+      agentId ? [FETCH_AGENT_KNOWLEDGE_KEY, agentId] : null,
       ([, id]: string[]) => agentService.getFilesAndKnowledgeBases(id),
       {
         fallbackData: [],

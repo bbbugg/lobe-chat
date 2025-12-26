@@ -79,7 +79,7 @@ export const openaiChatModels: AIChatModelCard[] = [
     contextWindowTokens: 128_000,
     description: 'GPT-5.2 Chat：ChatGPT 使用的 GPT-5.2 变体（chat-latest），用于体验最新对话改进。',
     displayName: 'GPT-5.2 Chat',
-    enabled: true,
+    // enabled: true,
     id: 'gpt-5.2-chat-latest',
     maxOutput: 16_384,
     pricing: {

@@ -183,6 +183,7 @@ export function defineConfig() {
     '/market-auth-callback',
     // public share pages
     '/share(.*)',
+    '/public(.*)', // 服务条款和隐私条款
   ]);
 
   const betterAuthMiddleware = async (req: NextRequest) => {

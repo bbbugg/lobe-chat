@@ -1,8 +1,7 @@
-import { Alert, TextArea } from '@lobehub/ui';
-import { Button, FormInstance } from 'antd';
+import { Alert, Button, Flexbox, TextArea } from '@lobehub/ui';
+import { type FormInstance } from 'antd';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Flexbox } from 'react-layout-kit';
 
 import { isDesktop } from '@/const/version';
 import { useToolStore } from '@/store/tool';
@@ -97,12 +96,12 @@ const QuickImportSection = ({
       <div>
         <Button
           block // Make button full width
+          style={{ marginBottom: 16 }} // Add some spacing
+          type="dashed"
           onClick={() => {
             setImportError(null); // Clear previous errors when opening
             setIsImportModalVisible(true);
           }}
-          style={{ marginBottom: 16 }} // Add some spacing
-          type="dashed"
         >
           {t('dev.mcp.quickImport')}
         </Button>
@@ -113,14 +112,11 @@ const QuickImportSection = ({
   return (
     <Flexbox gap={8}>
       {importError && (
-        <Alert message={importError} showIcon style={{ marginBottom: 8 }} type="error" />
+        <Alert showIcon style={{ marginBottom: 8 }} title={importError} type="error" />
       )}
       <TextArea
         autoSize={{ maxRows: 15, minRows: 10 }}
-        onChange={(e) => {
-          setJsonInput(e.target.value);
-          if (importError) setImportError(null);
-        }}
+        value={jsonInput}
         placeholder={`{
   "mcpServers": {
     "github": {
@@ -135,19 +131,22 @@ const QuickImportSection = ({
     }
   }
 }`}
-        value={jsonInput}
+        onChange={(e) => {
+          setJsonInput(e.target.value);
+          if (importError) setImportError(null);
+        }}
       />
       <Flexbox horizontal justify={'space-between'}>
         <Button
           className={electronStylish.nodrag}
+          size={'small'}
           onClick={() => {
             setIsImportModalVisible(false);
           }}
-          size={'small'}
         >
           {t('common:cancel')}
         </Button>
-        <Button onClick={handleImportConfirm} size={'small'} type={'primary'}>
+        <Button size={'small'} type={'primary'} onClick={handleImportConfirm}>
           {t('common:import')}
         </Button>
       </Flexbox>

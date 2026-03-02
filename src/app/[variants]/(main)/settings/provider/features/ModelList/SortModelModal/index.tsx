@@ -1,24 +1,23 @@
-import { Button, Modal, SortableList } from '@lobehub/ui';
+import { Button, Flexbox, Modal, SortableList } from '@lobehub/ui';
 import { App } from 'antd';
-import { createStyles } from 'antd-style';
-import { AiProviderModelListItem } from 'model-bank';
+import { createStaticStyles } from 'antd-style';
+import { type AiProviderModelListItem } from 'model-bank';
 import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Flexbox } from 'react-layout-kit';
 
 import { useAiInfraStore } from '@/store/aiInfra';
 
 import ListItem from './ListItem';
 
-const useStyles = createStyles(({ css, token }) => ({
+const styles = createStaticStyles(({ css, cssVar }) => ({
   container: css`
     height: 36px;
     padding-inline: 8px;
-    border-radius: ${token.borderRadius}px;
+    border-radius: ${cssVar.borderRadius};
     transition: background 0.2s ease-in-out;
 
     &:hover {
-      background: ${token.colorFillTertiary};
+      background: ${cssVar.colorFillTertiary};
     }
   `,
 }));
@@ -30,7 +29,6 @@ interface SortModelModalProps {
 }
 const SortModelModal = memo<SortModelModalProps>(({ open, onCancel, defaultItems }) => {
   const { t } = useTranslation('modelProvider');
-  const { styles } = useStyles();
   const [providerId, updateAiModelsSort] = useAiInfraStore((s) => [
     s.activeAiProvider,
     s.updateAiModelsSort,
@@ -43,33 +41,34 @@ const SortModelModal = memo<SortModelModalProps>(({ open, onCancel, defaultItems
     <Modal
       allowFullscreen
       footer={null}
-      onCancel={onCancel}
       open={open}
       title={t('sortModal.title')}
       width={400}
+      onCancel={onCancel}
     >
       <Flexbox gap={16}>
         <SortableList
           items={items}
-          onChange={async (items: AiProviderModelListItem[]) => {
-            setItems(items);
-          }}
           renderItem={(item: AiProviderModelListItem) => (
             <SortableList.Item
+              horizontal
               align={'center'}
               className={styles.container}
               gap={4}
-              horizontal
               id={item.id}
               justify={'space-between'}
             >
               <ListItem {...item} />
             </SortableList.Item>
           )}
+          onChange={async (items: AiProviderModelListItem[]) => {
+            setItems(items);
+          }}
         />
         <Button
           block
           loading={loading}
+          type={'primary'}
           onClick={async () => {
             if (!providerId) return;
 
@@ -85,7 +84,6 @@ const SortModelModal = memo<SortModelModalProps>(({ open, onCancel, defaultItems
             message.success(t('sortModal.success'));
             onCancel();
           }}
-          type={'primary'}
         >
           {t('sortModal.update')}
         </Button>

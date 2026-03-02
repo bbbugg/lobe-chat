@@ -1,19 +1,25 @@
 'use client';
 
 import { CheckCircleFilled } from '@ant-design/icons';
-import { ChatMessageError, TraceNameMap } from '@lobechat/types';
+import { type ChatMessageError } from '@lobechat/types';
+import { TraceNameMap } from '@lobechat/types';
 import { ModelIcon } from '@lobehub/icons';
-import { Alert, Button, Highlighter, Icon, Select, Text } from '@lobehub/ui';
-import { useTheme } from 'antd-style';
+import { Alert, Button, Flexbox, Highlighter, Icon, LobeSelect as Select } from '@lobehub/ui';
+import { createStaticStyles, cssVar, cx } from 'antd-style';
 import { Loader2Icon } from 'lucide-react';
-import { ReactNode, memo, useState } from 'react';
+import { type ReactNode } from 'react';
+import { memo, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Flexbox } from 'react-layout-kit';
 
 import { useProviderName } from '@/hooks/useProviderName';
 import { chatService } from '@/services/chat';
-import { aiModelSelectors, aiProviderSelectors, useAiInfraStore } from '@/store/aiInfra';
+import { aiProviderSelectors, useAiInfraStore } from '@/store/aiInfra';
 
+const styles = createStaticStyles(({ css }) => ({
+  popup: css`
+    width: 380px;
+  `,
+}));
 const Error = memo<{ error: ChatMessageError }>(({ error }) => {
   const { t } = useTranslation('error');
   const providerName = useProviderName(error.body?.provider);
@@ -21,8 +27,11 @@ const Error = memo<{ error: ChatMessageError }>(({ error }) => {
   return (
     <Flexbox gap={8} style={{ maxWidth: 600, width: '100%' }}>
       <Alert
+        showIcon
+        title={t(`response.${error.type}` as any, { provider: providerName })}
+        type={'error'}
         extra={
-          <Flexbox>
+          <Flexbox paddingBlock={8} paddingInline={16}>
             <Highlighter
               actionIconSize={'small'}
               language={'json'}
@@ -33,9 +42,6 @@ const Error = memo<{ error: ChatMessageError }>(({ error }) => {
             </Highlighter>
           </Flexbox>
         }
-        message={t(`response.${error.type}` as any, { provider: providerName })}
-        showIcon
-        type={'error'}
       />
     </Flexbox>
   );
@@ -59,19 +65,51 @@ const Checker = memo<ConnectionCheckerProps>(
   ({ model, provider, checkErrorRender: CheckErrorRender, onBeforeCheck, onAfterCheck }) => {
     const { t } = useTranslation('setting');
 
-    const isProviderConfigUpdating = useAiInfraStore(
-      aiProviderSelectors.isProviderConfigUpdating(provider),
-    );
-    const totalModels = useAiInfraStore(aiModelSelectors.enabledAiProviderModelList);
-    const updateAiProviderConfig = useAiInfraStore((s) => s.updateAiProviderConfig);
-    const currentConfig = useAiInfraStore(aiProviderSelectors.providerConfigById(provider));
+    const [isProviderConfigUpdating, updateAiProviderConfig] = useAiInfraStore((s) => [
+      aiProviderSelectors.isProviderConfigUpdating(provider)(s),
+      s.updateAiProviderConfig,
+    ]);
+    const aiProviderModelList = useAiInfraStore((s) => s.aiProviderModelList);
+
+    // Sort models for better UX:
+    // 1. checkModel first (provider's recommended test model)
+    // 2. enabled models (user is actively using)
+    // 3. by releasedAt descending (newer models first)
+    // 4. models without releasedAt last
+    const sortedModels = useMemo(() => {
+      const chatModels = aiProviderModelList.filter((m) => m.type === 'chat');
+
+      const sorted = [...chatModels].sort((a, b) => {
+        // checkModel always first
+        if (a.id === model) return -1;
+        if (b.id === model) return 1;
+
+        // enabled models come before disabled
+        if (a.enabled !== b.enabled) return a.enabled ? -1 : 1;
+
+        // sort by releasedAt descending, models without releasedAt go last
+        if (a.releasedAt && b.releasedAt) {
+          return new Date(b.releasedAt).getTime() - new Date(a.releasedAt).getTime();
+        }
+        if (a.releasedAt && !b.releasedAt) return -1;
+        if (!a.releasedAt && b.releasedAt) return 1;
+
+        return 0;
+      });
+
+      return sorted.map((m) => m.id);
+    }, [aiProviderModelList, model]);
 
     const [loading, setLoading] = useState(false);
     const [pass, setPass] = useState(false);
     const [checkModel, setCheckModel] = useState(model);
 
-    const theme = useTheme();
     const [error, setError] = useState<ChatMessageError | undefined>();
+
+    // Sync checkModel state when model prop changes
+    useEffect(() => {
+      setCheckModel(model);
+    }, [model]);
 
     const checkConnection = async () => {
       // Clear previous check results immediately
@@ -110,12 +148,12 @@ const Checker = memo<ConnectionCheckerProps>(
               role: 'user',
             },
           ],
-          model,
+          model: checkModel,
           provider,
         },
         trace: {
           sessionId: `connection:${provider}`,
-          topicId: model,
+          topicId: checkModel,
           traceName: TraceNameMap.ConnectivityChecker,
         },
       });
@@ -131,80 +169,57 @@ const Checker = memo<ConnectionCheckerProps>(
 
     return (
       <Flexbox gap={8}>
-        <Flexbox gap={8} horizontal>
-          <Flexbox
+        <Flexbox horizontal gap={8}>
+          <Select
+            virtual
+            listItemHeight={36}
+            options={sortedModels.map((id) => ({ label: id, value: id }))}
+            popupClassName={cx(styles.popup)}
+            suffixIcon={isProviderConfigUpdating && <Icon spin icon={Loader2Icon} />}
+            value={checkModel}
+            optionRender={({ value }) => {
+              return (
+                <Flexbox horizontal align={'center'} gap={6}>
+                  <ModelIcon model={value as string} size={20} />
+                  {value}
+                </Flexbox>
+              );
+            }}
             style={{
               flex: 1,
-              position: 'relative',
+              overflow: 'hidden',
             }}
-          >
-            <Select
-              style={{ width: '100%' }}
-              menuStyle={{
-                minWidth: '320px',
-                maxWidth: 'none',
-                overflowX: 'visible',
-              }}
-              variant={'filled'}
-              options={totalModels.map((model) => ({
-                label: (
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 8,
-                      padding: '8px 12px',
-                      width: '100%',
-                      userSelect: 'none',
-                      touchAction: 'pan-x',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    <ModelIcon model={model.id} size={20} />
-                    <div
-                      style={{
-                        display: 'inline-block',
-                        overflowX: 'auto',
-                        whiteSpace: 'nowrap',
-                        scrollbarWidth: 'thin',
-                        scrollbarColor: 'rgba(0, 0, 0, 0.3) transparent',
-                        flexShrink: 1,
-                        paddingBottom: '2px',
-                        maxWidth: '400px',
-                        WebkitOverflowScrolling: 'touch',
-                      }}
-                    >
-                      {model.displayName || model.id}
-                    </div>
-                  </div>
-                ),
-                value: model.id,
-              }))}
-              value={checkModel}
-              onChange={async (value) => {
-                setCheckModel(value);
-                await updateAiProviderConfig(provider, {
-                  ...currentConfig,
-                  checkModel: value,
-                });
-              }}
-            />
-            {isProviderConfigUpdating && (
-              <Icon
-                icon={Loader2Icon}
-                spin
-                style={{
-                  position: 'absolute',
-                  right: 8,
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                }}
-              />
-            )}
-          </Flexbox>
+            onSelect={async (value) => {
+              // Update local state
+              setCheckModel(value);
+              setPass(false);
+              setError(undefined);
+
+              // Persist the selected model to provider config
+              // This allows the model to be retained after page refresh
+              await updateAiProviderConfig(provider, { checkModel: value });
+            }}
+          />
           <Button
             disabled={isProviderConfigUpdating}
             loading={loading}
+            icon={
+              pass ? (
+                <CheckCircleFilled
+                  style={{
+                    color: cssVar.colorSuccess,
+                  }}
+                />
+              ) : undefined
+            }
+            style={
+              pass
+                ? {
+                    borderColor: cssVar.colorSuccess,
+                    color: cssVar.colorSuccess,
+                  }
+                : undefined
+            }
             onClick={async () => {
               await onBeforeCheck();
               try {
@@ -214,20 +229,9 @@ const Checker = memo<ConnectionCheckerProps>(
               }
             }}
           >
-            {t('llm.checker.button')}
+            {pass ? t('llm.checker.pass') : t('llm.checker.button')}
           </Button>
         </Flexbox>
-
-        {pass && (
-          <Flexbox gap={4} horizontal>
-            <CheckCircleFilled
-              style={{
-                color: theme.colorSuccess,
-              }}
-            />
-            {t('llm.checker.pass')}
-          </Flexbox>
-        )}
         {error && errorContent}
       </Flexbox>
     );

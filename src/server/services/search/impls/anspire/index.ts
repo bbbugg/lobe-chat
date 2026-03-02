@@ -1,10 +1,14 @@
-import { SearchParams, UniformSearchResponse, UniformSearchResult } from '@lobechat/types';
+import {
+  type SearchParams,
+  type UniformSearchResponse,
+  type UniformSearchResult,
+} from '@lobechat/types';
 import { TRPCError } from '@trpc/server';
 import debug from 'debug';
 import urlJoin from 'url-join';
 
-import { SearchServiceImpl } from '../type';
-import { AnspireResponse, AnspireSearchParameters } from './type';
+import { type SearchServiceImpl } from '../type';
+import { type AnspireResponse, type AnspireSearchParameters } from './type';
 
 const log = debug('lobe-search:Anspire');
 
@@ -32,7 +36,7 @@ export class AnspireImpl implements SearchServiceImpl {
       top_k: 20,
     };
 
-    let body: AnspireSearchParameters = {
+    const body: AnspireSearchParameters = {
       ...defaultQueryParams,
       ...(params?.searchTimeRange && params.searchTimeRange !== 'anytime'
         ? (() => {

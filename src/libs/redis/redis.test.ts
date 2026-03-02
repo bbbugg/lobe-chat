@@ -1,8 +1,8 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { IoRedisConfig } from './types';
+import { type RedisConfig } from './types';
 
-const buildRedisConfig = (): IoRedisConfig | null => {
+const buildRedisConfig = (): RedisConfig | null => {
   const url = process.env.REDIS_URL;
 
   if (!url) return null;
@@ -14,7 +14,6 @@ const buildRedisConfig = (): IoRedisConfig | null => {
     enabled: true,
     password: process.env.REDIS_PASSWORD,
     prefix: process.env.REDIS_PREFIX ?? 'lobe-chat-test',
-    provider: 'redis',
     tls: process.env.REDIS_TLS === 'true',
     url,
     username: process.env.REDIS_USERNAME,
@@ -43,6 +42,7 @@ const createMockedProvider = async () => {
     hset: vi.fn().mockResolvedValue(1),
     hdel: vi.fn().mockResolvedValue(1),
     hgetall: vi.fn().mockResolvedValue({ a: '1' }),
+    eval: vi.fn().mockResolvedValue(null),
   };
 
   vi.resetModules();
@@ -70,6 +70,7 @@ const createMockedProvider = async () => {
       hset = mocks.hset;
       hdel = mocks.hdel;
       hgetall = mocks.hgetall;
+      eval = mocks.eval;
     }
 
     return { default: FakeRedis };
@@ -79,7 +80,6 @@ const createMockedProvider = async () => {
   const provider = new IoRedisRedisProvider({
     enabled: true,
     prefix: 'mock',
-    provider: 'redis',
     tls: false,
     url: 'redis://localhost:6379',
   });
@@ -140,6 +140,17 @@ describe('mocked', () => {
     await provider.set('key', 'value', { ex: 10, nx: true, get: true });
 
     expect(mocks.set).toHaveBeenCalledWith('key', 'value', 'EX', 10, 'NX', 'GET');
+    await provider.disconnect();
+  });
+
+  it('forwards eval to ioredis', async () => {
+    const { mocks, provider } = await createMockedProvider();
+    mocks.eval.mockResolvedValue(1);
+
+    const result = await provider.eval('return redis.call("GET", KEYS[1])', 1, 'my-key');
+
+    expect(mocks.eval).toHaveBeenCalledWith('return redis.call("GET", KEYS[1])', 1, 'my-key');
+    expect(result).toBe(1);
     await provider.disconnect();
   });
 

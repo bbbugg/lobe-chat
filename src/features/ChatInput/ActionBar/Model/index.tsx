@@ -1,22 +1,33 @@
 import { ModelIcon } from '@lobehub/icons';
-import { createStyles } from 'antd-style';
-import { Settings2Icon } from 'lucide-react';
-import { memo } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Center, Flexbox } from 'react-layout-kit';
+import { Center } from '@lobehub/ui';
+import { createStaticStyles, cx } from 'antd-style';
+import { type ReactNode } from 'react';
+import { memo, useCallback } from 'react';
 
 import ModelSwitchPanel from '@/features/ModelSwitchPanel';
 import { useAgentStore } from '@/store/agent';
-import { agentSelectors } from '@/store/agent/selectors';
+import { agentByIdSelectors } from '@/store/agent/selectors';
 import { aiModelSelectors, useAiInfraStore } from '@/store/aiInfra';
 
-import Action from '../components/Action';
+import { useAgentId } from '../../hooks/useAgentId';
+import { useActionBarContext } from '../context';
 import ControlsForm from './ControlsForm';
 
-const useStyles = createStyles(({ css, token, cx }) => ({
-  container: css`
-    border-radius: 20px;
-    background: ${token.colorFillTertiary};
+const styles = createStaticStyles(({ css, cssVar }) => ({
+  extraControls: css`
+    padding: 8px;
+
+    .ant-form-item:first-child {
+      padding-block: 0 4px;
+    }
+
+    .ant-form-item:last-child {
+      padding-block: 4px 0;
+    }
+
+    .ant-divider {
+      display: none;
+    }
   `,
   icon: cx(
     'model-switch',
@@ -26,10 +37,10 @@ const useStyles = createStyles(({ css, token, cx }) => ({
   ),
   model: css`
     cursor: pointer;
-    border-radius: 8px;
+    border-radius: 24px;
 
     :hover {
-      background: ${token.colorFillSecondary};
+      background: ${cssVar.colorFillSecondary};
     }
 
     :active {
@@ -38,61 +49,66 @@ const useStyles = createStyles(({ css, token, cx }) => ({
       }
     }
   `,
-  modelWithControl: css`
-    border-radius: 20px;
-
-    :hover {
-      background: ${token.colorFillTertiary};
-    }
-  `,
-
-  video: css`
-    overflow: hidden;
-    border-radius: 8px;
-  `,
 }));
 
-const ModelSwitch = memo(() => {
-  const { t } = useTranslation('chat');
-  const { styles, cx } = useStyles();
-
-  const [model, provider] = useAgentStore((s) => [
-    agentSelectors.currentAgentModel(s),
-    agentSelectors.currentAgentModelProvider(s),
-  ]);
-
+const ControlsSection = memo<{ model: string; provider: string }>(({ model, provider }) => {
   const isModelHasExtendParams = useAiInfraStore(
     aiModelSelectors.isModelHasExtendParams(model, provider),
   );
 
-  return (
-    <Flexbox align={'center'} className={isModelHasExtendParams ? styles.container : ''} horizontal>
-      <ModelSwitchPanel>
-        <Center
-          className={cx(styles.model, isModelHasExtendParams && styles.modelWithControl)}
-          height={36}
-          width={36}
-        >
-          <div className={styles.icon}>
-            <ModelIcon model={model} size={22} />
-          </div>
-        </Center>
-      </ModelSwitchPanel>
+  if (!isModelHasExtendParams) return null;
 
-      {isModelHasExtendParams && (
-        <Action
-          icon={Settings2Icon}
-          popover={{
-            content: <ControlsForm />,
-            minWidth: 350,
-            placement: 'topLeft',
-          }}
-          showTooltip={false}
-          style={{ borderRadius: 20, marginInlineStart: -4 }}
-          title={t('extendParams.title')}
-        />
-      )}
-    </Flexbox>
+  return (
+    <div className={styles.extraControls}>
+      <ControlsForm model={model} provider={provider} />
+    </div>
+  );
+});
+
+ControlsSection.displayName = 'ControlsSection';
+
+const ModelSwitch = memo(() => {
+  const { dropdownPlacement, borderRadius } = useActionBarContext();
+
+  const agentId = useAgentId();
+  const [model, provider, updateAgentConfigById] = useAgentStore((s) => [
+    agentByIdSelectors.getAgentModelById(agentId)(s),
+    agentByIdSelectors.getAgentModelProviderById(agentId)(s),
+    s.updateAgentConfigById,
+  ]);
+
+  const handleModelChange = useCallback(
+    async (params: { model: string; provider: string }) => {
+      await updateAgentConfigById(agentId, params);
+    },
+    [agentId, updateAgentConfigById],
+  );
+
+  const renderControls = useCallback((modelId: string, providerId: string): ReactNode => {
+    const hasExtendParams = aiModelSelectors.isModelHasExtendParams(
+      modelId,
+      providerId,
+    )(useAiInfraStore.getState());
+
+    if (!hasExtendParams) return null;
+
+    return <ControlsSection model={modelId} provider={providerId} />;
+  }, []);
+
+  return (
+    <ModelSwitchPanel
+      extraControls={renderControls}
+      model={model}
+      placement={dropdownPlacement}
+      provider={provider}
+      onModelChange={handleModelChange}
+    >
+      <Center className={styles.model} height={36} style={borderRadius ? { borderRadius } : undefined} width={36}           >
+        <div className={styles.icon}>
+          <ModelIcon model={model} size={22} />
+        </div>
+      </Center>
+    </ModelSwitchPanel>
   );
 });
 

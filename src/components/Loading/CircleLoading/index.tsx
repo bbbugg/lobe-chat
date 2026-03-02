@@ -1,9 +1,8 @@
 'use client';
 
-import { Icon, Text } from '@lobehub/ui';
+import { Center, Flexbox, Icon, Text } from '@lobehub/ui';
 import { LoaderCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { Center, Flexbox } from 'react-layout-kit';
 
 export default () => {
   const { t } = useTranslation('common');
@@ -11,7 +10,7 @@ export default () => {
     <Center height={'100%'} width={'100%'}>
       <Flexbox align={'center'} gap={8}>
         <div>
-          <Icon icon={LoaderCircle} size={'large'} spin />
+          <Icon spin icon={LoaderCircle} size={'large'} />
         </div>
         <Text style={{ letterSpacing: '0.1em' }} type={'secondary'}>
           {t('loading')}

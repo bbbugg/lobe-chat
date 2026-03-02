@@ -1,12 +1,12 @@
 'use client';
 
-import { createStyles } from 'antd-style';
+import { Flexbox } from '@lobehub/ui';
+import { createStaticStyles } from 'antd-style';
 import { memo } from 'react';
-import { Flexbox } from 'react-layout-kit';
 
 import ImageItem from '@/components/ImageItem';
 
-const useStyles = createStyles(({ css, token }) => ({
+const styles = createStaticStyles(({ css, cssVar }) => ({
   container: css`
     gap: 8px;
     margin-block-end: 12px;
@@ -17,7 +17,7 @@ const useStyles = createStyles(({ css, token }) => ({
 
     width: 60px;
     height: 60px;
-    border-radius: ${token.borderRadius}px;
+    border-radius: ${cssVar.borderRadius}px;
   `,
   imageSingle: css`
     position: relative;
@@ -37,11 +37,11 @@ const useStyles = createStyles(({ css, token }) => ({
       z-index: -1;
       inset: -4px;
 
-      border: 1px solid ${token.colorBorder};
-      border-radius: ${token.borderRadius}px;
+      border: 1px solid ${cssVar.colorBorder};
+      border-radius: ${cssVar.borderRadius}px;
 
-      background: ${token.colorBgContainer};
-      box-shadow: 0 2px 8px ${token.colorBgMask};
+      background: ${cssVar.colorBgContainer};
+      box-shadow: 0 2px 8px ${cssVar.colorBgMask};
     }
 
     &:hover {
@@ -53,9 +53,9 @@ const useStyles = createStyles(({ css, token }) => ({
 
     width: 100%;
     height: 100%;
-    border-radius: ${token.borderRadiusSM}px;
+    border-radius: ${cssVar.borderRadiusSM}px;
 
-    background: ${token.colorBgLayout};
+    background: ${cssVar.colorBgLayout};
   `,
 }));
 
@@ -66,8 +66,6 @@ interface ReferenceImagesProps {
 }
 
 export const ReferenceImages = memo<ReferenceImagesProps>(({ imageUrl, imageUrls, layout }) => {
-  const { styles } = useStyles();
-
   // Collect all images
   const allImages: string[] = [];
   if (imageUrl) {
@@ -89,11 +87,11 @@ export const ReferenceImages = memo<ReferenceImagesProps>(({ imageUrl, imageUrls
         <div className={styles.imageSingleInner}>
           <ImageItem
             alt="Reference image"
+            style={{ height: '100%', width: '100%' }}
+            url={allImages[0]}
             preview={{
               src: allImages[0],
             }}
-            style={{ height: '100%', width: '100%' }}
-            url={allImages[0]}
           />
         </div>
       </div>
@@ -102,16 +100,16 @@ export const ReferenceImages = memo<ReferenceImagesProps>(({ imageUrl, imageUrls
 
   // Multiple images layout
   return (
-    <Flexbox className={styles.container} horizontal wrap="wrap">
+    <Flexbox horizontal className={styles.container} wrap="wrap">
       {allImages.map((url, index) => (
         <div className={styles.image} key={`${url}-${index}`}>
           <ImageItem
             alt={`Reference image ${index + 1}`}
+            style={{ height: '100%', width: '100%' }}
+            url={url}
             preview={{
               src: url,
             }}
-            style={{ height: '100%', width: '100%' }}
-            url={url}
           />
         </div>
       ))}

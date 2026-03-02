@@ -1,10 +1,14 @@
-import { SearchParams, UniformSearchResponse, UniformSearchResult } from '@lobechat/types';
+import {
+  type SearchParams,
+  type UniformSearchResponse,
+  type UniformSearchResult,
+} from '@lobechat/types';
 import { TRPCError } from '@trpc/server';
 import debug from 'debug';
 import urlJoin from 'url-join';
 
-import { SearchServiceImpl } from '../type';
-import { GoogleResponse, GoogleSearchParameters } from './type';
+import { type SearchServiceImpl } from '../type';
+import { type GoogleResponse, type GoogleSearchParameters } from './type';
 
 const log = debug('lobe-search:Google');
 
@@ -44,7 +48,7 @@ export class GoogleImpl implements SearchServiceImpl {
       q: query,
     };
 
-    let body: GoogleSearchParameters = {
+    const body: GoogleSearchParameters = {
       ...defaultQueryParams,
       dateRestrict:
         params?.searchTimeRange && params.searchTimeRange !== 'anytime'

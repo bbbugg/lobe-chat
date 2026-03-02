@@ -1,22 +1,20 @@
 'use client';
 
-import { Block, Grid } from '@lobehub/ui';
-import { Skeleton } from 'antd';
+import { Block, Center, Flexbox, Grid, Skeleton } from '@lobehub/ui';
 import { memo } from 'react';
-import { Center, Flexbox } from 'react-layout-kit';
 
 import PromptInput from '@/app/[variants]/(main)/image/features/PromptInput';
 
 const SkeletonList = memo(() => {
   return (
-    <>
+    <Flexbox style={{ minHeight: 'calc(100vh - 44px)' }}>
       <Block variant={'borderless'}>
         <Flexbox gap={12}>
           {/* Prompt text skeleton */}
           <Skeleton.Button active style={{ height: 20, width: '95%' }} />
 
           {/* Metadata skeleton */}
-          <Flexbox gap={12} horizontal style={{ width: '100%' }}>
+          <Flexbox horizontal gap={12} style={{ width: '100%' }}>
             <Skeleton.Button active style={{ height: 16, width: 120 }} />
             <Skeleton.Button active style={{ height: 16, width: 80 }} />
             <Skeleton.Button active style={{ height: 16, width: 60 }} />
@@ -41,7 +39,7 @@ const SkeletonList = memo(() => {
       >
         <PromptInput disableAnimation={true} showTitle={false} />
       </Center>
-    </>
+    </Flexbox>
   );
 });
 

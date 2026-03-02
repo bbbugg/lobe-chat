@@ -1,41 +1,46 @@
 'use client';
 
-import { AES_GCM_URL, BASE_PROVIDER_DOC_URL, FORM_STYLE, isDesktop } from '@lobechat/const';
+import { ENABLE_BUSINESS_FEATURES } from '@lobechat/business-const';
+import { AES_GCM_URL, BASE_PROVIDER_DOC_URL, FORM_STYLE } from '@lobechat/const';
 import { ProviderCombine } from '@lobehub/icons';
+import { type FormGroupItemType, type FormItemProps } from '@lobehub/ui';
 import {
   Avatar,
+  Center,
+  Flexbox,
   Form,
-  type FormGroupItemType,
-  type FormItemProps,
   Icon,
+  Skeleton,
   Tooltip,
+  stopPropagation,
 } from '@lobehub/ui';
 import { useDebounceFn } from 'ahooks';
-import { Skeleton, Switch } from 'antd';
-import { createStyles } from 'antd-style';
+import { Form as AntdForm, Switch } from 'antd';
+import { createStaticStyles, cssVar, cx, responsive } from 'antd-style';
 import { Loader2Icon, LockIcon } from 'lucide-react';
-import Link from 'next/link';
-import { ReactNode, memo, useCallback, useLayoutEffect, useRef } from 'react';
+import { type ReactNode } from 'react';
+import { memo, useCallback, useLayoutEffect, useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Center, Flexbox } from 'react-layout-kit';
 import urlJoin from 'url-join';
 import { z } from 'zod';
 
 import { FormInput, FormPassword } from '@/components/FormInput';
 import { SkeletonInput, SkeletonSwitch } from '@/components/Skeleton';
+import { lambdaQuery } from '@/libs/trpc/client';
 import { aiProviderSelectors, useAiInfraStore } from '@/store/aiInfra';
-import {
-  AiProviderDetailItem,
-  AiProviderSourceEnum,
-  AiProviderSourceType,
-} from '@/types/aiProvider';
+import { type AiProviderDetailItem, type AiProviderSourceType } from '@/types/aiProvider';
+import { AiProviderSourceEnum } from '@/types/aiProvider';
 
 import { KeyVaultsConfigKey, LLMProviderApiTokenKey, LLMProviderBaseUrlKey } from '../../const';
-import Checker, { CheckErrorRender } from './Checker';
+import { type CheckErrorRender } from './Checker';
+import Checker from './Checker';
 import EnableSwitch from './EnableSwitch';
+import OAuthDeviceFlowAuth from './OAuthDeviceFlowAuth';
 import UpdateProviderInfo from './UpdateProviderInfo';
 
-const useStyles = createStyles(({ css, prefixCls, responsive, token }) => ({
+const prefixCls = 'ant';
+
+const styles = createStaticStyles(({ css, cssVar }) => ({
   aceGcm: css`
     padding-block: 0 !important;
     .${prefixCls}-form-item-label {
@@ -45,12 +50,12 @@ const useStyles = createStyles(({ css, prefixCls, responsive, token }) => ({
       width: 100%;
 
       font-size: 12px;
-      color: ${token.colorTextSecondary};
+      color: ${cssVar.colorTextSecondary};
       text-align: center;
 
       opacity: 0.66;
 
-      transition: opacity 0.2s ${token.motionEaseInOut};
+      transition: opacity 0.2s ${cssVar.motionEaseInOut};
 
       &:hover {
         opacity: 1;
@@ -60,10 +65,8 @@ const useStyles = createStyles(({ css, prefixCls, responsive, token }) => ({
   form: css`
     .${prefixCls}-form-item-control:has(.${prefixCls}-input,.${prefixCls}-select) {
       flex: none;
-      width: min(70%, 800px);
-      min-width: min(70%, 800px) !important;
     }
-    ${responsive.mobile} {
+    ${responsive.sm} {
       width: 100%;
       min-width: unset !important;
     }
@@ -76,13 +79,13 @@ const useStyles = createStyles(({ css, prefixCls, responsive, token }) => ({
 
     font-size: 12px;
     font-weight: 500;
-    color: ${token.colorTextDescription};
+    color: ${cssVar.colorTextDescription};
 
-    background: ${token.colorFillTertiary};
+    background: ${cssVar.colorFillTertiary};
 
     &:hover {
-      color: ${token.colorText};
-      background: ${token.colorFill};
+      color: ${cssVar.colorText};
+      background: ${cssVar.colorFill};
     }
   `,
   switchLoading: css`
@@ -122,13 +125,16 @@ const ProviderConfig = memo<ProviderConfigProps>(
     logo,
     className,
     checkErrorRender,
+    canDeactivate = true,
     name,
     showAceGcm = true,
     extra,
     source = AiProviderSourceEnum.Builtin,
     apiKeyUrl,
+    title,
   }) => {
     const {
+      authType,
       proxyUrl,
       showApiKey = true,
       defaultShowBrowserRequest,
@@ -138,7 +144,15 @@ const ProviderConfig = memo<ProviderConfigProps>(
     } = settings || {};
     const { t } = useTranslation('modelProvider');
     const [form] = Form.useForm();
-    const { cx, styles, theme } = useStyles();
+
+    const isOAuthProvider = authType === 'oauthDeviceFlow';
+
+    // Query OAuth authentication status (only for OAuth providers)
+    const { data: oauthStatus } = lambdaQuery.oauthDeviceFlow.getAuthStatus.useQuery(
+      { providerId: id },
+      { enabled: isOAuthProvider, refetchOnWindowFocus: true },
+    );
+    const isOAuthAuthenticated = oauthStatus?.isAuthenticated ?? false;
 
     const [
       data,
@@ -146,28 +160,72 @@ const ProviderConfig = memo<ProviderConfigProps>(
       enabled,
       isLoading,
       configUpdating,
-      isFetchOnClient,
-      enableResponseApi,
-      isProviderEndpointNotEmpty,
-      isProviderApiKeyNotEmpty,
+      providerRuntimeConfig,
     ] = useAiInfraStore((s) => [
-      aiProviderSelectors.activeProviderConfig(s),
+      aiProviderSelectors.providerDetailById(id)(s),
       s.updateAiProviderConfig,
       aiProviderSelectors.isProviderEnabled(id)(s),
       aiProviderSelectors.isAiProviderConfigLoading(id)(s),
       aiProviderSelectors.isProviderConfigUpdating(id)(s),
-      aiProviderSelectors.isProviderFetchOnClient(id)(s),
-      aiProviderSelectors.isProviderEnableResponseApi(id)(s),
-      aiProviderSelectors.isActiveProviderEndpointNotEmpty(s),
-      aiProviderSelectors.isActiveProviderApiKeyNotEmpty(s),
+      aiProviderSelectors.providerConfigById(id)(s),
     ]);
+
+    // Watch form values in real-time to show/hide switches immediately
+    // Watch nested form values for endpoints
+    const formBaseURL = AntdForm.useWatch(['keyVaults', 'baseURL'], form);
+    const formEndpoint = AntdForm.useWatch(['keyVaults', 'endpoint'], form);
+    // Watch all possible credential fields for different providers
+    const formApiKey = AntdForm.useWatch(['keyVaults', 'apiKey'], form);
+    const formAccessKeyId = AntdForm.useWatch(['keyVaults', 'accessKeyId'], form);
+    const formSecretAccessKey = AntdForm.useWatch(['keyVaults', 'secretAccessKey'], form);
+    const formUsername = AntdForm.useWatch(['keyVaults', 'username'], form);
+    const formPassword = AntdForm.useWatch(['keyVaults', 'password'], form);
+
+    // Check if provider has endpoint and apiKey based on runtime config
+    // Fallback to data.keyVaults if runtime config is not yet loaded
+    const keyVaults = providerRuntimeConfig?.keyVaults || data?.keyVaults;
+    // Use form values first (for immediate update), fallback to stored values
+    const isProviderEndpointNotEmpty =
+      !!formBaseURL || !!formEndpoint || !!keyVaults?.baseURL || !!keyVaults?.endpoint;
+    // Check if any credential is present for different authentication types:
+    // - Standard apiKey (OpenAI, Azure, Cloudflare, VertexAI, etc.)
+    // - AWS Bedrock credentials (accessKeyId, secretAccessKey)
+    // - ComfyUI basic auth (username and password)
+    const isProviderApiKeyNotEmpty = !!(
+      formApiKey ||
+      keyVaults?.apiKey ||
+      formAccessKeyId ||
+      keyVaults?.accessKeyId ||
+      formSecretAccessKey ||
+      keyVaults?.secretAccessKey ||
+      (formUsername && formPassword) ||
+      (keyVaults?.username && keyVaults?.password)
+    );
+
+    // Track the last initialized provider ID to avoid resetting form during edits
+    const lastInitializedIdRef = useRef<string | null>(null);
 
     useLayoutEffect(() => {
       if (isLoading) return;
 
-      // set the first time
-      form.setFieldsValue(data);
-    }, [isLoading, id, data]);
+      // Only initialize form when:
+      // 1. First load (lastInitializedIdRef.current === null)
+      // 2. Provider ID changed (switching between providers)
+      const shouldInitialize = lastInitializedIdRef.current !== id;
+      if (!shouldInitialize) return;
+
+      // Merge data from both sources to ensure all fields are initialized correctly
+      // data: contains basic info like apiKey, baseURL, fetchOnClient
+      // providerRuntimeConfig: contains nested config like enableResponseApi
+      const mergedData = {
+        ...data,
+        ...(providerRuntimeConfig?.config && { config: providerRuntimeConfig.config }),
+      };
+
+      // Set form values and mark as initialized
+      form.setFieldsValue(mergedData);
+      lastInitializedIdRef.current = id;
+    }, [isLoading, id, data, providerRuntimeConfig, form]);
 
     // 标记是否正在进行连接测试
     const isCheckingConnection = useRef(false);
@@ -190,53 +248,70 @@ const ProviderConfig = memo<ProviderConfigProps>(
 
     const isCustom = source === AiProviderSourceEnum.Custom;
 
-    const apiKeyItem: FormItemProps[] = !showApiKey
-      ? []
-      : (apiKeyItems ?? [
-          {
-            children: isLoading ? (
-              <SkeletonInput />
-            ) : (
-              <FormPassword
-                autoComplete={'new-password'}
-                placeholder={t('providerModels.config.apiKey.placeholder', { name })}
-                suffix={
-                  configUpdating && (
-                    <Icon icon={Loader2Icon} spin style={{ color: theme.colorTextTertiary }} />
-                  )
-                }
-              />
-            ),
-            desc: apiKeyUrl ? (
-              <Trans
-                i18nKey="providerModels.config.apiKey.descWithUrl"
-                ns={'modelProvider'}
-                value={{ name }}
-              >
-                请填写你的 {{ name }} API Key,
-                <Link href={apiKeyUrl} target={'_blank'}>
-                  点此获取
-                </Link>
-              </Trans>
-            ) : (
-              t(`providerModels.config.apiKey.desc`, { name })
-            ),
-            label: t(`providerModels.config.apiKey.title`),
-            name: [KeyVaultsConfigKey, LLMProviderApiTokenKey],
-          },
-        ]);
+    // OAuth auth change handler
+    const handleOAuthChange = useCallback(async () => {
+      // Only refresh provider data, don't update with form values
+      // OAuth tokens are saved directly to DB by the tRPC endpoint
+      await useAiInfraStore.getState().refreshAiProviderDetail();
+      await useAiInfraStore.getState().refreshAiProviderRuntimeState();
+    }, []);
+
+    const apiKeyItem: FormItemProps[] =
+      !showApiKey || isOAuthProvider
+        ? []
+        : (apiKeyItems ?? [
+            {
+              children: isLoading ? (
+                <SkeletonInput />
+              ) : (
+                <FormPassword
+                  autoComplete={'new-password'}
+                  placeholder={t('providerModels.config.apiKey.placeholder', { name })}
+                  suffix={
+                    configUpdating && (
+                      <Icon spin icon={Loader2Icon} style={{ color: cssVar.colorTextTertiary }} />
+                    )
+                  }
+                />
+              ),
+              desc: apiKeyUrl ? (
+                <Trans
+                  i18nKey="providerModels.config.apiKey.descWithUrl"
+                  ns={'modelProvider'}
+                  values={{ name }}
+                  components={[
+                    <span key="0" />,
+                    <span key="1" />,
+                    <span key="2" />,
+                    <a href={apiKeyUrl} key="3" rel="noreferrer" target="_blank" />,
+                  ]}
+                />
+              ) : (
+                t(`providerModels.config.apiKey.desc`, { name })
+              ),
+              label: t(`providerModels.config.apiKey.title`),
+              name: [KeyVaultsConfigKey, LLMProviderApiTokenKey],
+            },
+          ]);
 
     const aceGcmItem: FormItemProps = {
       children: (
         <>
           <Icon icon={LockIcon} style={{ marginRight: 4 }} />
-          <Trans i18nKey="providerModels.config.aesGcm" ns={'modelProvider'}>
-            您的秘钥与代理地址等将使用
-            <Link href={AES_GCM_URL} style={{ marginInline: 4 }} target={'_blank'}>
-              AES-GCM
-            </Link>
-            加密算法进行加密
-          </Trans>
+          <Trans
+            i18nKey="providerModels.config.aesGcm"
+            ns={'modelProvider'}
+            components={[
+              <span key="0" />,
+              <a
+                href={AES_GCM_URL}
+                key="1"
+                rel="noreferrer"
+                style={{ marginInline: 4 }}
+                target="_blank"
+              />,
+            ]}
+          />
         </>
       ),
       className: styles.aceGcm,
@@ -258,7 +333,7 @@ const ProviderConfig = memo<ProviderConfigProps>(
               }
               suffix={
                 configUpdating && (
-                  <Icon icon={Loader2Icon} spin style={{ color: theme.colorTextTertiary }} />
+                  <Icon spin icon={Loader2Icon} style={{ color: cssVar.colorTextTertiary }} />
                 )
               }
             />
@@ -282,40 +357,33 @@ const ProviderConfig = memo<ProviderConfigProps>(
 
     /*
      * Conditions to show Client Fetch Switch
-     * 0. is not desktop app
      * 1. provider is not disabled browser request
      * 2. provider show browser request by default
      * 3. Provider allow to edit endpoint and the value of endpoint is not empty
      * 4. There is an apikey provided by user
      */
     const showClientFetch =
-      !isDesktop &&
       !disableBrowserRequest &&
       (defaultShowBrowserRequest ||
         (showEndpoint && isProviderEndpointNotEmpty) ||
         (showApiKey && isProviderApiKeyNotEmpty));
-    const clientFetchItem = showClientFetch && {
-      children: isLoading ? (
-        <SkeletonSwitch />
-      ) : (
-        <Switch checked={isFetchOnClient} disabled={configUpdating} />
-      ),
-      desc: t('providerModels.config.fetchOnClient.desc'),
-      label: t('providerModels.config.fetchOnClient.title'),
-      minWidth: undefined,
-      name: 'fetchOnClient',
-    };
+
+    const clientFetchItem = showClientFetch
+      ? {
+          children: isLoading ? <SkeletonSwitch /> : <Switch loading={configUpdating} />,
+          desc: t('providerModels.config.fetchOnClient.desc'),
+          label: t('providerModels.config.fetchOnClient.title'),
+          minWidth: undefined,
+          name: 'fetchOnClient',
+        }
+      : undefined;
 
     const configItems = [
       ...apiKeyItem,
       endpointItem,
       supportResponsesApi
         ? {
-            children: isLoading ? (
-              <Skeleton.Button active />
-            ) : (
-              <Switch loading={configUpdating} value={enableResponseApi} />
-            ),
+            children: isLoading ? <Skeleton.Button active /> : <Switch loading={configUpdating} />,
             desc: t('providerModels.config.responsesApi.desc'),
             label: t('providerModels.config.responsesApi.title'),
             minWidth: undefined,
@@ -331,6 +399,7 @@ const ProviderConfig = memo<ProviderConfigProps>(
               <Checker
                 checkErrorRender={checkErrorRender}
                 model={data?.checkModel || checkModel!}
+                provider={id}
                 onAfterCheck={async () => {
                   // 重置连接测试状态，允许后续的 onValuesChange 更新
                   isCheckingConnection.current = false;
@@ -341,82 +410,102 @@ const ProviderConfig = memo<ProviderConfigProps>(
                   // 主动保存表单最新值，确保 fetchAiProviderRuntimeState 获取最新数据
                   await updateAiProviderConfig(id, form.getFieldsValue());
                 }}
-                provider={id}
               />
             ),
             desc: t('providerModels.config.checker.desc'),
             label: t('providerModels.config.checker.title'),
-            minWidth: undefined,
           }
         : undefined,
       showAceGcm && aceGcmItem,
     ].filter(Boolean) as FormItemProps[];
 
     const logoUrl = data?.logo ?? logo;
+
+    // Header components - shared between OAuth card and Form
+    const headerTitle = (
+      <Flexbox
+        horizontal
+        align={'center'}
+        gap={4}
+        style={{
+          height: 24,
+          maxHeight: 24,
+          ...(enabled ? {} : { filter: 'grayscale(100%)', maxHeight: 24, opacity: 0.66 }),
+        }}
+      >
+        {isCustom ? (
+          <Flexbox horizontal align={'center'} gap={8}>
+            {logoUrl ? (
+              <Avatar avatar={logoUrl} shape={'circle'} size={32} title={name || id} />
+            ) : (
+              <ProviderCombine provider={'not-exist-provider'} size={24} />
+            )}
+            {name}
+          </Flexbox>
+        ) : (
+          <>
+            {title ?? <ProviderCombine provider={id} size={24} />}
+            <Tooltip title={t('providerModels.config.helpDoc')}>
+              <a
+                href={urlJoin(BASE_PROVIDER_DOC_URL, id)}
+                rel="noreferrer"
+                target="_blank"
+                onClick={stopPropagation}
+              >
+                <Center className={styles.help} height={20} width={20}>
+                  ?
+                </Center>
+              </a>
+            </Tooltip>
+          </>
+        )}
+      </Flexbox>
+    );
+
+    const headerExtra = (
+      <Flexbox horizontal align={'center'} gap={8}>
+        {extra}
+        {isCustom && <UpdateProviderInfo />}
+        {canDeactivate && !(ENABLE_BUSINESS_FEATURES && id === 'lobehub') && (
+          <EnableSwitch id={id} key={id} />
+        )}
+      </Flexbox>
+    );
+
     const model: FormGroupItemType = {
       children: configItems,
-
       defaultActive: true,
-
-      extra: (
-        <Flexbox align={'center'} gap={8} horizontal>
-          {extra}
-
-          {isCustom && <UpdateProviderInfo />}
-          <EnableSwitch id={id} />
-        </Flexbox>
-      ),
-      title: (
-        <Flexbox
-          align={'center'}
-          gap={4}
-          horizontal
-          style={{
-            height: 24,
-            maxHeight: 24,
-            ...(enabled ? {} : { filter: 'grayscale(100%)', maxHeight: 24, opacity: 0.66 }),
-          }}
-        >
-          {isCustom ? (
-            <Flexbox align={'center'} gap={8} horizontal>
-              {logoUrl ? (
-                <Avatar avatar={logoUrl} shape={'circle'} size={32} title={name || id} />
-              ) : (
-                <ProviderCombine provider={'not-exist-provider'} size={24} />
-              )}
-              {name}
-            </Flexbox>
-          ) : (
-            <>
-              <ProviderCombine provider={id} size={24} />
-              <Tooltip title={t('providerModels.config.helpDoc')}>
-                <Link
-                  href={urlJoin(BASE_PROVIDER_DOC_URL, id)}
-                  onClick={(e) => e.stopPropagation()}
-                  target={'_blank'}
-                >
-                  <Center className={styles.help} height={20} width={20}>
-                    ?
-                  </Center>
-                </Link>
-              </Tooltip>
-            </>
-          )}
-        </Flexbox>
-      ),
+      extra: isOAuthProvider ? undefined : headerExtra,
+      title: isOAuthProvider ? '' : headerTitle,
     };
 
+    // For OAuth providers, only show Form when authenticated
+    const shouldShowForm = !isOAuthProvider || isOAuthAuthenticated;
+
     return (
-      <Form
-        className={cx(styles.form, className)}
-        form={form}
-        items={[model]}
-        onValuesChange={(_, values) => {
-          debouncedHandleValueChange(id, values);
-        }}
-        variant={'borderless'}
-        {...FORM_STYLE}
-      />
+      <>
+        {isOAuthProvider && (
+          <OAuthDeviceFlowAuth
+            extra={headerExtra}
+            name={name || id}
+            providerId={id}
+            title={headerTitle}
+            onAuthChange={handleOAuthChange}
+          />
+        )}
+        {shouldShowForm && (
+          <Form
+            className={cx(styles.form, className)}
+            form={form}
+            items={[model]}
+            variant={'borderless'}
+            onValuesChange={(_, values) => {
+              debouncedHandleValueChange(id, values);
+            }}
+            {...FORM_STYLE}
+          />
+        )}
+      </>
     );
   },
 );

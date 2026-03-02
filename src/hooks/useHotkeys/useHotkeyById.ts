@@ -1,12 +1,13 @@
-import { uniq } from 'lodash-es';
-import { DependencyList } from 'react';
-import { type HotkeyCallback, type Options, useHotkeys } from 'react-hotkeys-hook';
+import { uniq } from 'es-toolkit/compat';
+import { type DependencyList } from 'react';
+import { type HotkeyCallback, type Options } from 'react-hotkeys-hook';
+import { useHotkeys } from 'react-hotkeys-hook';
 
 import { HOTKEYS_REGISTRATION } from '@/const/hotkeys';
 import { useServerConfigStore } from '@/store/serverConfig';
 import { useUserStore } from '@/store/user';
 import { settingsSelectors } from '@/store/user/selectors';
-import { HotkeyId } from '@/types/hotkey';
+import { type HotkeyId } from '@/types/hotkey';
 import { isDev } from '@/utils/env';
 
 type OptionsOrDependencyArray = Options | DependencyList;

@@ -1,11 +1,10 @@
 'use client';
 
-import { ActionIcon, Text } from '@lobehub/ui';
+import { ActionIcon, Flexbox, Text, TooltipGroup } from '@lobehub/ui';
 import isEqual from 'fast-deep-equal';
 import { ToggleRightIcon } from 'lucide-react';
 import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Flexbox } from 'react-layout-kit';
 
 import { aiModelSelectors, useAiInfraStore } from '@/store/aiInfra';
 
@@ -18,7 +17,7 @@ const SearchResult = memo(() => {
   const batchToggleAiModels = useAiInfraStore((s) => s.batchToggleAiModels);
 
   const filteredModels = useAiInfraStore(aiModelSelectors.filteredAiProviderModelList, isEqual);
-  console.log('filteredModels:', filteredModels);
+
   const [batchLoading, setBatchLoading] = useState(false);
 
   const isEmpty = filteredModels.length === 0;
@@ -33,6 +32,8 @@ const SearchResult = memo(() => {
             <ActionIcon
               icon={ToggleRightIcon}
               loading={batchLoading}
+              size={'small'}
+              title={t('providerModels.list.enabledActions.enableAll')}
               onClick={async () => {
                 setBatchLoading(true);
                 await batchToggleAiModels(
@@ -41,8 +42,6 @@ const SearchResult = memo(() => {
                 );
                 setBatchLoading(false);
               }}
-              size={'small'}
-              title={t('providerModels.list.enabledActions.enableAll')}
             />
           </Flexbox>
         )}
@@ -53,11 +52,13 @@ const SearchResult = memo(() => {
           {t('providerModels.searchNotFound')}
         </Flexbox>
       ) : (
-        <Flexbox gap={4}>
-          {filteredModels.map((item) => (
-            <ModelItem {...item} key={`${item.id}-${item.enabled}`} />
-          ))}
-        </Flexbox>
+        <TooltipGroup>
+          <Flexbox gap={4}>
+            {filteredModels.map((item) => (
+              <ModelItem {...item} key={`${item.id}-${item.enabled}`} />
+            ))}
+          </Flexbox>
+        </TooltipGroup>
       )}
     </>
   );

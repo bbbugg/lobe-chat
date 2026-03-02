@@ -1,38 +1,55 @@
+import { type FormItemProps } from '@lobehub/ui';
 import { Form } from '@lobehub/ui';
-import type { FormItemProps } from '@lobehub/ui';
 import { Form as AntdForm, Grid, Switch } from 'antd';
 import isEqual from 'fast-deep-equal';
-import Link from 'next/link';
 import { memo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { useAgentStore } from '@/store/agent';
-import { agentChatConfigSelectors, agentSelectors } from '@/store/agent/selectors';
+import { agentByIdSelectors, chatConfigByIdSelectors } from '@/store/agent/selectors';
 import { aiModelSelectors, useAiInfraStore } from '@/store/aiInfra';
 
+import { useAgentId } from '../../hooks/useAgentId';
+import { useUpdateAgentConfig } from '../../hooks/useUpdateAgentConfig';
 import ContextCachingSwitch from './ContextCachingSwitch';
+import EffortSlider from './EffortSlider';
 import GPT5ReasoningEffortSlider from './GPT5ReasoningEffortSlider';
 import GPT51ReasoningEffortSlider from './GPT51ReasoningEffortSlider';
+import GPT52ProReasoningEffortSlider from './GPT52ProReasoningEffortSlider';
+import GPT52ReasoningEffortSlider from './GPT52ReasoningEffortSlider';
 import ImageAspectRatioSelect from './ImageAspectRatioSelect';
 import ImageResolutionSlider from './ImageResolutionSlider';
 import ReasoningEffortSlider from './ReasoningEffortSlider';
 import ReasoningTokenSlider from './ReasoningTokenSlider';
 import TextVerbositySlider from './TextVerbositySlider';
 import ThinkingBudgetSlider from './ThinkingBudgetSlider';
+import ThinkingLevel2Slider from './ThinkingLevel2Slider';
+import ThinkingLevel3Slider from './ThinkingLevel3Slider';
 import ThinkingLevelSlider from './ThinkingLevelSlider';
 import ThinkingSlider from './ThinkingSlider';
 
-const ControlsForm = memo(() => {
+interface ControlsFormProps {
+  model?: string;
+  provider?: string;
+}
+
+const ControlsForm = memo<ControlsFormProps>(({ model: modelProp, provider: providerProp }) => {
   const { t } = useTranslation('chat');
-  const [model, provider, updateAgentChatConfig] = useAgentStore((s) => [
-    agentSelectors.currentAgentModel(s),
-    agentSelectors.currentAgentModelProvider(s),
-    s.updateAgentChatConfig,
+  const agentId = useAgentId();
+  const { updateAgentChatConfig } = useUpdateAgentConfig();
+  const [agentModel, agentProvider] = useAgentStore((s) => [
+    agentByIdSelectors.getAgentModelById(agentId)(s),
+    agentByIdSelectors.getAgentModelProviderById(agentId)(s),
   ]);
+  const model = modelProp ?? agentModel;
+  const provider = providerProp ?? agentProvider;
   const [form] = Form.useForm();
   const enableReasoning = AntdForm.useWatch(['enableReasoning'], form);
 
-  const config = useAgentStore(agentChatConfigSelectors.currentChatConfig, isEqual);
+  const config = useAgentStore(
+    (s) => chatConfigByIdSelectors.getChatConfigById(agentId)(s),
+    isEqual,
+  );
 
   const modelExtendParams = useAiInfraStore(aiModelSelectors.modelExtendParams(model, provider));
 
@@ -53,12 +70,13 @@ const ControlsForm = memo(() => {
         <span style={isNarrow ? descNarrow : descWide}>
           <Trans i18nKey={'extendParams.disableContextCaching.desc'} ns={'chat'}>
             单条对话生成成本最高可降低 90%，响应速度提升 4 倍（
-            <Link
+            <a
               href={'https://www.anthropic.com/news/prompt-caching?utm_source=lobechat'}
-              rel={'nofollow'}
+              rel="noreferrer nofollow"
+              target="_blank"
             >
               了解更多
-            </Link>
+            </a>
             ）。开启后将自动禁用历史记录限制
           </Trans>
         </span>
@@ -74,14 +92,15 @@ const ControlsForm = memo(() => {
         <span style={isNarrow ? descNarrow : descWide}>
           <Trans i18nKey={'extendParams.enableReasoning.desc'} ns={'chat'}>
             基于 Claude Thinking 机制限制（
-            <Link
+            <a
+              rel="noreferrer nofollow"
+              target="_blank"
               href={
                 'https://docs.anthropic.com/en/docs/build-with-claude/extended-thinking?utm_source=lobechat#why-thinking-blocks-must-be-preserved'
               }
-              rel={'nofollow'}
             >
               了解更多
-            </Link>
+            </a>
             ），开启后将自动禁用历史消息数限制
           </Trans>
         </span>
@@ -90,6 +109,18 @@ const ControlsForm = memo(() => {
       layout: isNarrow ? 'vertical' : 'horizontal',
       minWidth: undefined,
       name: 'enableReasoning',
+    },
+    {
+      children: <Switch />,
+      desc: isNarrow ? (
+        <span style={descNarrow}>{t('extendParams.enableAdaptiveThinking.desc')}</span>
+      ) : (
+        t('extendParams.enableAdaptiveThinking.desc')
+      ),
+      label: t('extendParams.enableAdaptiveThinking.title'),
+      layout: isNarrow ? 'vertical' : 'horizontal',
+      minWidth: undefined,
+      name: 'enableAdaptiveThinking',
     },
     (enableReasoning || modelExtendParams?.includes('reasoningBudgetToken')) && {
       children: <ReasoningTokenSlider />,
@@ -108,6 +139,21 @@ const ControlsForm = memo(() => {
       layout: 'horizontal',
       minWidth: undefined,
       name: 'reasoningEffort',
+      style: {
+        paddingBottom: 0,
+      },
+    },
+    {
+      children: <EffortSlider />,
+      desc: isNarrow ? (
+        <span style={descNarrow}>{t('extendParams.effort.desc')}</span>
+      ) : (
+        t('extendParams.effort.desc')
+      ),
+      label: t('extendParams.effort.title'),
+      layout: 'horizontal',
+      minWidth: undefined,
+      name: 'effort',
       style: {
         paddingBottom: 0,
       },
@@ -135,6 +181,28 @@ const ControlsForm = memo(() => {
       },
     },
     {
+      children: <GPT52ReasoningEffortSlider />,
+      desc: 'reasoning_effort',
+      label: t('extendParams.reasoningEffort.title'),
+      layout: 'horizontal',
+      minWidth: undefined,
+      name: 'gpt5_2ReasoningEffort',
+      style: {
+        paddingBottom: 0,
+      },
+    },
+    {
+      children: <GPT52ProReasoningEffortSlider />,
+      desc: 'reasoning_effort',
+      label: t('extendParams.reasoningEffort.title'),
+      layout: 'horizontal',
+      minWidth: undefined,
+      name: 'gpt5_2ProReasoningEffort',
+      style: {
+        paddingBottom: 0,
+      },
+    },
+    {
       children: <TextVerbositySlider />,
       desc: 'text_verbosity',
       label: t('extendParams.textVerbosity.title'),
@@ -147,9 +215,9 @@ const ControlsForm = memo(() => {
     },
     {
       children: <ThinkingBudgetSlider />,
-      label: t('extendParams.reasoningBudgetToken.title'),
+      label: t('extendParams.thinkingBudget.title'),
       layout: 'vertical',
-      minWidth: 460,
+      minWidth: undefined,
       name: 'thinkingBudget',
       style: {
         paddingBottom: 0,
@@ -167,7 +235,7 @@ const ControlsForm = memo(() => {
       layout: isNarrow ? 'vertical' : 'horizontal',
       minWidth: undefined,
       name: 'urlContext',
-      style: isNarrow ? undefined : { width: 445 },
+      style: undefined,
       tag: 'urlContext',
     },
     {
@@ -189,6 +257,29 @@ const ControlsForm = memo(() => {
       style: {
         paddingBottom: 0,
       },
+      desc: 'thinkingLevel',
+    },
+    {
+      children: <ThinkingLevel2Slider />,
+      label: t('extendParams.thinkingLevel.title'),
+      layout: 'horizontal',
+      minWidth: undefined,
+      name: 'thinkingLevel2',
+      style: {
+        paddingBottom: 0,
+      },
+      desc: 'thinkingLevel',
+    },
+    {
+      children: <ThinkingLevel3Slider />,
+      label: t('extendParams.thinkingLevel.title'),
+      layout: 'horizontal',
+      minWidth: undefined,
+      name: 'thinkingLevel3',
+      style: {
+        paddingBottom: 0,
+      },
+      desc: 'thinkingLevel',
     },
     {
       children: <ImageAspectRatioSelect />,
@@ -199,7 +290,7 @@ const ControlsForm = memo(() => {
       style: {
         paddingBottom: 0,
       },
-      tag: 'aspectRatio',
+      desc: 'aspectRatio',
     },
     {
       children: <ImageResolutionSlider />,
@@ -210,7 +301,7 @@ const ControlsForm = memo(() => {
       style: {
         paddingBottom: 0,
       },
-      tag: 'imageSize',
+      desc: 'imageSize',
     },
   ].filter(Boolean) as FormItemProps[];
 
@@ -218,18 +309,18 @@ const ControlsForm = memo(() => {
     <Form
       form={form}
       initialValues={config}
+      itemsType={'flat'}
+      size={'small'}
+      style={{ fontSize: 12 }}
+      variant={'borderless'}
       items={
         (modelExtendParams || [])
           .map((item: any) => items.find((i) => i.name === item))
           .filter(Boolean) as FormItemProps[]
       }
-      itemsType={'flat'}
       onValuesChange={async (_, values) => {
         await updateAgentChatConfig(values);
       }}
-      size={'small'}
-      style={{ fontSize: 12 }}
-      variant={'borderless'}
     />
   );
 });

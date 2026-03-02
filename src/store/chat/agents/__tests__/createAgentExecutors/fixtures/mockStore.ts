@@ -1,7 +1,7 @@
 import { nanoid } from '@lobechat/utils';
 import { vi } from 'vitest';
 
-import type { ChatStore } from '@/store/chat/store';
+import { type ChatStore } from '@/store/chat/store';
 
 /**
  * Create a mock ChatStore for testing executors
@@ -15,7 +15,7 @@ export const createMockStore = (overrides: Partial<ChatStore> = {}): ChatStore =
 
   const store = {
     // Other store properties (add as needed)
-    activeId: 'test-session',
+    activeAgentId: 'test-session',
 
     activeTopicId: 'test-topic',
 
@@ -56,6 +56,8 @@ export const createMockStore = (overrides: Partial<ChatStore> = {}): ChatStore =
     }),
 
     // AI chat methods
+    internal_dispatchMessage: vi.fn(),
+
     internal_fetchAIChatMessage: vi.fn().mockResolvedValue(undefined),
 
     internal_invokeDifferentTypePlugin: vi.fn().mockResolvedValue({ error: null }),

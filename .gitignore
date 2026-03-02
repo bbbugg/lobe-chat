@@ -108,12 +108,23 @@ CLAUDE.local.md
 # MCP tools
 .serena/**
 
+# Docker development data
+docker-compose/dev/data/
+
+# Migration scripts data
+scripts/clerk-to-betterauth/test/*.csv
+scripts/clerk-to-betterauth/test/*.json
+scripts/clerk-to-betterauth/prod/*.csv
+scripts/clerk-to-betterauth/prod/*.json
+
 # Misc
 ./packages/lobe-ui
 *.ppt*
 *.doc*
 *.xls*
-
 e2e/reports
-
 out
+i18n-unused-keys-report.json
+.vitest-reports
+
+pnpm-lock.yaml

@@ -1,5 +1,5 @@
 import { Button, Modal } from '@lobehub/ui';
-import { FormInstance } from 'antd';
+import { type FormInstance } from 'antd';
 import isEqual from 'fast-deep-equal';
 import { memo, use, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -33,6 +33,10 @@ const ModelConfigModal = memo<ModelConfigModalProps>(({ id, open, setOpen }) => 
   return (
     <Modal
       destroyOnHidden
+      maskClosable
+      open={open}
+      title={t('llm.customModelCards.modelConfig.modalTitle', { ns: 'setting' })}
+      zIndex={1251} // Select is 1150
       footer={[
         <Button key="cancel" onClick={closeModal}>
           {t('cancel')}
@@ -40,6 +44,8 @@ const ModelConfigModal = memo<ModelConfigModalProps>(({ id, open, setOpen }) => 
         <Button
           key="ok"
           loading={loading}
+          style={{ marginInlineStart: '16px' }}
+          type="primary"
           onClick={async () => {
             if (!editingProvider || !id || !formInstance) return;
             const data = formInstance.getFieldsValue();
@@ -50,31 +56,25 @@ const ModelConfigModal = memo<ModelConfigModalProps>(({ id, open, setOpen }) => 
 
             closeModal();
           }}
-          style={{ marginInlineStart: '16px' }}
-          type="primary"
         >
           {t('ok')}
         </Button>,
       ]}
-      maskClosable
-      onCancel={closeModal}
-      open={open}
       styles={{
-        content: {
+        body: {
           display: 'flex',
           flexDirection: 'column',
           maxHeight: 'calc(100vh - 150px)',
         },
       }}
-      title={t('llm.customModelCards.modelConfig.modalTitle', { ns: 'setting' })}
-      zIndex={1251} // Select is 1150
+      onCancel={closeModal}
     >
       <ModelConfigForm
         idEditable={false}
         initialValues={model}
-        onFormInstanceReady={setFormInstance}
         showDeployName={showDeployName}
         type={model?.type}
+        onFormInstanceReady={setFormInstance}
       />
     </Modal>
   );

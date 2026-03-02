@@ -1,13 +1,13 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { withSWR } from '~test-utils';
 
 import { DEFAULT_PREFERENCE } from '@/const/user';
 import { userService } from '@/services/user';
 import { useUserStore } from '@/store/user';
-import { preferenceSelectors } from '@/store/user/selectors';
-import { GlobalServerConfig } from '@/types/serverConfig';
-import { UserInitializationState, UserPreference } from '@/types/user';
+import { userGeneralSettingsSelectors } from '@/store/user/selectors';
+import { type GlobalServerConfig } from '@/types/serverConfig';
+import { type UserInitializationState, type UserPreference } from '@/types/user';
+import { withSWR } from '~test-utils';
 
 vi.mock('zustand/traditional');
 
@@ -167,7 +167,7 @@ describe('createCommonSlice', () => {
       );
 
       await waitFor(() => {
-        expect(preference.current.data.preference).toEqual(savedPreference);
+        expect(preference.current.data?.preference).toEqual(savedPreference);
         expect(result.current.isUserStateInit).toBeTruthy();
         expect(result.current.preference).toEqual(savedPreference);
       });
@@ -232,8 +232,8 @@ describe('createCommonSlice', () => {
       await waitFor(() => expect(result.current.data).toBeUndefined());
     });
 
-    it('should return false when userAllowTrace is already set', async () => {
-      vi.spyOn(preferenceSelectors, 'userAllowTrace').mockReturnValueOnce(true);
+    it('should return false when telemetry is already set', async () => {
+      vi.spyOn(userGeneralSettingsSelectors, 'telemetry').mockReturnValueOnce(true);
 
       const { result } = renderHook(() => useUserStore().useCheckTrace(true), {
         wrapper: withSWR,
@@ -243,7 +243,7 @@ describe('createCommonSlice', () => {
     });
 
     it('should call messageService.messageCountToCheckTrace when needed', async () => {
-      vi.spyOn(preferenceSelectors, 'userAllowTrace').mockReturnValueOnce(null);
+      vi.spyOn(userGeneralSettingsSelectors, 'telemetry').mockReturnValueOnce(undefined as any);
 
       act(() => {
         useUserStore.setState({

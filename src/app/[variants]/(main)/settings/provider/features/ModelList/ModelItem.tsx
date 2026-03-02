@@ -1,12 +1,12 @@
 import { ModelIcon } from '@lobehub/icons';
-import { ActionIcon, Tag, Text, copyToClipboard } from '@lobehub/ui';
+import { ActionIcon, copyToClipboard, Flexbox, Tag, Text } from '@lobehub/ui';
 import { App, Switch } from 'antd';
-import { createStyles, useTheme } from 'antd-style';
+import { createStaticStyles, cssVar } from 'antd-style';
 import { LucidePencil, TrashIcon } from 'lucide-react';
-import { AiModelSourceEnum, AiProviderModelListItem } from 'model-bank';
+import { type AiProviderModelListItem } from 'model-bank';
+import { AiModelSourceEnum } from 'model-bank';
 import React, { memo, use, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Flexbox } from 'react-layout-kit';
 
 import { ModelInfoTags } from '@/components/ModelSelect';
 import NewModelBadge from '@/components/ModelSelect/NewModelBadge';
@@ -22,23 +22,24 @@ import {
 import ModelConfigModal from './ModelConfigModal';
 import { ProviderSettingsContext } from './ProviderSettingsContext';
 
-export const useStyles = createStyles(({ css, token, cx }) => {
-  const config = css`
-    opacity: 0;
-    transition: all 100ms ease-in-out;
-  `;
-
+const styles = createStaticStyles(({ css, cx }) => {
   return {
-    config,
+    config: cx(
+      'model-item-config',
+      css`
+        opacity: 0;
+        transition: all 100ms ease-in-out;
+      `,
+    ),
     container: css`
       position: relative;
-      border-radius: ${token.borderRadiusLG}px;
+      border-radius: ${cssVar.borderRadiusLG}px;
       transition: all 200ms ease-in-out;
 
       &:hover {
-        background-color: ${token.colorFillTertiary};
+        background-color: ${cssVar.colorFillTertiary};
 
-        .${cx(config)} {
+        .model-item-config {
           opacity: 1;
         }
       }
@@ -77,9 +78,7 @@ const ModelItem = memo<ModelItemProps>(
     abilities,
     type,
   }) => {
-    const { styles } = useStyles();
     const { t } = useTranslation(['modelProvider', 'components', 'models', 'common']);
-    const theme = useTheme();
     const { modelEditable } = use(ProviderSettingsContext);
 
     const [activeAiProvider, isModelLoading, toggleModelEnabled, removeAiModel] = useAiInfraStore(
@@ -166,7 +165,7 @@ const ModelItem = memo<ModelItemProps>(
     const NewTag = <NewModelBadge releasedAt={releasedAt} />;
 
     const ModelIdTag = (
-      <Tag onClick={copyModelId} style={{ cursor: 'pointer', marginRight: 0 }}>
+      <Tag style={{ cursor: 'pointer', marginRight: 0 }} onClick={copyModelId}>
         {id}
       </Tag>
     );
@@ -175,30 +174,32 @@ const ModelItem = memo<ModelItemProps>(
       <Switch
         checked={checked}
         loading={isModelLoading}
+        size={'small'}
         onChange={async (e) => {
           setChecked(e);
           await toggleModelEnabled({ enabled: e, id, source, type });
         }}
-        size={'small'}
       />
     );
 
     const Actions =
       modelEditable &&
       ((style?: React.CSSProperties) => (
-        <Flexbox className={styles.config} horizontal style={style}>
+        <Flexbox horizontal className={styles.config} style={style}>
           <ActionIcon
             icon={LucidePencil}
+            size={'small'}
+            title={t('providerModels.item.config')}
             onClick={(e) => {
               e.stopPropagation();
               setShowConfig(true);
             }}
-            size={'small'}
-            title={t('providerModels.item.config')}
           />
           {source !== AiModelSourceEnum.Builtin && (
             <ActionIcon
               icon={TrashIcon}
+              size={'small'}
+              title={t('providerModels.item.delete.title')}
               onClick={() => {
                 modal.confirm({
                   centered: true,
@@ -215,8 +216,6 @@ const ModelItem = memo<ModelItemProps>(
                   }),
                 });
               }}
-              size={'small'}
-              title={t('providerModels.item.delete.title')}
             />
           )}
         </Flexbox>
@@ -224,34 +223,24 @@ const ModelItem = memo<ModelItemProps>(
 
     const dom = isMobile ? (
       <Flexbox
+        horizontal
         align={'center'}
         gap={12}
-        horizontal
         justify={'space-between'}
         padding={'12px 6px'}
         width={'100%'}
       >
-        <Flexbox align={'center'} flex={1} gap={16} horizontal style={{ minWidth: 0 }}>
+        <Flexbox horizontal align={'center'} flex={1} gap={16} style={{ minWidth: 0 }}>
           <ModelIcon model={id} size={32} />
           <Flexbox flex={1} gap={4} style={{ minWidth: 0 }}>
-            <Flexbox align={'center'} gap={8} horizontal>
+            <Flexbox horizontal align={'center'} gap={8}>
               {displayName || id}
-              <Flexbox align={'center'} gap={8} horizontal>
+              <Flexbox horizontal align={'center'} gap={8}>
                 <ModelInfoTags
                   placement={'top'}
                   {...abilities}
                   contextWindowTokens={contextWindowTokens}
                 />
-                {/*{removed && (*/}
-                {/*  <Tooltip*/}
-                {/*    overlayStyle={{ maxWidth: 300 }}*/}
-                {/*    placement={'top'}*/}
-                {/*    style={{ pointerEvents: 'none' }}*/}
-                {/*    title={t('ModelSelect.removed')}*/}
-                {/*  >*/}
-                {/*    <ActionIcon icon={Recycle} style={{ color: theme.colorWarning }} />*/}
-                {/*  </Tooltip>*/}
-                {/*)}*/}
               </Flexbox>
             </Flexbox>
             <div>
@@ -260,40 +249,40 @@ const ModelItem = memo<ModelItemProps>(
             </div>
           </Flexbox>
         </Flexbox>
-        <Flexbox align={'center'} gap={4} horizontal>
+        <Flexbox horizontal align={'center'} gap={4}>
           {Actions && Actions({ opacity: 1 })}
           {EnableSwitch}
         </Flexbox>
       </Flexbox>
     ) : (
       <Flexbox
+        horizontal
         align={'center'}
         className={styles.container}
         gap={24}
-        horizontal
         justify={'space-between'}
         padding={12}
         width={'100%'}
       >
-        <Flexbox align={'center'} flex={1} gap={8} horizontal style={{ minWidth: 0 }}>
+        <Flexbox horizontal align={'center'} flex={1} gap={8} style={{ minWidth: 0 }}>
           <ModelIcon model={id} size={32} />
           <Flexbox flex={1} gap={2} style={{ minWidth: 0 }}>
-            <Flexbox align={'center'} gap={8} horizontal>
+            <Flexbox horizontal align={'center'} gap={8}>
               {displayName || id}
               {ModelIdTag}
               {NewTag}
               {Actions && Actions()}
             </Flexbox>
-            <Flexbox align={'baseline'} gap={8} horizontal>
+            <Flexbox horizontal align={'baseline'} gap={8}>
               {content.length > 0 && (
-                <Text style={{ color: theme.colorTextSecondary, fontSize: 12, marginBottom: 0 }}>
+                <Text style={{ color: cssVar.colorTextSecondary, fontSize: 12, marginBottom: 0 }}>
                   {content.join(' · ')}
                 </Text>
               )}
             </Flexbox>
           </Flexbox>
         </Flexbox>
-        <Flexbox align={'center'} gap={8} horizontal>
+        <Flexbox horizontal align={'center'} gap={8}>
           <ModelInfoTags
             placement={'top'}
             {...abilities}

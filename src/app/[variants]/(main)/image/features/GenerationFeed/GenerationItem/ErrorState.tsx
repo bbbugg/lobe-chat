@@ -1,22 +1,20 @@
 'use client';
 
-import { Block, Icon, Text } from '@lobehub/ui';
+import { AgentRuntimeErrorType } from '@lobechat/model-runtime';
+import { Block, Center, Icon, Text } from '@lobehub/ui';
+import { cssVar } from 'antd-style';
 import { ImageOffIcon } from 'lucide-react';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Center } from 'react-layout-kit';
-
-import { AgentRuntimeErrorType } from '@lobechat/model-runtime';
 
 import { ActionButtons } from './ActionButtons';
-import { useStyles } from './styles';
-import { ErrorStateProps } from './types';
+import { styles } from './styles';
+import { type ErrorStateProps } from './types';
 import { getThumbnailMaxWidth } from './utils';
 
 // 错误状态组件
 export const ErrorState = memo<ErrorStateProps>(
   ({ generation, generationBatch, aspectRatio, onDelete, onCopyError }) => {
-    const { styles, theme } = useStyles();
     const { t } = useTranslation('image');
     const { t: tError } = useTranslation('error');
 
@@ -64,17 +62,17 @@ export const ErrorState = memo<ErrorStateProps>(
         align={'center'}
         className={styles.placeholderContainer}
         justify={'center'}
-        onClick={onCopyError}
         padding={16}
+        variant={'filled'}
         style={{
           aspectRatio,
           cursor: 'pointer',
           maxWidth: getThumbnailMaxWidth(generation, generationBatch),
         }}
-        variant={'filled'}
+        onClick={onCopyError}
       >
         <Center gap={8}>
-          <Icon color={theme.colorTextDescription} icon={ImageOffIcon} size={24} />
+          <Icon color={cssVar.colorTextDescription} icon={ImageOffIcon} size={24} />
           <Text strong type={'secondary'}>
             {t('generation.status.failed')}
           </Text>
@@ -83,11 +81,11 @@ export const ErrorState = memo<ErrorStateProps>(
               code
               ellipsis={{ rows: 2 }}
               fontSize={10}
+              title={t('generation.actions.copyError')}
+              type={'secondary'}
               style={{
                 wordBreak: 'break-all',
               }}
-              title={t('generation.actions.copyError')}
-              type={'secondary'}
             >
               {errorMessage}
             </Text>

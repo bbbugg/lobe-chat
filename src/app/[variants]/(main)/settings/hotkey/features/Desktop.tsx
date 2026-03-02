@@ -1,7 +1,8 @@
 'use client';
 
-import { Form, type FormGroupItemType, HotkeyInput, Icon } from '@lobehub/ui';
-import { App, Skeleton } from 'antd';
+import { type FormGroupItemType } from '@lobehub/ui';
+import { Form, HotkeyInput, Icon, Skeleton } from '@lobehub/ui';
+import { App } from 'antd';
 import isEqual from 'fast-deep-equal';
 import { Loader2Icon } from 'lucide-react';
 import { memo, useState } from 'react';
@@ -12,7 +13,7 @@ import { FORM_STYLE } from '@/const/layoutTokens';
 import hotkeyMeta from '@/locales/default/hotkey';
 import { useElectronStore } from '@/store/electron';
 import { desktopHotkeysSelectors } from '@/store/electron/selectors';
-import { DesktopHotkeyItem } from '@/types/hotkey';
+import { type DesktopHotkeyItem } from '@/types/hotkey';
 
 const HotkeySetting = memo(() => {
   const { t } = useTranslation(['setting', 'hotkey']);
@@ -20,6 +21,7 @@ const HotkeySetting = memo(() => {
   const { message } = App.useApp();
 
   const hotkeys = useElectronStore(desktopHotkeysSelectors.hotkeys, isEqual);
+
   const [isHotkeysInit, updateDesktopHotkey, useFetchDesktopHotkeys] = useElectronStore((s) => [
     desktopHotkeysSelectors.isHotkeysInit(s),
     s.updateDesktopHotkey,
@@ -36,11 +38,13 @@ const HotkeySetting = memo(() => {
     children: (
       <HotkeyInput
         disabled={item.nonEditable}
+        placeholder={t('hotkey.record')}
+        resetValue={item.keys}
+        value={hotkeys[item.id]}
         onChange={async (value) => {
           setLoading(true);
           try {
             const result = await updateDesktopHotkey(item.id, value);
-            console.log(result);
             if (result.success) {
               message.success(t('hotkey.updateSuccess', { ns: 'setting' }));
             } else {
@@ -54,36 +58,30 @@ const HotkeySetting = memo(() => {
             setLoading(false);
           }
         }}
-        placeholder={t('hotkey.record')}
-        resetValue={item.keys}
-        texts={{
-          conflicts: t('hotkey.conflicts'),
-          invalidCombination: t('hotkey.invalidCombination'),
-          reset: t('hotkey.reset'),
-        }}
-        value={hotkeys[item.id]}
       />
     ),
-    desc: hotkeyMeta.desktop[item.id]?.desc
-      ? t(`desktop.${item.id}.desc`, { ns: 'hotkey' })
+
+    desc: hotkeyMeta[`desktop.${item.id}.desc` as keyof typeof hotkeyMeta]
+      ? t(`desktop.${item.id}.desc` as keyof typeof hotkeyMeta, { ns: 'hotkey' })
       : undefined,
-    label: t(`desktop.${item.id}.title`, { ns: 'hotkey' }),
+    label: t(`desktop.${item.id}.title` as keyof typeof hotkeyMeta, { ns: 'hotkey' }),
     name: item.id,
   });
 
   const desktop: FormGroupItemType = {
     children: DESKTOP_HOTKEYS_REGISTRATION.map((item) => mapHotkeyItem(item)),
-    extra: loading && <Icon icon={Loader2Icon} size={16} spin style={{ opacity: 0.5 }} />,
+    extra: loading && <Icon spin icon={Loader2Icon} size={16} style={{ opacity: 0.5 }} />,
     title: t('hotkey.group.desktop'),
   };
 
   return (
     <Form
+      collapsible={false}
       form={form}
       initialValues={hotkeys}
       items={[desktop]}
       itemsType={'group'}
-      variant={'borderless'}
+      variant={'filled'}
       {...FORM_STYLE}
     />
   );

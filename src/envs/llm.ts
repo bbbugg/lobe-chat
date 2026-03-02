@@ -212,6 +212,14 @@ export const getLLMConfig = () => {
 
       ENABLED_ZENMUX: z.boolean(),
       ZENMUX_API_KEY: z.string().optional(),
+
+      ENABLED_STRAICO: z.boolean(),
+      STRAICO_API_KEY: z.string().optional(),
+
+      ENABLED_LOBEHUB: z.boolean(),
+
+      ENABLED_XIAOMIMIMO: z.boolean(),
+      XIAOMIMIMO_API_KEY: z.string().optional(),
     },
     runtimeEnv: {
       API_KEY_SELECT_MODE: process.env.API_KEY_SELECT_MODE,
@@ -234,7 +242,7 @@ export const getLLMConfig = () => {
       ENABLED_DEEPSEEK: !!process.env.DEEPSEEK_API_KEY,
       DEEPSEEK_API_KEY: process.env.DEEPSEEK_API_KEY,
 
-      ENABLED_GOOGLE: !!process.env.GOOGLE_API_KEY,
+      ENABLED_GOOGLE: process.env.ENABLED_GOOGLE !== '0',
       GOOGLE_API_KEY: process.env.GOOGLE_API_KEY,
 
       ENABLED_VOLCENGINE: !!process.env.VOLCENGINE_API_KEY,
@@ -243,7 +251,7 @@ export const getLLMConfig = () => {
       ENABLED_PERPLEXITY: !!process.env.PERPLEXITY_API_KEY,
       PERPLEXITY_API_KEY: process.env.PERPLEXITY_API_KEY,
 
-      ENABLED_ANTHROPIC: !!process.env.ANTHROPIC_API_KEY,
+      ENABLED_ANTHROPIC: process.env.ENABLED_ANTHROPIC !== '0',
       ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
 
       ENABLED_MINIMAX: !!process.env.MINIMAX_API_KEY,
@@ -422,6 +430,14 @@ export const getLLMConfig = () => {
 
       ENABLED_ZENMUX: !!process.env.ZENMUX_API_KEY,
       ZENMUX_API_KEY: process.env.ZENMUX_API_KEY,
+
+      ENABLED_STRAICO: !!process.env.STRAICO_API_KEY,
+      STRAICO_API_KEY: process.env.STRAICO_API_KEY,
+
+      ENABLED_LOBEHUB: !!process.env.ENABLED_LOBEHUB,
+
+      ENABLED_XIAOMIMIMO: !!process.env.XIAOMIMIMO_API_KEY,
+      XIAOMIMIMO_API_KEY: process.env.XIAOMIMIMO_API_KEY,
     },
   });
 };

@@ -1,8 +1,7 @@
 'use client';
 
-import { Form, type FormGroupItemType, Icon } from '@lobehub/ui';
-import { Select } from '@lobehub/ui';
-import { Skeleton } from 'antd';
+import { type FormGroupItemType } from '@lobehub/ui';
+import { Form, Icon, Select, Skeleton } from '@lobehub/ui';
 import isEqual from 'fast-deep-equal';
 import { Loader2Icon } from 'lucide-react';
 import { memo, useState } from 'react';
@@ -36,16 +35,18 @@ const OpenAI = memo(() => {
         name: ['openAI', 'sttModel'],
       },
     ],
-    extra: loading && <Icon icon={Loader2Icon} size={16} spin style={{ opacity: 0.5 }} />,
+    extra: loading && <Icon spin icon={Loader2Icon} size={16} style={{ opacity: 0.5 }} />,
     title: t('settingTTS.openai.title'),
   };
 
   return (
     <Form
+      collapsible={false}
       form={form}
       initialValues={tts}
       items={[openai]}
       itemsType={'group'}
+      variant={'filled'}
       onValuesChange={async (values) => {
         setLoading(true);
         await setSettings({
@@ -53,7 +54,6 @@ const OpenAI = memo(() => {
         });
         setLoading(false);
       }}
-      variant={'borderless'}
       {...FORM_STYLE}
     />
   );

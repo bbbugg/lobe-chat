@@ -1,22 +1,14 @@
 import { ProviderIcon } from '@lobehub/icons';
-import {
-  type FormItemProps,
-  FormModal,
-  Icon,
-  Input,
-  InputPassword,
-  Select,
-  TextArea,
-} from '@lobehub/ui';
+import { type FormItemProps } from '@lobehub/ui';
+import { Flexbox, FormModal, Icon, Input, InputPassword, Select, TextArea } from '@lobehub/ui';
 import { App } from 'antd';
 import { BrainIcon } from 'lucide-react';
 import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Flexbox } from 'react-layout-kit';
 import { useNavigate } from 'react-router-dom';
 
 import { useAiInfraStore } from '@/store/aiInfra/store';
-import { CreateAiProviderParams } from '@/types/aiProvider';
+import { type CreateAiProviderParams } from '@/types/aiProvider';
 
 import { KeyVaultsConfigKey, LLMProviderApiTokenKey, LLMProviderBaseUrlKey } from '../../const';
 import { CUSTOM_PROVIDER_SDK_OPTIONS } from '../customProviderSdkOptions';
@@ -53,7 +45,7 @@ const CreateNewProvider = memo<CreateNewProviderProps>(({ onClose, open }) => {
 
       await createNewAiProvider(finalValues);
       setLoading(false);
-      navigate(`/settings?active=provider&provider=${values.id}`);
+      navigate(`/settings/provider/${values.id}`);
       message.success(t('createNewAiProvider.createSuccess'));
       onClose?.();
     } catch (e) {
@@ -100,7 +92,13 @@ const CreateNewProvider = memo<CreateNewProviderProps>(({ onClose, open }) => {
       name: 'description',
     },
     {
-      children: <Input allowClear placeholder={'https://logo-url'} variant={'filled'} />,
+      children: (
+        <Input
+          allowClear
+          placeholder={t('createNewAiProvider.logo.placeholder')}
+          variant={'filled'}
+        />
+      ),
       label: t('createNewAiProvider.logo.title'),
       minWidth: 400,
       name: 'logo',
@@ -111,19 +109,19 @@ const CreateNewProvider = memo<CreateNewProviderProps>(({ onClose, open }) => {
     {
       children: (
         <Select
+          options={CUSTOM_PROVIDER_SDK_OPTIONS}
+          placeholder={t('createNewAiProvider.sdkType.placeholder')}
+          variant={'filled'}
           optionRender={({ label, value }) => {
             // Map 'router' to 'newapi' for displaying the correct icon
             const iconProvider = value === 'router' ? 'newapi' : (value as string);
             return (
-              <Flexbox align={'center'} gap={8} horizontal>
+              <Flexbox horizontal align={'center'} gap={8}>
                 <ProviderIcon provider={iconProvider} size={18} />
                 {label}
               </Flexbox>
             );
           }}
-          options={CUSTOM_PROVIDER_SDK_OPTIONS}
-          placeholder={t('createNewAiProvider.sdkType.placeholder')}
-          variant={'filled'}
         />
       ),
       label: t('createNewAiProvider.sdkType.title'),
@@ -132,7 +130,7 @@ const CreateNewProvider = memo<CreateNewProviderProps>(({ onClose, open }) => {
       rules: [{ message: t('createNewAiProvider.sdkType.required'), required: true }],
     },
     {
-      children: <Input allowClear placeholder={'https://xxxx-proxy.com/v1'} />,
+      children: <Input allowClear placeholder={t('createNewAiProvider.proxyUrl.placeholder')} />,
       label: t('createNewAiProvider.proxyUrl.title'),
       minWidth: 400,
       name: [KeyVaultsConfigKey, LLMProviderBaseUrlKey],
@@ -155,6 +153,10 @@ const CreateNewProvider = memo<CreateNewProviderProps>(({ onClose, open }) => {
   return (
     <FormModal
       destroyOnHidden
+      open={open}
+      scrollToFirstError={{ behavior: 'instant', block: 'end', focus: true }}
+      submitLoading={loading}
+      submitText={t('createNewAiProvider.confirm')}
       items={[
         {
           children: basicItems,
@@ -165,18 +167,14 @@ const CreateNewProvider = memo<CreateNewProviderProps>(({ onClose, open }) => {
           title: t('createNewAiProvider.configTitle'),
         },
       ]}
-      onCancel={onClose}
-      onFinish={onFinish}
-      open={open}
-      scrollToFirstError={{ behavior: 'instant', block: 'end', focus: true }}
-      submitLoading={loading}
-      submitText={t('createNewAiProvider.confirm')}
       title={
-        <Flexbox gap={8} horizontal>
+        <Flexbox horizontal gap={8}>
           <Icon icon={BrainIcon} />
           {t('createNewAiProvider.title')}
         </Flexbox>
       }
+      onCancel={onClose}
+      onFinish={onFinish}
     />
   );
 });

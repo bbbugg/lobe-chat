@@ -1,10 +1,9 @@
-import { ActionIcon, Button, Dropdown, Text } from '@lobehub/ui';
-import { App, Skeleton, Space } from 'antd';
-import { useTheme } from 'antd-style';
+import { ActionIcon, Button, DropdownMenu, Flexbox, Skeleton, Text } from '@lobehub/ui';
+import { App, Space } from 'antd';
+import { cssVar } from 'antd-style';
 import { CircleX, EllipsisVertical, LucideRefreshCcwDot, PlusIcon } from 'lucide-react';
 import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Flexbox } from 'react-layout-kit';
 
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { useAiInfraStore } from '@/store/aiInfra';
@@ -21,7 +20,6 @@ interface ModelFetcherProps {
 
 const ModelTitle = memo<ModelFetcherProps>(
   ({ provider, showAddNewModel = true, showModelFetcher = true }) => {
-    const theme = useTheme();
     const { t } = useTranslation('modelProvider');
     const { modal, message } = App.useApp();
     const [
@@ -57,7 +55,7 @@ const ModelTitle = memo<ModelFetcherProps>(
         gap={12}
         paddingBlock={8}
         style={{
-          background: theme.colorBgContainer,
+          background: cssVar.colorBgContainer,
           marginTop: mobile ? 0 : -12,
           paddingTop: mobile ? 0 : 20,
           position: 'sticky',
@@ -65,8 +63,8 @@ const ModelTitle = memo<ModelFetcherProps>(
           zIndex: 15,
         }}
       >
-        <Flexbox align={'center'} gap={0} horizontal justify={'space-between'}>
-          <Flexbox align={'center'} gap={8} horizontal>
+        <Flexbox horizontal align={'center'} gap={0} justify={'space-between'}>
+          <Flexbox horizontal align={'center'} gap={8}>
             <Text strong style={{ fontSize: 16 }}>
               {t('providerModels.list.title')}
             </Text>
@@ -81,13 +79,13 @@ const ModelTitle = memo<ModelFetcherProps>(
                     <ActionIcon
                       icon={CircleX}
                       loading={clearRemoteModelsLoading}
+                      size={'small'}
+                      title={t('providerModels.list.fetcher.clear')}
                       onClick={async () => {
                         setClearRemoteModelsLoading(true);
                         await clearObtainedModels(provider);
                         setClearRemoteModelsLoading(false);
                       }}
-                      size={'small'}
-                      title={t('providerModels.list.fetcher.clear')}
                     />
                   )}
                 </div>
@@ -97,13 +95,13 @@ const ModelTitle = memo<ModelFetcherProps>(
           {isLoading ? (
             <Skeleton.Button active size={'small'} style={{ width: 120 }} />
           ) : isEmpty ? null : (
-            <Flexbox gap={8} horizontal>
+            <Flexbox horizontal gap={8}>
               {!mobile && (
                 <Search
+                  value={searchKeyword}
                   onChange={(value) => {
                     useAiInfraStore.setState({ modelSearchKeyword: value });
                   }}
-                  value={searchKeyword}
                 />
               )}
               <Space.Compact>
@@ -111,6 +109,7 @@ const ModelTitle = memo<ModelFetcherProps>(
                   <Button
                     icon={LucideRefreshCcwDot}
                     loading={fetchRemoteModelsLoading}
+                    size={'small'}
                     onClick={async () => {
                       setFetchRemoteModelsLoading(true);
                       try {
@@ -120,7 +119,6 @@ const ModelTitle = memo<ModelFetcherProps>(
                       }
                       setFetchRemoteModelsLoading(false);
                     }}
-                    size={'small'}
                   >
                     {fetchRemoteModelsLoading
                       ? t('providerModels.list.fetcher.fetching')
@@ -131,36 +129,34 @@ const ModelTitle = memo<ModelFetcherProps>(
                   <>
                     <Button
                       icon={PlusIcon}
+                      size={'small'}
                       onClick={() => {
                         setShowModal(true);
                       }}
-                      size={'small'}
                     />
                     <CreateNewModelModal open={showModal} setOpen={setShowModal} />
                   </>
                 )}
-                <Dropdown
-                  menu={{
-                    items: [
-                      {
-                        key: 'reset',
-                        label: t('providerModels.list.resetAll.title'),
-                        onClick: async () => {
-                          modal.confirm({
-                            content: t('providerModels.list.resetAll.conform'),
-                            onOk: async () => {
-                              await clearModelsByProvider(provider);
-                              message.success(t('providerModels.list.resetAll.success'));
-                            },
-                            title: t('providerModels.list.resetAll.title'),
-                          });
-                        },
+                <DropdownMenu
+                  items={[
+                    {
+                      key: 'reset',
+                      label: t('providerModels.list.resetAll.title'),
+                      onClick: async () => {
+                        modal.confirm({
+                          content: t('providerModels.list.resetAll.conform'),
+                          onOk: async () => {
+                            await clearModelsByProvider(provider);
+                            message.success(t('providerModels.list.resetAll.success'));
+                          },
+                          title: t('providerModels.list.resetAll.title'),
+                        });
                       },
-                    ],
-                  }}
+                    },
+                  ]}
                 >
                   <Button icon={EllipsisVertical} size={'small'} />
-                </Dropdown>
+                </DropdownMenu>
               </Space.Compact>
             </Flexbox>
           )}
@@ -168,11 +164,11 @@ const ModelTitle = memo<ModelFetcherProps>(
 
         {mobile && (
           <Search
+            value={searchKeyword}
+            variant={'filled'}
             onChange={(value) => {
               useAiInfraStore.setState({ modelSearchKeyword: value });
             }}
-            value={searchKeyword}
-            variant={'filled'}
           />
         )}
       </Flexbox>

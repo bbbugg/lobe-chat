@@ -6,8 +6,8 @@ import { memo } from 'react';
 import ImageItem from '@/components/ImageItem';
 
 import { ActionButtons } from './ActionButtons';
-import { useStyles } from './styles';
-import { SuccessStateProps } from './types';
+import { styles } from './styles';
+import { type SuccessStateProps } from './types';
 import { getThumbnailMaxWidth } from './utils';
 
 // 成功状态组件
@@ -22,18 +22,16 @@ export const SuccessState = memo<SuccessStateProps>(
     onCopySeed,
     seedTooltip,
   }) => {
-    const { styles } = useStyles();
-
     return (
       <Block
         align={'center'}
         className={styles.imageContainer}
         justify={'center'}
+        variant={'filled'}
         style={{
           aspectRatio,
           maxWidth: getThumbnailMaxWidth(generation, generationBatch),
         }}
-        variant={'filled'}
       >
         <ImageItem
           alt={prompt}
@@ -45,12 +43,12 @@ export const SuccessState = memo<SuccessStateProps>(
           url={generation.asset!.url}
         />
         <ActionButtons
+          showDownload
+          seedTooltip={seedTooltip}
+          showCopySeed={!!generation.seed}
           onCopySeed={onCopySeed}
           onDelete={onDelete}
           onDownload={onDownload}
-          seedTooltip={seedTooltip}
-          showCopySeed={!!generation.seed}
-          showDownload
         />
       </Block>
     );

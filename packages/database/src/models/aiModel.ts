@@ -1,14 +1,15 @@
 import { and, asc, desc, eq, inArray } from 'drizzle-orm';
-import {
+import type {
   AiModelSortMap,
-  AiModelSourceEnum,
   AiProviderModelListItem,
   EnabledAiModel,
   ToggleAiModelEnableParams,
 } from 'model-bank';
+import { AiModelSourceEnum } from 'model-bank';
 
-import { AiModelSelectItem, NewAiModelItem, aiModels } from '../schemas';
-import { LobeChatDatabase } from '../type';
+import type { AiModelSelectItem, NewAiModelItem } from '../schemas';
+import { aiModels } from '../schemas';
+import type { LobeChatDatabase } from '../type';
 
 export class AiModelModel {
   private userId: string;
@@ -78,6 +79,7 @@ export class AiModelModel {
         parameters: aiModels.parameters,
         pricing: aiModels.pricing,
         releasedAt: aiModels.releasedAt,
+        settings: aiModels.settings,
         source: aiModels.source,
         type: aiModels.type,
       })
@@ -105,6 +107,7 @@ export class AiModelModel {
         parameters: aiModels.parameters,
         providerId: aiModels.providerId,
         releasedAt: aiModels.releasedAt,
+        settings: aiModels.settings,
         sort: aiModels.sort,
         source: aiModels.source,
         type: aiModels.type,

@@ -1,24 +1,25 @@
 import { type GoogleGenAIOptions } from '@google/genai';
 import { ModelRuntime } from '@lobechat/model-runtime';
 import { LobeVertexAI } from '@lobechat/model-runtime/vertexai';
-import { type AWSBedrockKeyVault, type AzureOpenAIKeyVault, type ClientSecretPayload, type CloudflareKeyVault, type ComfyUIKeyVault, type GithubCopilotKeyVault, type OpenAICompatibleKeyVault, type VertexAIKeyVault } from '@lobechat/types';
+import {
+  type AWSBedrockKeyVault,
+  type AzureOpenAIKeyVault,
+  type ClientSecretPayload,
+  type CloudflareKeyVault,
+  type ComfyUIKeyVault,
+  type GithubCopilotKeyVault,
+  type OpenAICompatibleKeyVault,
+  type VertexAIKeyVault,
+} from '@lobechat/types';
 import { safeParseJSON } from '@lobechat/utils';
 import { ModelProvider } from 'model-bank';
-
-
 
 import { AiProviderModel } from '@/database/models/aiProvider';
 import { type LobeChatDatabase } from '@/database/type';
 import { getLLMConfig } from '@/envs/llm';
 
-
-
 import { KeyVaultsGateKeeper } from '../KeyVaultsEncrypt';
 import apiKeyManager from './apiKeyManager';
-
-
-
-
 
 export * from './trace';
 

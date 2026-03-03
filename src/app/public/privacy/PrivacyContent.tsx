@@ -1,15 +1,14 @@
 'use client';
 
-import {Button} from '@lobehub/ui';
+import { Button, Flexbox } from '@lobehub/ui';
 // 尝试使用项目内置的UI组件
-import {ArrowUp, Home} from 'lucide-react';
+import { ArrowUp, Home } from 'lucide-react';
 // 使用更现代的图标库
-import {useRouter} from 'next/navigation';
+import { useRouter } from 'next/navigation';
 // 引入 useRef 钩子，用于获取DOM元素的引用
-import React, {useRef} from 'react';
-import {Flexbox} from 'react-layout-kit';
+import React, { useRef } from 'react';
 
-import {BRANDING_EMAIL, BRANDING_NAME} from '@/const/branding';
+import { BRANDING_EMAIL, BRANDING_NAME } from '@lobechat/business-const';
 
 // 使用项目常用的布局组件
 
@@ -31,10 +30,10 @@ export default function PrivacyContent() {
       }}
     >
       {/* 2. 创建一个容器来模拟HTML中的 `margin: 0 10%` 效果，并居中内容 */}
-      <div style={{margin: '0 auto', width: '80%'}}>
+      <div style={{ margin: '0 auto', width: '80%' }}>
         {/* 将 "Back to Home Page" 按钮放置于内容区的左上角 */}
         <Button
-          icon={<Home/>}
+          icon={<Home />}
           onClick={() => router.push('/')}
           style={{
             fontSize: '16px',
@@ -45,8 +44,8 @@ export default function PrivacyContent() {
         </Button>
 
         {/* 3. 为文本内容创建一个容器，并设置字体和对齐方式 */}
-        <div style={{fontSize: '16px', textAlign: 'justify'}}>
-          <div style={{marginBottom: '3em', textAlign: 'center'}}>
+        <div style={{ fontSize: '16px', textAlign: 'justify' }}>
+          <div style={{ marginBottom: '3em', textAlign: 'center' }}>
             <h1>Privacy Policy</h1>
             <div>
               Last Updated at&nbsp;
@@ -59,20 +58,21 @@ export default function PrivacyContent() {
           <p>
             Welcome to {BRANDING_NAME}! We are committed to protecting your personal information and
             your right to privacy. This Privacy Policy describes Our policies and procedures on the
-            collection, use and disclosure of Your information when You use the Service and tells You
-            about Your privacy rights and how the law protects You. By using our Service, you agree
-            to the collection and use of information in accordance with this policy.
+            collection, use and disclosure of Your information when You use the Service and tells
+            You about Your privacy rights and how the law protects You. By using our Service, you
+            agree to the collection and use of information in accordance with this policy.
           </p>
           <h2>Definitions</h2>
           <p>
             The words of which the initial letter is capitalized have meanings defined under the
-            following conditions. The following definitions shall have the same meaning regardless of
-            whether they appear in singular or in plural.
+            following conditions. The following definitions shall have the same meaning regardless
+            of whether they appear in singular or in plural.
           </p>
           <ul>
             <li>
               <strong>Company</strong> (referred to as either &quot;the Company&quot;,
-              &quot;We&quot;, &quot;Us&quot; or &quot;Our&quot; in this Agreement) refers to {BRANDING_NAME}.
+              &quot;We&quot;, &quot;Us&quot; or &quot;Our&quot; in this Agreement) refers to{' '}
+              {BRANDING_NAME}.
             </li>
             <li>
               <strong>Cookies</strong> are small files that are placed on Your computer, mobile
@@ -91,8 +91,8 @@ export default function PrivacyContent() {
             </li>
             <li>
               <strong>You</strong> means the individual accessing or using the Service, or the
-              company, or other legal entity on behalf of which such individual is accessing or using
-              the Service, as applicable.
+              company, or other legal entity on behalf of which such individual is accessing or
+              using the Service, as applicable.
             </li>
           </ul>
           <h2>Collecting of Your Personal Data</h2>
@@ -136,13 +136,13 @@ export default function PrivacyContent() {
             </li>
             <li>
               <strong>Device Information.</strong> Such as your device&apos;s Internet Protocol
-              address (e.g. IP address), browser type, browser version, the pages of our Service that
-              You visit, the time and date of Your visit, the time spent on those pages, unique
+              address (e.g. IP address), browser type, browser version, the pages of our Service
+              that You visit, the time and date of Your visit, the time spent on those pages, unique
               device identifiers and other diagnostic data.
             </li>
             <li>
-              <strong>Mobile Device Information.</strong> When You access the Service by or through a
-              mobile device, We may collect certain information automatically, including, but not
+              <strong>Mobile Device Information.</strong> When You access the Service by or through
+              a mobile device, We may collect certain information automatically, including, but not
               limited to, the type of mobile device You use, Your mobile device unique ID, the IP
               address of Your mobile device, Your mobile operating system, the type of mobile
               Internet browser You use, unique device identifiers and other diagnostic data.
@@ -150,26 +150,26 @@ export default function PrivacyContent() {
           </ul>
           <h3>Tracking Technologies and Cookies</h3>
           <p>
-            We use Cookies and similar tracking technologies to track the activity on Our Service and
-            store certain information. Tracking technologies used are beacons, tags, and scripts to
-            collect and track information and to improve and analyze Our Service. The technologies We
-            use may include:
+            We use Cookies and similar tracking technologies to track the activity on Our Service
+            and store certain information. Tracking technologies used are beacons, tags, and scripts
+            to collect and track information and to improve and analyze Our Service. The
+            technologies We use may include:
           </p>
           <ul>
             <li>
               <strong>Cookies or Browser Cookies.</strong> A cookie is a small file placed on Your
               Device. You can instruct Your browser to refuse all Cookies or to indicate when a
-              Cookie is being sent. However, if You do not accept Cookies, You may not be able to use
-              some parts of our Service. Unless you have adjusted Your browser setting so that it will
-              refuse Cookies, our Service may use Cookies.
+              Cookie is being sent. However, if You do not accept Cookies, You may not be able to
+              use some parts of our Service. Unless you have adjusted Your browser setting so that
+              it will refuse Cookies, our Service may use Cookies.
             </li>
             <li>
-              <strong>Web Beacons.</strong> Certain sections of our Service and our emails may contain
-              small electronic files known as web beacons (also referred to as clear gifs, pixel
-              tags, and single-pixel gifs) that permit the Company, for example, to count users who
-              have visited those pages or opened an email and for other related website statistics
-              (e.g., recording the popularity of a certain section and verifying system and server
-              integrity).
+              <strong>Web Beacons.</strong> Certain sections of our Service and our emails may
+              contain small electronic files known as web beacons (also referred to as clear gifs,
+              pixel tags, and single-pixel gifs) that permit the Company, for example, to count
+              users who have visited those pages or opened an email and for other related website
+              statistics (e.g., recording the popularity of a certain section and verifying system
+              and server integrity).
             </li>
           </ul>
           <p>
@@ -188,9 +188,9 @@ export default function PrivacyContent() {
           <p>
             Purpose: These Cookies are essential to provide You with services available through the
             Website and to enable You to use some of its features. They help to authenticate users
-            and prevent fraudulent use of user accounts. Without these Cookies, the services that You
-            have asked for cannot be provided, and We only use these Cookies to provide You with those
-            services.
+            and prevent fraudulent use of user accounts. Without these Cookies, the services that
+            You have asked for cannot be provided, and We only use these Cookies to provide You with
+            those services.
           </p>
           <ul>
             <li>
@@ -199,7 +199,10 @@ export default function PrivacyContent() {
           </ul>
           <p>Type: Persistent Cookies</p>
           <p>Administered by: Us</p>
-          <p>Purpose: These Cookies identify if users have accepted the use of cookies on the Website.</p>
+          <p>
+            Purpose: These Cookies identify if users have accepted the use of cookies on the
+            Website.
+          </p>
           <ul>
             <li>
               <strong>Functionality Cookies</strong>
@@ -217,20 +220,20 @@ export default function PrivacyContent() {
           <p>We may use your Personal Data for the following purposes:</p>
           <ul>
             <li>
-              <strong>To provide and maintain our Service</strong>, including to monitor the usage of
-              our Service.
+              <strong>To provide and maintain our Service</strong>, including to monitor the usage
+              of our Service.
             </li>
             <li>
               <strong>To manage Your Account:</strong> to manage Your registration as a user of the
-              Service. The Personal Data You provide can give You access to different functionalities
-              of the Service that are available to You as a registered user.
+              Service. The Personal Data You provide can give You access to different
+              functionalities of the Service that are available to You as a registered user.
             </li>
             <li>
               <strong>To contact You:</strong> To contact You by email or other equivalent forms of
               electronic communication, such as a mobile application&apos;s push notifications
-              regarding updates or informative communications related to the functionalities, products
-              or contracted services, including the security updates, when necessary or reasonable for
-              their implementation.
+              regarding updates or informative communications related to the functionalities,
+              products or contracted services, including the security updates, when necessary or
+              reasonable for their implementation.
             </li>
             <li>
               <strong>To manage Your requests:</strong> To attend and manage Your requests to Us.
@@ -250,9 +253,9 @@ export default function PrivacyContent() {
           <p>We may share Your personal information in the following situations:</p>
           <ul>
             <li>
-              <strong>With Service Providers:</strong> We may share Your personal information with out
-              AI model Providers and Data Service Providers for the purpose of data analysis and model
-              training.
+              <strong>With Service Providers:</strong> We may share Your personal information with
+              out AI model Providers and Data Service Providers for the purpose of data analysis and
+              model training.
             </li>
             <li>
               <strong>For business transfers:</strong> We may share or transfer Your personal
@@ -261,14 +264,14 @@ export default function PrivacyContent() {
               company.
             </li>
             <li>
-              <strong>With Affiliates:</strong> We may share Your information with Our affiliates, in
-              which case we will require those affiliates to honor this Privacy Policy. Affiliates
-              include Our parent company and any other subsidiaries, joint venture partners or other
-              companies that We control or that are under common control with Us.
+              <strong>With Affiliates:</strong> We may share Your information with Our affiliates,
+              in which case we will require those affiliates to honor this Privacy Policy.
+              Affiliates include Our parent company and any other subsidiaries, joint venture
+              partners or other companies that We control or that are under common control with Us.
             </li>
             <li>
-              <strong>With business partners:</strong> We may share Your information with Our business
-              partners to offer You certain products, services or promotions.
+              <strong>With business partners:</strong> We may share Your information with Our
+              business partners to offer You certain products, services or promotions.
             </li>
             <li>
               <strong>With other users:</strong> when You share personal information or otherwise
@@ -284,9 +287,9 @@ export default function PrivacyContent() {
           <p>
             We will retain Your Personal Data only for as long as is necessary for the purposes set
             out in this Privacy Policy. We will retain and use Your Personal Data to the extent
-            necessary to comply with our legal obligations (for example, if we are required to retain
-            your data to comply with applicable laws), resolve disputes, and enforce our legal
-            agreements and policies.
+            necessary to comply with our legal obligations (for example, if we are required to
+            retain your data to comply with applicable laws), resolve disputes, and enforce our
+            legal agreements and policies.
           </p>
           <p>
             We will also retain Usage Data for internal analysis purposes. Usage Data is generally
@@ -297,10 +300,10 @@ export default function PrivacyContent() {
           <h2>Transfer of Your Personal Data</h2>
           <p>
             Your information, including Personal Data, is processed at the Company&apos;s operating
-            offices and in any other places where the parties involved in the processing are located.
-            It means that this information may be transferred to computers located outside of Your
-            state, province, country or other governmental jurisdiction where the data protection laws
-            may differ than those from Your jurisdiction.
+            offices and in any other places where the parties involved in the processing are
+            located. It means that this information may be transferred to computers located outside
+            of Your state, province, country or other governmental jurisdiction where the data
+            protection laws may differ than those from Your jurisdiction.
           </p>
           <p>
             Your consent to this Privacy Policy followed by Your submission of such information
@@ -308,14 +311,14 @@ export default function PrivacyContent() {
           </p>
           <p>
             The Company will take all steps reasonably necessary to ensure that Your data is treated
-            securely and in accordance with this Privacy Policy and no transfer of Your Personal Data
-            will take place to an organization or a country unless there are adequate controls in
-            place including the security of Your data and other personal information.
+            securely and in accordance with this Privacy Policy and no transfer of Your Personal
+            Data will take place to an organization or a country unless there are adequate controls
+            in place including the security of Your data and other personal information.
           </p>
           <h2>Delete Your Personal Data</h2>
           <p>
-            You have the right to delete or request that We assist in deleting the Personal Data that
-            We have collected about You.
+            You have the right to delete or request that We assist in deleting the Personal Data
+            that We have collected about You.
           </p>
           <p>
             Our Service may give You the ability to delete certain information about You from within
@@ -328,15 +331,15 @@ export default function PrivacyContent() {
             or delete any personal information that You have provided to Us.
           </p>
           <p>
-            Please note, however, that We may need to retain certain information when we have a legal
-            obligation or lawful basis to do so.
+            Please note, however, that We may need to retain certain information when we have a
+            legal obligation or lawful basis to do so.
           </p>
           <h2>Disclosure of Your Personal Data</h2>
           <h3>Law enforcement</h3>
           <p>
-            Under certain circumstances, the Company may be required to disclose Your Personal Data if
-            required to do so by law or in response to valid requests by public authorities (e.g. a
-            court or a government agency).
+            Under certain circumstances, the Company may be required to disclose Your Personal Data
+            if required to do so by law or in response to valid requests by public authorities (e.g.
+            a court or a government agency).
           </p>
           <h3>Other legal requirements</h3>
           <p>
@@ -362,8 +365,8 @@ export default function PrivacyContent() {
             Our Service does not address anyone under the age of 18. We do not knowingly collect
             personally identifiable information from anyone under the age of 18. If You are a parent
             or guardian and You are aware that Your child has provided Us with Personal Data, please
-            contact Us. If We become aware that We have collected Personal Data from anyone under the
-            age of 18 without verification of parental consent, We take steps to remove that
+            contact Us. If We become aware that We have collected Personal Data from anyone under
+            the age of 18 without verification of parental consent, We take steps to remove that
             information from Our servers.
           </p>
           <p>
@@ -373,13 +376,13 @@ export default function PrivacyContent() {
           </p>
           <h2>Links to Other Websites</h2>
           <p>
-            Our Service may contain links to other websites that are not operated by Us. If You click
-            on a third party link, You will be directed to that third party&apos;s site. We strongly
-            advise You to review the Privacy Policy of every site You visit.
+            Our Service may contain links to other websites that are not operated by Us. If You
+            click on a third party link, You will be directed to that third party&apos;s site. We
+            strongly advise You to review the Privacy Policy of every site You visit.
           </p>
           <p>
-            We have no control over and assume no responsibility for the content, privacy policies or
-            practices of any third party sites or services.
+            We have no control over and assume no responsibility for the content, privacy policies
+            or practices of any third party sites or services.
           </p>
           <h2>Changes to this Privacy Policy</h2>
           <p>
@@ -388,8 +391,8 @@ export default function PrivacyContent() {
           </p>
           <p>
             We will let You know via email and/or a prominent notice on Our Service, prior to the
-            change becoming effective and update the &quot;Last updated&quot; date at the top of this
-            Privacy Policy.
+            change becoming effective and update the &quot;Last updated&quot; date at the top of
+            this Privacy Policy.
           </p>
           <p>
             You are advised to review this Privacy Policy periodically for any changes. Changes to
@@ -405,15 +408,15 @@ export default function PrivacyContent() {
 
       {/* “回到顶部”按钮 */}
       <Button
-        icon={<ArrowUp/>}
+        icon={<ArrowUp />}
         onClick={() => {
           // 4. 使用 ref 来操作滚动
           // .current 属性指向真实的DOM元素
           if (scrollableContainerRef.current) {
-            scrollableContainerRef.current.scrollTo({behavior: 'smooth', top: 0});
+            scrollableContainerRef.current.scrollTo({ behavior: 'smooth', top: 0 });
           }
         }}
-        style={{bottom: '2%', fontSize: '16px', position: 'fixed', right: '1%'}}
+        style={{ bottom: '2%', fontSize: '16px', position: 'fixed', right: '1%' }}
       >
         Top
       </Button>

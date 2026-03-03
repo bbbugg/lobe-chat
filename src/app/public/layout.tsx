@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import React from 'react';
-import { BRANDING_NAME } from '@/const/branding';
+import { BRANDING_NAME } from '@lobechat/business-const';
 
 // 2. 导入我们刚刚创建的客户端主题注册表组件
 import ThemeRegistry from './ThemeRegistry';
@@ -14,21 +14,17 @@ export const metadata: Metadata = {
   },
 };
 
-export default function PublicLayout({
-                                       children,
-                                     }: {
-  children: React.ReactNode;
-}) {
+export default function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" style={{ height: '100%' }}>
-    <body style={{ height: '100%', margin: 0 }}>
-    {/*
+      <body style={{ height: '100%', margin: 0 }}>
+        {/*
           4. 使用 ThemeRegistry 组件包裹 children。
           这样，布局本身仍然是服务器组件，可以处理 metadata，
           而主题功能则被委托给了客户端组件 ThemeRegistry。
         */}
-    <ThemeRegistry>{children}</ThemeRegistry>
-    </body>
+        <ThemeRegistry>{children}</ThemeRegistry>
+      </body>
     </html>
   );
 }

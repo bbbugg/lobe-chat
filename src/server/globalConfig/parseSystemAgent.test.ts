@@ -106,7 +106,7 @@ describe('parseSystemAgent', () => {
     expect(result.queryRewrite).toEqual({
       provider: 'ollama',
       model: 'deepseek-v3',
-      enabled: true,
+      enabled: false,
     });
   });
 
@@ -124,7 +124,7 @@ describe('parseSystemAgent', () => {
     expect(result.queryRewrite).toEqual({
       provider: 'ollama',
       model: 'deepseek-v3',
-      enabled: true,
+      enabled: false,
     });
   });
 
@@ -145,7 +145,7 @@ describe('parseSystemAgent', () => {
     expect(result.queryRewrite).toEqual({
       provider: 'ollama',
       model: 'deepseek-v3',
-      enabled: true,
+      enabled: false,
     });
   });
 });

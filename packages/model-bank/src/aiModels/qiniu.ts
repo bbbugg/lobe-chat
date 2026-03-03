@@ -106,7 +106,6 @@ const qiniuChatModels: AIChatModelCard[] = [
     abilities: {
       functionCall: true,
       reasoning: true,
-      search: true,
     },
     contextWindowTokens: 131_072,
     description:

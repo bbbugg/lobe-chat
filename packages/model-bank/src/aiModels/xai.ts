@@ -12,7 +12,7 @@ const xaiChatModels: AIChatModelCard[] = [
     contextWindowTokens: 2_000_000,
     description: 'A frontier multimodal model optimized for high-performance agent tool use.',
     displayName: 'Grok 4.1 Fast (Non-Reasoning)',
-    // enabled: true,
+    enabled: true,
     id: 'grok-4-1-fast-non-reasoning',
     pricing: {
       units: [
@@ -201,7 +201,7 @@ const xaiChatModels: AIChatModelCard[] = [
     description:
       'Our newest and strongest flagship model, excelling in NLP, math, and reasoning—an ideal all-rounder.',
     displayName: 'Grok 4 0709',
-    // enabled: true,
+    enabled: true,
     id: 'grok-4',
     pricing: {
       units: [

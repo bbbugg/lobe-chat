@@ -82,7 +82,7 @@ export const openaiChatModels: AIChatModelCard[] = [
     description:
       'GPT-5.2 Chat is the ChatGPT variant (chat-latest) for the latest conversation improvements.',
     displayName: 'GPT-5.2 Chat',
-    // enabled: true,
+    enabled: true,
     id: 'gpt-5.2-chat-latest',
     maxOutput: 16_384,
     pricing: {
@@ -130,7 +130,6 @@ export const openaiChatModels: AIChatModelCard[] = [
     contextWindowTokens: 128_000,
     description: 'GPT-5.1 Chat: the ChatGPT variant of GPT-5.1, built for chat scenarios.',
     displayName: 'GPT-5.1 Chat',
-    // enabled: true,
     id: 'gpt-5.1-chat-latest',
     maxOutput: 16_384,
     pricing: {

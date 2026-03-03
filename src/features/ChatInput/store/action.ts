@@ -34,9 +34,6 @@ export const store: CreateStore = (publicState) => (set, get) => ({
   handleSendButton: () => {
     if (!get().editor) return;
 
-    const { generating } = get().sendButtonProps || {};
-    if (generating) return;
-
     const editor = get().editor;
 
     get().onSend?.({

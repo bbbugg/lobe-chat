@@ -1,25 +1,24 @@
 import { type GoogleGenAIOptions } from '@google/genai';
 import { ModelRuntime } from '@lobechat/model-runtime';
 import { LobeVertexAI } from '@lobechat/model-runtime/vertexai';
-import {
-  type AWSBedrockKeyVault,
-  type AzureOpenAIKeyVault,
-  type ClientSecretPayload,
-  type CloudflareKeyVault,
-  type ComfyUIKeyVault,
-  type GithubCopilotKeyVault,
-  type OpenAICompatibleKeyVault,
-  type VertexAIKeyVault,
-} from '@lobechat/types';
+import { type AWSBedrockKeyVault, type AzureOpenAIKeyVault, type ClientSecretPayload, type CloudflareKeyVault, type ComfyUIKeyVault, type GithubCopilotKeyVault, type OpenAICompatibleKeyVault, type VertexAIKeyVault } from '@lobechat/types';
 import { safeParseJSON } from '@lobechat/utils';
 import { ModelProvider } from 'model-bank';
+
+
 
 import { AiProviderModel } from '@/database/models/aiProvider';
 import { type LobeChatDatabase } from '@/database/type';
 import { getLLMConfig } from '@/envs/llm';
 
+
+
 import { KeyVaultsGateKeeper } from '../KeyVaultsEncrypt';
 import apiKeyManager from './apiKeyManager';
+
+
+
+
 
 export * from './trace';
 
@@ -318,21 +317,21 @@ const buildVertexOptions = (
   payload: ClientSecretPayload,
   params: Partial<GoogleGenAIOptions> = {},
 ): GoogleGenAIOptions => {
-  const rawCredentials = payload.apiKey ?? process.env.VERTEXAI_CREDENTIALS ?? '';
+  const rawCredentials = payload.apiKey || process.env.VERTEXAI_CREDENTIALS || '';
   const credentials = safeParseJSON<Record<string, string>>(rawCredentials);
 
   const projectFromParams = params.project as string | undefined;
   const projectFromCredentials = credentials?.project_id;
   const projectFromEnv = process.env.VERTEXAI_PROJECT;
 
-  const project = projectFromParams ?? projectFromCredentials ?? projectFromEnv;
+  const project = projectFromParams || projectFromCredentials || projectFromEnv;
   const location =
     (params.location as string | undefined) ||
     payload.vertexAIRegion ||
     process.env.VERTEXAI_LOCATION ||
     undefined;
 
-  const googleAuthOptions = params.googleAuthOptions ?? (credentials ? { credentials } : undefined);
+  const googleAuthOptions = params.googleAuthOptions || (credentials ? { credentials } : undefined);
 
   const options: GoogleGenAIOptions = {
     ...params,

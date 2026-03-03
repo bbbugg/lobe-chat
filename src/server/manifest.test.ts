@@ -3,7 +3,13 @@ import { BRANDING_LOGO_URL } from '@lobechat/business-const';
 import qs from 'query-string';
 import { describe, expect, it, vi } from 'vitest';
 
+
+
 import { Manifest, manifestModule } from './manifest';
+
+
+
+
 
 // Mock external dependencies
 vi.mock('@/const/branding', () => ({
@@ -148,7 +154,7 @@ describe('Manifest', () => {
         immutable: 'true',
         max_age: 31536000,
         sizes: '1280x676',
-        src: 'https://example.com/screenshot.png?v=1',
+        src: '/icons/cutecat.svg?v=1',
         type: 'image/png',
       });
     });

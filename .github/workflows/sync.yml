@@ -2,78 +2,43 @@ name: Upstream Sync
 
 permissions:
   contents: write
-  issues: write
   actions: write
 
 on:
   schedule:
-    - cron: '0 */6 * * *' # 每 6 小时执行一次
-  workflow_dispatch:  # 支持手动触发
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
 
 jobs:
   sync_latest_from_upstream:
-    name: Sync latest commits from upstream repo  # 同步上游仓库的最新提交
+    name: Sync latest commits from upstream repo
     runs-on: ubuntu-latest
-    if: ${{ github.event.repository.fork }}  # 仅在 fork 仓库中运行
+    if: ${{ github.event.repository.fork }}
 
     steps:
-      - uses: actions/checkout@v6
+      - name: Checkout target repo
+        uses: actions/checkout@v6
         with:
-          token: ${{ secrets.MY_PAT }}  # 使用 PAT 确保后续 git 操作有权限
-          ref: main  # 明确检出 main 分支
-          fetch-depth: 0  # 获取完整历史，便于 merge 操作
+          token: ${{ secrets.MY_PAT }}
+          ref: main
+          fetch-depth: 0
 
-      - name: Clean issue notice  # 清理之前的失败 issue
-        uses: actions-cool/issues-helper@v3
-        with:
-          actions: 'close-issues'
-          labels: '🚨 Sync Fail'
-
-      # 配置 Git 用户信息
       - name: Setup Git User
         run: |
           git config --global user.name "bbbugg"
           git config --global user.email "daming20120101@163.com"
 
-      # 手动同步上游变更（使用 merge 策略）
       - name: Manual Sync upstream changes
+        id: sync
         run: |
-          set -e  # 严格模式：任何命令失败即退出
-          # 添加上游 remote（如果已存在则忽略）
+          set -e
           git remote add upstream https://github.com/lobehub/lobehub.git || true
-          # 获取上游最新变更
           git fetch upstream main
-          # 切换到目标分支
           git checkout main
-          # 显式 merge（--no-ff 强制创建 merge commit，-m 自定义消息）
           git merge upstream/main --no-ff -m "Action: 自动同步上游代码"
-          # 检查是否有冲突（unmerged paths）
           if git diff --name-only --diff-filter=U | grep -q . ; then
             echo "Merge conflict detected in main branch. Files need manual resolution:"
-            git diff --name-only --diff-filter=U  # 输出冲突文件，便于日志查看
-            exit 1  # 明确失败，触发 issue
+            git diff --name-only --diff-filter=U
+            exit 1
           fi
-          # 无冲突：已自动 commit
-
-          # 推送目标分支（精确 ref，确保 --force-with-lease 安全）
           git push origin main --force-with-lease=main:origin/main
-
-
-      # 同步检查：如果失败，创建 issue
-      - name: Sync check
-        if: failure()
-        uses: actions-cool/issues-helper@v3
-        with:
-          actions: 'create-issue'
-          title: '🚨 同步失败 | Sync Fail'
-          labels: '🚨 Sync Fail'
-          body: |
-            Due to a change in the workflow file of the [LobeChat][lobechat] upstream repository, GitHub has automatically suspended the scheduled automatic update. You need to manually sync your fork. Please refer to the detailed [Tutorial][tutorial-en-US] for instructions.
-
-            由于 [LobeChat][lobechat] 上游仓库的 workflow 文件变更，导致 GitHub 自动暂停了本次自动更新，你需要手动 Sync Fork 一次，请查看 [详细教程][tutorial-zh-CN]
-
-            ![](https://github-production-user-asset-6210df.s3.amazonaws.com/17870709/273954625-df80c890-0822-4ac2-95e6-c990785cbed5.png)
-
-            [lobechat]: https://github.com/lobehub/lobe-chat
-            [tutorial-zh-CN]: https://lobehub.com/zh/docs/self-hosting/advanced/upstream-sync
-            [tutorial-en-US]: https://lobehub.com/docs/self-hosting/advanced/upstream-sync
